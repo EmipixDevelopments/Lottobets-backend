@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV || "localhost"
+const env = process.env.NODE_ENV || "production"
 
 module.exports = function (dataBaseType) {
 
@@ -10,11 +10,11 @@ module.exports = function (dataBaseType) {
 	var host = '';
 	
 	if (env == "production") {
-		database = "smsbomb";
-		username = "root";
-		password = "Emipix123!@#";
+		database = "luckynumberint";
+		username = "luckynumberint";
+		password = '7@x"`f3d(~LUQRf(';
 		//port = "22";
-		host = "localhost";
+		host = "172.31.37.175";
 	} else if (env == "localhost") {
 		database = "mlm";
 		username = "root";

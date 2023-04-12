@@ -27,13 +27,13 @@ global.now = new Date();
 };
 var server = require('https').createServer(https_options, app);*/
 //+++++++++++++++++++++++++++++++COIN PAYMENT CODE END END+++++++++++++++++++++++++
-if (process.env.NODE_ENV == "production") {
+/*if (process.env.NODE_ENV == "production") {
   var server = require('https').createServer(https_options, app);
  //var server = require('http').createServer(app);
 } else {
   var server = require('http').createServer(app);
-}
-
+}*/
+var server = require('http').createServer(app);
 io = require('socket.io')(server, {cors: { origin: "*" }});
 
 var Sequelize = require('sequelize');
