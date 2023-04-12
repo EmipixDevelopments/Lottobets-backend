@@ -5,8 +5,8 @@ var config = {
 		
 	},
 	production: {
-		"port": 3000,
-		"baseUrl": "https://app.lucky.app:3000",
+		"port": 22,
+		"baseUrl": "https://3.120.231.131",
 		//"rootpath": "/var/www/html",
 		"rootpath": "/var/www/lucky",
 		"siteName": "lucky",
