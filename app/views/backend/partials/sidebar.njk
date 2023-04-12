@@ -1,0 +1,138 @@
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/" class="brand-link ">
+      <img src="/logo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">SMS Bomber</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          <li class="nav-item">
+            <a href="/dashboard" class="nav-link {% if alias=='dashboard' %} active {% endif %}">
+              <i class="nav-icon fa fa-list"></i>
+              <p>
+                Campaigns
+              </p>
+            </a>
+          </li>
+          {% if auth.user.role=='superadmin' %}
+          <li class="nav-item">
+            <a href="/contact" class="nav-link {% if alias=='contact' %} active {% endif %}">
+              <i class="nav-icon fa fa-phone"></i>
+              <p>
+                Contacts
+              </p>
+            </a>
+          </li>
+          {% endif %}
+          
+          {% if auth.user.role=='superadmin' %}
+          <li class="nav-item">
+            <a href="/user_list" class="nav-link {% if alias=='user' %} active {% endif %}">
+              <i class="nav-icon fa fa-users"></i>
+              <p>
+                Users
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/template" class="nav-link {% if alias=='template' %} active {% endif %}">
+              <i class="nav-icon fa fa-text-height"></i>
+              <p>
+                Template
+              </p>
+            </a>
+          </li>
+          {% endif %}
+          
+          {% if auth.user.role=='superadmin' %}
+          <li class="nav-item">
+            <a href="#" class="nav-link {% if (alias=='countries') or (alias=='categories') or (alias=='integrations_deliverhub') or (alias=='integrations_textlocal') or (alias=='integrations_textbox') or (alias=='integrations_mmd') or (alias=='integrations_tiny') or (alias=='integrations_tiny')%} active {% endif %}">
+              <i class="nav-icon fa fa-cog"></i>
+              <p>
+                Settings
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="/countries" class="nav-link {% if alias=='countries' %} active {% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Countries</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/categories" class="nav-link {% if alias=='categories' %} active {% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Categories</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link {% if (alias=='integrations_mmd') or (alias=='integrations_deliverhub') or (alias=='integrations_textlocal') or (alias=='integrations_textbox') or (alias=='integrations_tiny') %} active {% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Integrations<i class="right fas fa-angle-left"></i></p>
+                </a>
+                <ul class="nav nav-treeview">
+                   <li class="nav-item">
+                    <a href="/integrations_mmd" class="nav-link {% if alias=='integrations_mmd' %} active {% endif %}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>MMD</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="integrations_deliverhub" class="nav-link {% if alias=='integrations_deliverhub' %} active {% endif %}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Deliverhub</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="integrations_textlocal" class="nav-link {% if alias=='integrations_textlocal' %} active {% endif %}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Textlocal</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="integrations_textbox" class="nav-link {% if alias=='integration_textbox' %} active {% endif %}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Text Box</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="integrations_tiny" class="nav-link {% if alias=='integrations_tiny' %} active {% endif %}">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Tiny URL</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a href="/offer" class="nav-link {% if alias=='offer' %} active {% endif %}">
+              <i class="nav-icon fa fa-gift"></i>
+              <p>
+                Offers/URLs
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/senders_list" class="nav-link {% if alias=='senders' %} active {% endif %}">
+              <i class="nav-icon fa fa-envelope"></i>
+              <p>
+                Senders
+              </p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
