@@ -38,8 +38,8 @@ io = require('socket.io')(server, {cors: { origin: "*" }});
 
 var Sequelize = require('sequelize');
 global.Sequelize = Sequelize;
-var sequelizeDB = require('./config/database.js')(Sequelize);
-global.sequelize1 = sequelizeDB;
+//var sequelizeDB = require('./config/database.js')(Sequelize);
+//global.sequelize1 = sequelizeDB;
 //require('./config/logconfig.js');
 global.fs = require('fs');
 
@@ -96,9 +96,9 @@ passport.deserializeUser(function (user, done) {
 
 //Start: Load model, controller, helper, and route
 //var model = require('./app/models/mongo/index')(mongoose);
-var model = require('./app/models/mysql/index')(Sequelize, sequelizeDB);
-var controllers = require('./app/controllers/index')(model);
-require('./routes/index.js')(app, model, controllers);
+//var model = require('./app/models/mysql/index')(Sequelize, sequelizeDB);
+//var controllers = require('./app/controllers/index')(model);
+//require('./routes/index.js')(app, model, controllers);
 global.helper = require('./app/helpers/helpers.js');
 
 
@@ -116,7 +116,7 @@ const httpsAgent = new https.Agent({
 
 
 //Start: Server connection
-console.log("process.env.NODE_ENV=",process.env.NODE_ENV)
+//console.log("process.env.NODE_ENV=",process.env.NODE_ENV)
 app.set('port', port);
 server.listen(port, function () {
   console.log("server starting on port " + port);
