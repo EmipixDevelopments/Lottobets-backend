@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 global.config = require('./config/constants.js');
-var port = config.port || 486;
+var port = config.port;
 var passport = require('passport');
 var flash = require('connect-flash');
 var path = require('path');
