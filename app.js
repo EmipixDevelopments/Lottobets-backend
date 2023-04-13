@@ -32,7 +32,7 @@ var server = require('https').createServer(https_options, app);*/
  //var server = require('http').createServer(app);
 } else {
   var server = require('http').createServer(app);
-}*/
+}*/ 
 var server = require('http').createServer(app);
 io = require('socket.io')(server, {cors: { origin: "*" }});
 
