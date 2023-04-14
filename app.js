@@ -113,7 +113,19 @@ const httpsAgent = new https.Agent({
 })*/
 
   
+const mysql = require('mysql');
 
+const connection = mysql.createConnection({
+  host : "172.31.37.175",
+  user     : 'luckynumberint',
+  password : '7@x"`f3d(~LUQRf(',
+  database : 'luckynumberint'
+});
+
+connection.connect((err) => {
+    if(err) throw err;
+    console.log('Connected to MySQL Server!==',err);
+});
 
 //Start: Server connection
 console.log("process.env.NODE_ENV=",process.env.NODE_ENV)
