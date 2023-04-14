@@ -43,21 +43,8 @@ module.exports = function(model,config){
                     CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                     result['CutTime'] = CutTime;
                 }
-                /*result.sort(function(a,b){
-                  var o1 = a.State.toLowerCase();
-                  var o2 = b.State.toLowerCase();
-                  if (o1 < o2) return -1;
-                  if (o1 > o2) return 1;
-                    
-                  var p1 = a.ProfileName.toLowerCase();
-                  var p2 = b.ProfileName.toLowerCase();
-                  if (p1 < p2) return -1;
-                  if (p1 > p2) return 1;
-
-                  return 0;
-                });*/
-        
-                return response.send({
+                
+        		return response.send({
                     status: "success",
                     result: result,
                     message: "Lotto found successfully",
@@ -73,7 +60,7 @@ module.exports = function(model,config){
             }
 		    } catch (error) {
 		        console.log('error',error);
-		        if(t) {
+		        if(tra) {
 		           await t.rollback();
 		        }
 		    }
