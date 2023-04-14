@@ -38,12 +38,13 @@ io = require('socket.io')(server, {cors: { origin: "*" }});
 
 var mysql = require('mysql');
 global.dbconnection = mysql.createPool({
-    /*connectionLimit: 100000,
+    connectionLimit: 100000,
     acquireTimeout: 100000,
     queueLimit:0,
     supportBigNumbers: true,
     bigNumberStrings: true,
-    waitForConnections: true,*/
+    waitForConnections: true,
+    por:3306,
     host: '172.31.37.175',
     user: 'luckynumberint',
     password: '7@x"`f3d(~LUQRf(',
