@@ -57,19 +57,19 @@ module.exports = function(model,config){
                   return 0;
                 });*/
         
-                return {
+                return response.send({
                     status: "success",
                     result: result,
                     message: "Lotto found successfully",
                     status_code: 200
-                };
+                });
             } else {
-                return {
+                return response.send({
                     status: "success",
                     result: result,
                     message: "Lotto not found",
                     status_code: 200
-                };
+                });
             }
 		    } catch (error) {
 		        console.log('error',error);
