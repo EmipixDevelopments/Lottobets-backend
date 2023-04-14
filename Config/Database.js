@@ -39,7 +39,7 @@ module.exports = {
 			sql: {
 				//host: '172.31.44.69',
 				host: '172.31.37.175',
-				port: '3306',
+				port: '',
 				user: 'luckynumberint',
 				password : '7@x"`f3d(~LUQRf(',
 				database: 'luckynumberint'

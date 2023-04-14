@@ -88,7 +88,6 @@ fs.readdirSync(join(__dirname, '../Helper'))
 });
 
 // Logger Load
-//app.use("/", express.static(__dirname + "/public/Build"));
 
 Sys.Log = winston.createLogger({
 
@@ -230,8 +229,8 @@ if(Sys.Config.Database.connectionType == 'local'){
 console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :",Sys.Config.Database[Sys.Config.Database.connectionType].sql.host)
 
 	Sys.SqlPool = mysql.createPool({
-		connectionLimit: 100000,
-		acquireTimeout: 100000,
+		connectionLimit: 10,
+		acquireTimeout: 10000,
 		queueLimit:0,
 		supportBigNumbers: true,
         bigNumberStrings: true,
@@ -246,8 +245,8 @@ console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :"
 else{
 Sys.Log.info('Connection... DB...');
 	Sys.SqlPool = mysql.createPool({
-		connectionLimit: 100000,
-		acquireTimeout: 100000,
+		connectionLimit: 10,
+		acquireTimeout: 10000,
 		queueLimit:0,
 		waitForConnections: true,
 		supportBigNumbers: true,
