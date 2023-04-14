@@ -26,8 +26,8 @@ module.exports = function (dataBaseType) {
 	var sequelize = new dataBaseType(database, username, password, {
 		host: host,
 		dialect: 'mysql',
-		/*operatorsAliases: false,
-		logging: false, // true when you want to seen query */
+		operatorsAliases: false,
+		logging: false, // true when you want to seen query 
 		port: port,
 		pool: {
 			max: 5,
@@ -35,6 +35,7 @@ module.exports = function (dataBaseType) {
 			acquire: 30000,
 			idle: 10000
 		},
+		dialectOptions: { connectTimeout:  5000 }
 		
 	});
 
