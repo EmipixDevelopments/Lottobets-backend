@@ -352,7 +352,7 @@ Sys.SqlPool2.query = util.promisify(Sys.SqlPool2.query);
     
 
 
-Sys.SqlPool2.getConnection((err, connection) => {
+/*Sys.SqlPool2.getConnection((err, connection) => {
     if (err) {
     console.log('=====',err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
@@ -372,7 +372,7 @@ Sys.SqlPool2.getConnection((err, connection) => {
 Sys.SqlPool.on('connection',async function (err,) {
     
 
-});
+});*/
 // var dbURI = '';
 // if(Sys.Config.Database.connectionType == 'local'){
 
