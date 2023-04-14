@@ -42,6 +42,7 @@
     "md5": "^2.3.0",
     "mobile-detect": "^1.4.5",
     "moment-timezone": "^0.5.40",
+    "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "node-cron": "^3.0.2",
     "node-deeplink": "^0.6.0",
