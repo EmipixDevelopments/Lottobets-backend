@@ -282,7 +282,7 @@ Sys.SqlPool.getConnection((err, connection) => {
  
     if (connection){
 
-		Sys.Log.info('Loading... Setting');
+		/*Sys.Log.info('Loading... Setting');
 		Sys.Io = require('socket.io')(Sys.Server,{'pingTimeout' :Sys.Config.Socket.pingTimeout,'pingInterval' : Sys.Config.Socket.pingInterval});
 		//Sys.Log.info('Loading... Socket');
 		Sys.Io.on('connection',async function(socket) {
@@ -294,7 +294,7 @@ Sys.SqlPool.getConnection((err, connection) => {
 					Object.keys(Sys.KioskServer.Common.Sockets).forEach(function(key){ // Register Socket File in Socket Variable
 						Sys.KioskServer.Common.Sockets[key](socket,Sys.Io)
 					});
-		});
+		});*/
 
 	    
 
@@ -310,7 +310,7 @@ Sys.SqlPool.getConnection((err, connection) => {
 })
 
 
-//////////////////////////////Dotnet/////////////////////////////////////////
+/*//////////////////////////////Dotnet/////////////////////////////////////////
 if(Sys.Config.Database.connectionType2 == 'dotNet'){
 //console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :",Sys.Config.Database[Sys.Config.Database.connectionType].sql.host)
 
@@ -372,7 +372,7 @@ Sys.SqlPool2.getConnection((err, connection) => {
 Sys.SqlPool.on('connection',async function (err,) {
     
 
-});
+});*/
 // var dbURI = '';
 // if(Sys.Config.Database.connectionType == 'local'){
 
