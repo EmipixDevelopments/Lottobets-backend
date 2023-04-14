@@ -23,30 +23,6 @@ module.exports = function (dataBaseType) {
 		port = "";
 		host = "localhost";
 	}
-	var dbconnection = mysql.createPool({
-		connectionLimit: 100000,
-		acquireTimeout: 100000,
-		queueLimit:0,
-		supportBigNumbers: true,
-        bigNumberStrings: true,
-        waitForConnections: true,
-		host: host,
-		user: username,
-		password: password,
-		database: database
-	});    
-
-	dbconnection.on('connection', function (connection) {
-	  console.log('DB Connection established');
-
-	  connection.on('error', function (err) {
-	    console.error(new Date(), 'MySQL error', err.code);
-	  });
-	  connection.on('close', function (err) {
-	    console.error(new Date(), 'MySQL close', err);
-	  });
-
-	});
-	return dbconnection;
+	
 	//End: sequelize database connection
 }

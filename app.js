@@ -37,9 +37,30 @@ if (process.env.NODE_ENV == "production") {
 io = require('socket.io')(server, {cors: { origin: "*" }});
 
 var mysql = require('mysql');
-global.Sequelize = mysql;
-var sequelizeDB = require('./config/database.js')(mysql);
-global.sequelize1 = sequelizeDB;
+global.dbconnection = mysql.createPool({
+    connectionLimit: 100000,
+    acquireTimeout: 100000,
+    queueLimit:0,
+    supportBigNumbers: true,
+    bigNumberStrings: true,
+    waitForConnections: true,
+    host: '172.31.37.175',
+    user: 'luckynumberint',
+    password: '7@x"`f3d(~LUQRf(',
+    database: 'luckynumberint'
+  });    
+
+  dbconnection.on('connection', function (connection) {
+    console.log('DB Connection established');
+
+    connection.on('error', function (err) {
+      console.error(new Date(), 'MySQL error', err.code);
+    });
+    connection.on('close', function (err) {
+      console.error(new Date(), 'MySQL close', err);
+    });
+
+  });
 //require('./config/logconfig.js');
 global.fs = require('fs');
 
