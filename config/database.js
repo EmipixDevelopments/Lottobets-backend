@@ -35,6 +35,9 @@ module.exports = function (dataBaseType) {
 			acquire: 30000,
 			idle: 10000
 		}
+		dialectOptions: {
+		    requestTimeout: 3000
+		},
 	});
 
 	sequelize.authenticate().then(() => {
