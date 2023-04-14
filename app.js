@@ -38,8 +38,10 @@ io = require('socket.io')(server, {cors: { origin: "*" }});
 
 var Sequelize = require('sequelize');
 global.Sequelize = Sequelize;
-var sequelizeDB = require('./config/database.js')(Sequelize);
-global.sequelize1 = sequelizeDB;
+var database_cngapi = require('./config/database_cngapi.js')(Sequelize);
+var database_luckynumberint = require('./config/database_luckynumberint.js')(Sequelize);
+global.sequelize_luckynumberint = database_luckynumberint;
+global.sequelize_cngapi = database_cngapi;
 //require('./config/logconfig.js');
 global.fs = require('fs');
 
@@ -96,7 +98,7 @@ passport.deserializeUser(function (user, done) {
 
 //Start: Load model, controller, helper, and route
 //var model = require('./app/models/mongo/index')(mongoose);
-var model = require('./app/models/mysql/index')(Sequelize, sequelizeDB);
+var model = require('./app/models/mysql/index')(Sequelize, database_luckynumberint);
 var controllers = require('./app/controllers/index')(model);
 require('./routes/index.js')(app, model, controllers);
 global.helper = require('./app/helpers/helpers.js');
