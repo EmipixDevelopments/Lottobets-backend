@@ -117,8 +117,8 @@ passport.deserializeUser(function (user, done) {
 
 //Start: Load model, controller, helper, and route
 //var model = require('./app/models/mongo/index')(mongoose);
-var model = require('./app/models/mysql/index')(Sequelize, sequelizeDB);
-var controllers = require('./app/controllers/index')(model);
+//var model = require('./app/models/mysql/index')(Sequelize, sequelizeDB);
+var controllers = require('./app/controllers/index');
 require('./routes/index.js')(app, model, controllers);
 global.helper = require('./app/helpers/helpers.js');
 
