@@ -1,6 +1,6 @@
 var dateformat = require('dateformat');
 var currentDate = new Date();
-var Op = Sequelize.Op;
+//var Op = Sequelize.Op;
 var md5 = require('md5');
 
 module.exports = function(model,config){	
