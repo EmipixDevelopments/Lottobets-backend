@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV || "localhost"
+const env = process.env.NODE_ENV || "production"
 
 var config = {
 	development: {

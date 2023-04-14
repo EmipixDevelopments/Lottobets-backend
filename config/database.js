@@ -1,4 +1,4 @@
-const env = process.env.NODE_ENV || "localhost"
+const env = process.env.NODE_ENV || "production"
 var mysql = require('mysql');
 module.exports = function (dataBaseType) {
 
