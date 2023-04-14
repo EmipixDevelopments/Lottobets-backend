@@ -13,9 +13,9 @@ module.exports = function(model,config){
 			
 			//const t = await Sequelize.transaction();
 			//let transaction;
-			let t = await sequelize1.transaction();
+			let t = await sequelize_luckynumberint.transaction();
 		    try {
-		        let d = await sequelize_luckynumberint.query('SELECT * FROM question_list;', { transaction: t ,type: sequelize1.QueryTypes.SELECT})
+		        let d = await sequelize_luckynumberint.query('SELECT * FROM question_list;', { transaction: t ,type: sequelize_luckynumberint.QueryTypes.SELECT})
 				await t.commit(); 
 				return response.send(d)
 		    } catch (error) {
