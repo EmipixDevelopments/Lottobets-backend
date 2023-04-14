@@ -25,7 +25,7 @@ module.exports = function (dataBaseType) {
 	}
 	var sequelize = new dataBaseType(database, username, password, {
 		host: host,
-		dialect: 'mysql2',
+		dialect: 'mysqli',
 		operatorsAliases: false,
 		logging: false, // true when you want to seen query 
 		port: port,
