@@ -1,8 +1,8 @@
 const { check, validationResult } = require('express-validator/check');
-module.exports = function (app, model, controller) {
+module.exports = function (app, controller) {
     
-    var middleware = require('../app/middleware/index')(model);
-    var validation = require('../app/validator/index')(model);
+    var middleware = require('../app/middleware/index');
+    var validation = require('../app/validator/index');
     
     /*Start: smsbomb routing*/
     app.get('/test',  controller.user.getUsers);
