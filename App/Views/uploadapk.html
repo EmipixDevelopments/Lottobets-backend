@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Upload CNG APK</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<style>
+html{
+	margin:0px;
+	padding: 0px;
+}
+body{
+	font-family:'Roboto';
+	background: url(./apk/layout_bg.jpg) center center no-repeat fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    margin: 0px;
+    padding: 0px;
+}
+.cngapk{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	-webkit-transform: translate(-50%,-50%);
+	-moz-transform: translate(-50%,-50%);
+	-o-transform: translate(-50%,-50%);
+	-ms-transform: translate(-50%,-50%);
+	background: rgba(148, 148, 148, 0.5);
+    padding: 5px;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    -o-border-radius: 15px;
+    -ms-border-radius: 15px;
+    border: 5px solid rgba(116, 115, 115, 0.40);
+}
+form{
+
+}
+.cngapk h2{
+	font-size:22px;
+	margin-top: 5px;
+	margin-bottom:15px;
+	color: #fff;
+	text-align: center;
+}
+.cngapk p{font-size:16px; margin-top:5px;margin-bottom:10px;}
+.cngapk .input_num{
+	width: 100%;
+	background:rgba(255,255,255,0.5);
+	height: 30px;
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	-ms-border-radius: 4px;
+	display: block;
+	color: #000;
+}
+
+.cngapk input{
+	margin-bottom: 15px;
+	display: block;
+	color: #fff;
+}
+.form_box{
+	position: relative;
+	padding:20px 30px 20px 20px;
+}
+:after, :before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+*, :after, :before {
+    box-sizing: inherit;
+}
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #fff;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #fff;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: #fff;
+}
+.submit_btn{
+	background: #000;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	-ms-border-radius: 4px;
+	display: block;
+	color: #fff;
+	padding: 10px 20px;
+	border:1px solid #000;
+	margin-bottom: 0px !important;
+	cursor: pointer;
+}
+.submit_btn:hover, .submit_btn:focus{
+	background: rgba(0,0,0,0.85);
+}
+
+</style>
+
+<body>
+<div class="cngapk">
+    <h2>Upload CNG APK</h2>
+    <div class="form_box">
+	    <form action="/uploadapk" method="post" enctype="multipart/form-data">
+			<input type="text" name="version_name" placeholder="Please enter version name" class="input_num" required>
+	        <input type="number" name="version_number" placeholder="Please enter version number of apk" class="input_num" required>
+	        <input type="file" name="apkfile" required>
+			<textarea name="description" placeholder="Enter description" cols="52" rows="3" required></textarea>
+	        <input type="submit" name="apk_submit" class="submit_btn" value="Submit">
+	    </form>    
+	</div>
+ </div>
+    
+</body>
+</html>
