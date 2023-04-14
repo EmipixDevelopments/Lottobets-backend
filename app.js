@@ -36,32 +36,10 @@ if (process.env.NODE_ENV == "production") {
 
 io = require('socket.io')(server, {cors: { origin: "*" }});
 
-var mysql = require('mysql');
-global.dbconnection = mysql.createPool({
-    connectionLimit: 100000,
-    acquireTimeout: 100000,
-    queueLimit:0,
-    supportBigNumbers: true,
-    bigNumberStrings: true,
-    waitForConnections: true,
-    por:3306,
-    host: '172.31.37.175',
-    user: 'luckynumberint',
-    password: '7@x"`f3d(~LUQRf(',
-    database: 'luckynumberint'
-  });    
-
-  dbconnection.on('connection', function (connection) {
-    console.log('DB Connection established');
-
-    connection.on('error', function (err) {
-      console.error(new Date(), 'MySQL error', err.code);
-    });
-    connection.on('close', function (err) {
-      console.error(new Date(), 'MySQL close', err);
-    });
-
-  });
+var Sequelize = require('sequelize');
+global.Sequelize = Sequelize;
+var sequelizeDB = require('./config/database.js')(Sequelize);
+global.sequelize1 = sequelizeDB;
 //require('./config/logconfig.js');
 global.fs = require('fs');
 
@@ -118,7 +96,7 @@ passport.deserializeUser(function (user, done) {
 
 //Start: Load model, controller, helper, and route
 //var model = require('./app/models/mongo/index')(mongoose);
-var model = require('./app/models/mysql/index');
+var model = require('./app/models/mysql/index')(Sequelize, sequelizeDB);
 var controllers = require('./app/controllers/index')(model);
 require('./routes/index.js')(app, model, controllers);
 global.helper = require('./app/helpers/helpers.js');
