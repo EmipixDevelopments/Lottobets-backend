@@ -31,7 +31,7 @@ module.exports = function (dataBaseType) {
         bigNumberStrings: true,
         waitForConnections: true,
 		host: host,
-		user: user,
+		user: username,
 		password: password,
 		database: database
 	});    
