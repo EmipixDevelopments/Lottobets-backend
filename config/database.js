@@ -36,9 +36,8 @@ module.exports = function (dataBaseType) {
 			idle: 10000
 		},
 		dialectOptions: {
-		  statement_timeout: 1000,
-		  idle_in_transaction_session_timeout: 5000
-		}
+		    connectTimeout: 20000, // default is 10s which causes occasional ETIMEDOUT errors (see https://stackoverflow.com/a/52465919/491553)
+		  },
 	});
 
 	sequelize.authenticate().then(() => {
