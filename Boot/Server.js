@@ -88,7 +88,7 @@ fs.readdirSync(join(__dirname, '../Helper'))
 });
 
 // Logger Load
-Sys.App.use("/", express.static(__dirname + "/public/Build"));
+//app.use("/", express.static(__dirname + "/public/Build"));
 
 Sys.Log = winston.createLogger({
 
