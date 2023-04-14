@@ -311,7 +311,7 @@ Sys.SqlPool.getConnection((err, connection) => {
 
 
 //////////////////////////////Dotnet/////////////////////////////////////////
-if(Sys.Config.Database.connectionType2 == 'dotNet'){
+/*if(Sys.Config.Database.connectionType2 == 'dotNet'){
 //console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :",Sys.Config.Database[Sys.Config.Database.connectionType].sql.host)
 
 	Sys.SqlPool2 = mysql.createPool({
@@ -346,7 +346,7 @@ Sys.Log.info('Connection... DB...');
  
 }
 
-Sys.SqlPool2.query = util.promisify(Sys.SqlPool2.query);
+Sys.SqlPool2.query = util.promisify(Sys.SqlPool2.query);*/
 
 
     
