@@ -26,7 +26,9 @@ module.exports = function(model,config){
 		    }*/
 		    let iav_running_check = "SELECT * FROM question_list";
             let result_running_check = await getResult(iav_running_check);
-            console.log("result_running_check==",result_running_check)
+            console.log("result_running_check==",result_running_check);
+            console.log("dbconnection==",dbconnection);
+            
 
 	};
 	function getResult(sql){
