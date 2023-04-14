@@ -15,7 +15,7 @@ module.exports = function(model,config){
 			//let transaction;
 			let t = await sequelize1.transaction();
 		    try {
-		        let d = await sequelize1.query('SELECT * FROM admins;', { transaction: t ,type: sequelize1.QueryTypes.SELECT})
+		        let d = await sequelize1.query('SELECT * FROM question_list;', { transaction: t ,type: sequelize1.QueryTypes.SELECT})
 				await t.commit(); 
 				return response.send(d)
 		    } catch (error) {
