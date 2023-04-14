@@ -119,7 +119,7 @@ passport.deserializeUser(function (user, done) {
 //var model = require('./app/models/mongo/index')(mongoose);
 //var model = require('./app/models/mysql/index')(Sequelize, sequelizeDB);
 var controllers = require('./app/controllers/index');
-require('./routes/index.js')(app, model, controllers);
+require('./routes/index.js')(app, controllers);
 global.helper = require('./app/helpers/helpers.js');
 
 
