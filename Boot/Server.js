@@ -245,12 +245,12 @@ console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :"
 else{
 Sys.Log.info('Connection... DB...');
 	Sys.SqlPool = mysql.createPool({
-		connectionLimit: 100000,
+		/*connectionLimit: 100000,
 		acquireTimeout: 100000,
 		queueLimit:0,
 		waitForConnections: true,
 		supportBigNumbers: true,
-        bigNumberStrings: true,
+        bigNumberStrings: true,*/
 		host: Sys.Config.Database[Sys.Config.Database.connectionType].sql.host,
 		port:Sys.Config.Database[Sys.Config.Database.connectionType].sql.port,
 		user: Sys.Config.Database[Sys.Config.Database.connectionType].sql.user,
