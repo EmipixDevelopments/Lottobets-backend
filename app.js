@@ -36,9 +36,9 @@ if (process.env.NODE_ENV == "production") {
 
 io = require('socket.io')(server, {cors: { origin: "*" }});
 
-var Sequelize = require('sequelize');
-global.Sequelize = Sequelize;
-var sequelizeDB = require('./config/database.js')(Sequelize);
+var mysql = require('mysql');
+global.Sequelize = mysql;
+var sequelizeDB = require('./config/database.js')(mysql);
 global.sequelize1 = sequelizeDB;
 //require('./config/logconfig.js');
 global.fs = require('fs');

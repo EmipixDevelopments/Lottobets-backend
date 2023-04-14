@@ -32,6 +32,8 @@ module.exports = function(model,config){
 	function getResult(sql){
       return new Promise(function(resolve,reject){
          sequelize1.getConnection( function(err, conn) {
+         	console.log("sql==",sql)
+         	console.log("conn==",conn)
                  conn.query(sql, async function(err, Result) {
                     conn.release();
                     //console.log(JSON.parse(JSON.stringify(Result)))
