@@ -210,6 +210,7 @@ Sys.Log.info('Loading... Router');
 fs.readdirSync(join(__dirname, '../App/Routes'))
   .filter(file => ~file.search(/^[^\.].*\.js$/))
   .forEach(function(file) {
+	Sys.App.use('/', require(join(join(__dirname, '../public/Build'), file))); // Register Router to app.use
 	Sys.App.use('/', require(join(join(__dirname, '../App/Routes'), file))); // Register Router to app.use
 });
 
