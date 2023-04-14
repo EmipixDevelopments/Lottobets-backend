@@ -13,7 +13,7 @@ module.exports = function (dataBaseType) {
 		database = "luckynumberint";
 		username = "luckynumberint";
 		password = '7@x"`f3d(~LUQRf(';
-		port = "3306";
+		port = 3306;
 		host = "172.31.37.175";
 	} else if (env == "localhost") {
 		database = "mlm";
