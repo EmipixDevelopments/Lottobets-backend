@@ -229,8 +229,8 @@ if(Sys.Config.Database.connectionType == 'local'){
 console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :",Sys.Config.Database[Sys.Config.Database.connectionType].sql.host)
 
 	Sys.SqlPool = mysql.createPool({
-		connectionLimit: 10,
-		acquireTimeout: 10000,
+		connectionLimit: 100000,
+		acquireTimeout: 100000,
 		queueLimit:0,
 		supportBigNumbers: true,
         bigNumberStrings: true,
@@ -245,8 +245,8 @@ console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :"
 else{
 Sys.Log.info('Connection... DB...');
 	Sys.SqlPool = mysql.createPool({
-		connectionLimit: 10,
-		acquireTimeout: 10000,
+		connectionLimit: 100000,
+		acquireTimeout: 100000,
 		queueLimit:0,
 		waitForConnections: true,
 		supportBigNumbers: true,
@@ -311,7 +311,7 @@ Sys.SqlPool.getConnection((err, connection) => {
 
 
 //////////////////////////////Dotnet/////////////////////////////////////////
-/*if(Sys.Config.Database.connectionType2 == 'dotNet'){
+if(Sys.Config.Database.connectionType2 == 'dotNet'){
 //console.log("Sys.Config.Database[Sys.Config.Database.connectionType].sql.host :",Sys.Config.Database[Sys.Config.Database.connectionType].sql.host)
 
 	Sys.SqlPool2 = mysql.createPool({
@@ -346,13 +346,13 @@ Sys.Log.info('Connection... DB...');
  
 }
 
-Sys.SqlPool2.query = util.promisify(Sys.SqlPool2.query);*/
+Sys.SqlPool2.query = util.promisify(Sys.SqlPool2.query);
 
 
     
 
 
-/*Sys.SqlPool2.getConnection((err, connection) => {
+Sys.SqlPool2.getConnection((err, connection) => {
     if (err) {
     console.log('=====',err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
@@ -372,7 +372,7 @@ Sys.SqlPool2.query = util.promisify(Sys.SqlPool2.query);*/
 Sys.SqlPool.on('connection',async function (err,) {
     
 
-});*/
+});
 // var dbURI = '';
 // if(Sys.Config.Database.connectionType == 'local'){
 
