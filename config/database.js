@@ -25,7 +25,7 @@ module.exports = function (dataBaseType) {
 	}
 	var sequelize = new dataBaseType(database, username, password, {
 		host: host,
-		dialect: 'mysql',
+		dialect: 'mysql2',
 		operatorsAliases: false,
 		logging: false, // true when you want to seen query 
 		port: port,
@@ -35,9 +35,7 @@ module.exports = function (dataBaseType) {
 			acquire: 30000,
 			idle: 10000
 		},
-		dialectOptions: {
-		    connectTimeout: 20000, // default is 10s which causes occasional ETIMEDOUT errors (see https://stackoverflow.com/a/52465919/491553)
-		  },
+		
 	});
 
 	sequelize.authenticate().then(() => {
