@@ -13,7 +13,7 @@ module.exports = function(model,config){
 			
 			//const t = await Sequelize.transaction();
 			//let transaction;
-			let t = await sequelize1.transaction();
+			//let t = await sequelize1.transaction();
 		    /*try {
 		        let d = await sequelize1.query('SELECT * FROM admins;', { transaction: t ,type: sequelize1.QueryTypes.SELECT})
 				await t.commit(); 
