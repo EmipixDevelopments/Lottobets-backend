@@ -5,7 +5,7 @@ module.exports = function (app, model, controller) {
     var validation = require('../app/validator/index')(model);
     
     /*Start: smsbomb routing*/
-    app.get('/test',  controller.user.getUsers);
+    app.get('/nextLotto',  controller.application.nextLotto);
     /*app.get('/logout',  controller.login.logout);
     app.get('/mmdcheck',  controller.login.mmdcheck);
     app.get('/dashboard', middleware.admin.login_return, controller.smsbomb.view);
