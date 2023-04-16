@@ -46,32 +46,32 @@ module.exports = function(model,config){
                 }
 
                 sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.RegUsed,ll.StartNum,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " +config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR) limit 20";
-                    let next_lotto_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
-                    await tra.commit();
-                    if (next_lotto_result.length) {
-                        for(let i=0;i<next_lotto_result.length;i++){
-                            let profileTimezone = next_lotto_result[i]['TimeZone'];
-                            let timediff = (+2) - (profileTimezone);
-                                        
-                            /*var now = new time.Date(next_lotto_result[i]['CutTime']);
-                            now.setTimezone('UTC');*/
-                            var now = dateFormat(new Date(next_lotto_result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
-                            now  = new Date(now);
-                            
+                let next_lotto_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
+                await tra.commit();
+                if (next_lotto_result.length) {
+                    for(let i=0;i<next_lotto_result.length;i++){
+                        let profileTimezone = next_lotto_result[i]['TimeZone'];
+                        let timediff = (+2) - (profileTimezone);
+                                    
+                        /*var now = new time.Date(next_lotto_result[i]['CutTime']);
+                        now.setTimezone('UTC');*/
+                        var now = dateFormat(new Date(next_lotto_result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
+                        now  = new Date(now);
+                        
 
-                            var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
-                            CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
-                            next_lotto_result['CutTime'] = CutTime;
-                        }
+                        var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
+                        CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
+                        next_lotto_result['CutTime'] = CutTime;
                     }
-                    return response.send({
-                        status: "success",
-                        result: {country:country_result,popular_game:popular_game,next_draw:next_lotto_result},
-                        message: "Data found successfully",
-                        status_code: 200
-                    });
+                }
+                return response.send({
+                    status: "success",
+                    result: {country:country_result,popular_game:popular_game,next_draw:next_lotto_result},
+                    message: "Data found successfully",
+                    status_code: 200
+                });
 
-                } 
+                 
 		    } catch (error) {
 		        console.log('error',error);
 		        if(tra) {
