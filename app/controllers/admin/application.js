@@ -42,7 +42,17 @@ module.exports = function(model,config){
                         });
                     }
                 }
+                var d = new Date();
+                var dt = d.getDate()+2;
+                var current = new Date(dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss",true));
+                current = current.setHours(current.getHours() + 2);
+                current = dateFormat(current, "yyyy-mm-dd HH:MM:ss");
 
+                var t = new Date();
+                t.setDate(t.getDate() + 2);
+                var next = new Date(dateFormat(new Date(t), "yyyy-mm-dd HH:MM:ss",true));
+                next.setHours(next.getHours() + 2);
+                next = dateFormat(next, "yyyy-mm-dd HH:MM:ss");
                 sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.RegUsed,ll.StartNum,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " +config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR) limit 20";
                 let next_lotto_result = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
                 
