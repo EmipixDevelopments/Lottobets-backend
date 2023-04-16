@@ -63,6 +63,11 @@ module.exports = function(model,config){
 		        if(tra) {
 		           await t.rollback();
 		        }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
 		    }
 
 	};
