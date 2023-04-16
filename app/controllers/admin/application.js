@@ -74,10 +74,12 @@ module.exports = function(model,config){
                  
 		    } catch (error) {
 		        console.log('error',error);
-		        if(tra) {
+		        if(tra_lucky) {
 		           await tra_lucky.rollback();
+                }
+                if(tra_cngapi) {
                    await tra_cngapi.rollback();
-		        }
+                }
                 return response.send({
                     status: 'fail',
                     message: error,
