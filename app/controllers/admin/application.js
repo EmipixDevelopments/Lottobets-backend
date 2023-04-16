@@ -28,28 +28,25 @@ module.exports = function(model,config){
                      popular_game = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                     await tra.commit();
                     if (popular_game.length) {
-                        
+                        popular_game.sort(function(a,b){
+
+                        var o1 = a.State.toLowerCase();
+                        var o2 = b.State.toLowerCase();
+                        if (o1 < o2) return -1;
+                        if (o1 > o2) return 1;
+
+                        var p1 = a.lottoName.toLowerCase();
+                        var p2 = b.lottoName.toLowerCase();
+                        if (p1 < p2) return -1;
+                        if (p1 > p2) return 1;
+
+                        return 0;
+                        });
                     }
-
-                    popular_game.sort(function(a,b){
-
-                    var o1 = a.State.toLowerCase();
-                    var o2 = b.State.toLowerCase();
-                    if (o1 < o2) return -1;
-                    if (o1 > o2) return 1;
-
-                    var p1 = a.lottoName.toLowerCase();
-                    var p2 = b.lottoName.toLowerCase();
-                    if (p1 < p2) return -1;
-                    if (p1 > p2) return 1;
-
-                    return 0;
-                    });
-                    
                 }
 
                 sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.RegUsed,ll.StartNum,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " +config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR) limit 20";
-                let next_lotto_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
+                    let next_lotto_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                     await tra.commit();
                     if (next_lotto_result.length) {
                         for(let i=0;i<next_lotto_result.length;i++){
@@ -67,21 +64,14 @@ module.exports = function(model,config){
                             next_lotto_result['CutTime'] = CutTime;
                         }
                     }
-                return response.send({
-                    status: "success",
-                    result: {country:country_result,popular_game:popular_game,next_draw:next_lotto_result},
-                    message: "Data found successfully",
-                    status_code: 200
-                });
+                    return response.send({
+                        status: "success",
+                        result: {country:country_result,popular_game:popular_game,next_draw:next_lotto_result},
+                        message: "Data found successfully",
+                        status_code: 200
+                    });
 
-            } else {
-                return response.send({
-                    status: "success",
-                    result: result,
-                    message: "Lotto not found",
-                    status_code: 200
-                });
-            }
+                } 
 		    } catch (error) {
 		        console.log('error',error);
 		        if(tra) {
