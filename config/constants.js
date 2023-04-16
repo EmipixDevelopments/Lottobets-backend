@@ -5,8 +5,8 @@ var config = {
 		
 	},
 	production: {
-		"port": 3001,
-		"baseUrl": "http://3.120.224.214:3001",
+		"port": 3000,
+		"baseUrl": "http://3.120.224.214:3000",
 		//"rootpath": "/var/www/html",
 		"rootpath": "/var/www/lucky",
 		"siteName": "lucky",
