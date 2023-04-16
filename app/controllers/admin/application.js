@@ -9,7 +9,7 @@ module.exports = function(model,config){
 
 	
 
-	module.nextLotto = async function(request, response){
+	module.nextDraw = async function(request, response){
 			
 			var d = new Date();
             var dt = d.getDate()+2;
