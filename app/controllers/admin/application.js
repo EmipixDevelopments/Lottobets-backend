@@ -75,7 +75,7 @@ module.exports = function(model,config){
 		    } catch (error) {
 		        console.log('error',error);
 		        if(tra) {
-		           await t.rollback();
+		           await tra.rollback();
 		        }
                 return response.send({
                     status: 'fail',
