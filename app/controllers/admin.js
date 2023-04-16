@@ -4,7 +4,7 @@ module.exports = function (model) {
 	const config = require('../../config/constants.js');
 	
 	module.user = require('./admin/user')(model,config);
-	module.user = require('./admin/application')(model,config);
+	module.application = require('./admin/application')(model,config);
 	
 	
 	
