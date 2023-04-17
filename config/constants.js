@@ -5,8 +5,8 @@ var config = {
 		
 	},
 	production: {
-		"port": 3001,
-		"baseUrl": "http://3.120.224.214:3001",
+		"port": 3002,
+		"baseUrl": "http://3.120.224.214:3002",
 		"rootpath": "/var/www/lucky",
 		"siteName": "lucky",
 		"jwt_secret": "appjwttokenfetyuhgbcase45w368w3a",
