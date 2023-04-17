@@ -42,6 +42,8 @@ module.exports = function(model,config){
                     var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
                     CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                     result['CutTime'] = CutTime;
+                    result['countryFlag'] = 'https://img.luckynumbersinternet.net/flags/'+result[i].countryFlag+'.png';
+                    result['colorimage'] = 'https://img.luckynumbersinternet.net/Colour/'+result[i].colorimage;
                 }
                 
         		return response.send({
