@@ -44,6 +44,7 @@ module.exports = function(model,config){
                     result['CutTime'] = CutTime;
                     result['countryFlag'] = 'https://img.luckynumbersinternet.net/flags/'+result[i].countryFlag+'.png';
                     result['colorimage'] = 'https://img.luckynumbersinternet.net/Colour/'+result[i].colorimage;
+                    console.log("res===========",result)
                 }
                 
         		return response.send({
