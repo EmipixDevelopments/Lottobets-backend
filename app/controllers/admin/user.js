@@ -11,7 +11,8 @@ module.exports = function(model,config){
 			
 		let tra_lucky = await sequelize_luckynumberint.transaction();
         let inputs = request.body;
-        console.log("Login==",inputs)
+        console.log("Login==",inputs);
+        console.log("ip==",request.socket.remoteAddress);
             try {
                 	let sql = "SELECT userId,fullName,photo,mobile,countryCode,deviceId,userName,mobile_ip,mobile_device_id,token,mobile_ip FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND pin=" + sequelize_luckynumberint.escape(inputs.password) + " ORDER BY created_at DESC limit 1";
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
