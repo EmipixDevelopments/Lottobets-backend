@@ -19,7 +19,7 @@ module.exports = function(model,config){
                 	if (result.length) {
                         return response.send({
                             status: "success",
-                            result: result,
+                            result: result[0],
                             message: "Login successfully",
                             status_code: 200
                         });
