@@ -16,7 +16,7 @@ module.exports = function(model,config){
             let tra_cngapi = await sequelize_cngapi.transaction();
             console.log("homeScreen=",request.body);
             let search='';
-            if(request.body.hasOwnProperty('search') && request.body.search!=''){
+            if(request.body.hasOwnProperty('search') && request.body.search.trim()!=''){
                 search = request.body.search;
             }
 		    try {
@@ -24,8 +24,7 @@ module.exports = function(model,config){
                 if(search!=''){
                     sql = "SELECT DISTINCT(cl.id) AS id,CONCAT(cl.FlagAbv,'.png') as flag,cl.Country,cl.Continent,cl.FlagAbv FROM " + config.Table.CUNTRYLIST + " cl JOIN " + config.Table.LOTTOLIST + " ll ON cl.id=ll.CountryId WHERE cl.Country like '%"+search+"%' ";
                 }
-                console.log("sql=",sql)
-		        let country_result = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+                let country_result = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
                 for(let i=0;i<country_result.length;i++){
                     country_result[i]['countryFlag'] = config.baseUrl+'/flags/'+country_result[i].flag;
                 }
@@ -36,6 +35,10 @@ module.exports = function(model,config){
                 let popular_game=[];
                 if (lotto_id != '' || lotto_id != null || lotto_id != 'null' || lotto_id != 'NULL' || lotto_id != 'null') {
                     sql = "SELECT DATE_FORMAT(l.CutTime,'%Y-%m-%d %H:%i:%s') AS CutTime,DATE_FORMAT(l.UpdateTime,'%Y-%m-%d %H:%i:%s') AS UpdateTime,DATE_FORMAT(l.DrawTime,'%Y-%m-%d %H:%i:%s') AS DrawTime,DATE_FORMAT(l.DaylightSavingBegin,'%Y-%m-%d %H:%i:%s') AS DaylightSavingBegin,l.ProfileName AS lottoName,l.ID as lottoId, l.Country,l.State,l.colorimage,l.grayscaleimage,cl.FlagAbv FROM " + config.Table.LOTTOLIST + " AS l LEFT JOIN countrylist cl ON l.CountryId=cl.Id WHERE l.id IN('" + lotto_id + "')";
+                    if(search!=''){
+                        sql = "SELECT DATE_FORMAT(l.CutTime,'%Y-%m-%d %H:%i:%s') AS CutTime,DATE_FORMAT(l.UpdateTime,'%Y-%m-%d %H:%i:%s') AS UpdateTime,DATE_FORMAT(l.DrawTime,'%Y-%m-%d %H:%i:%s') AS DrawTime,DATE_FORMAT(l.DaylightSavingBegin,'%Y-%m-%d %H:%i:%s') AS DaylightSavingBegin,l.ProfileName AS lottoName,l.ID as lottoId, l.Country,l.State,l.colorimage,l.grayscaleimage,cl.FlagAbv FROM " + config.Table.LOTTOLIST + " AS l LEFT JOIN countrylist cl ON l.CountryId=cl.Id WHERE l.id IN('" + lotto_id + "') AND (l.ProfileName like '%"+search+"%' OR l.Country like '%"+search+"%')";
+                    }
+                    console.log("sql=",sql)
                      popular_game = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
                      if (popular_game.length) {
                         popular_game.sort(function(a,b){
