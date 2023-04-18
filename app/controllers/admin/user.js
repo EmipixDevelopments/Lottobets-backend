@@ -6,7 +6,7 @@ var dateFormat = require('dateformat');
 const querystring = require("querystring");
 var jwt = require('jsonwebtoken');
 var jwtcofig = {
-    'secret': 'AisJwtAuth'
+    'secret': 'lottobetsJwtAuth'
 };
 module.exports = function(model,config){	
 	var module = {};
@@ -23,7 +23,13 @@ module.exports = function(model,config){
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
                 	await tra_lucky.commit(); 
                 	if (result.length) {
-                        sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(result[0].userId)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
+                        let token = jwt.sign({
+                            login: true,
+                            deviceId: inputs.deviceId
+                        }, jwtcofig.secret, {
+                            //expiresIn: 60 * 60 * 24 // expires in 24 hours
+                        });
+                        sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
                         console.log("sql==",sql);
                         // await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE})
                         return response.send({
