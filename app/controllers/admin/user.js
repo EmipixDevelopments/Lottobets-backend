@@ -31,7 +31,8 @@ module.exports = function(model,config){
                         });
                         sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
                         console.log("sql==",sql);
-                        // await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE})
+                        await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE});
+                        result[0]['token']=token;
                         return response.send({
                             status: "success",
                             result: result[0],
