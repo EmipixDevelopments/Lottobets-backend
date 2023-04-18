@@ -7,6 +7,7 @@ var config = {
 	production: {
 		"port": 3002,
 		"baseUrl": "http://3.120.224.214:3002",
+		"lotto_img_url": "https://img.luckynumbersinternet.net/Colour",
 		"rootpath": "/var/www/lucky",
 		"siteName": "lucky",
 		"jwt_secret": "appjwttokenfetyuhgbcase45w368w3a",

@@ -32,19 +32,15 @@ module.exports = function(model,config){
                 for(let i=0;i<result.length;i++){
                     let profileTimezone = result[i]['TimeZone'];
                     let timediff = (+2) - (profileTimezone);
-                                
-                    /*var now = new time.Date(result[i]['CutTime']);
-                    now.setTimezone('UTC');*/
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
                     now  = new Date(now);
                     
-
                     var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
                     CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                     result['CutTime'] = CutTime;
                     result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
-                    result[i]['colorimage'] = 'https://img.luckynumbersinternet.net/Colour/'+result[i].colorimage;
-                    //console.log("res===========",result)
+                    result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
+                    
                 }
                 
         		return response.send({
