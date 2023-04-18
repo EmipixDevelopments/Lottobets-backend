@@ -23,7 +23,7 @@ module.exports = function(model,config){
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
                 	await tra_lucky.commit(); 
                 	if (result.length) {
-                        sql = "UPDATE " + config.Table.USER + "  SET token ="+tra_lucky.escape(result[0].userId)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
+                        sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(result[0].userId)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
                         console.log("sql==",sql);
                         // await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE})
                         return response.send({
