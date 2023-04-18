@@ -21,7 +21,7 @@ module.exports = function(model,config){
             try {
                 	let sql = "SELECT userId,fullName,photo,mobile,countryCode,deviceId,userName,mobile_ip,mobile_device_id,token,mobile_ip FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND pin=" + sequelize_luckynumberint.escape(inputs.password) + " AND platform='lottobets' ORDER BY created_at DESC limit 1";
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
-                	await tra_lucky.commit(); 
+                	 
                 	if (result.length) {
                         let token = jwt.sign({
                             login: true,
@@ -33,6 +33,7 @@ module.exports = function(model,config){
                         console.log("sql==",sql);
                         await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE});
                         result[0]['token']=token;
+                        await tra_lucky.commit();
                         return response.send({
                             status: "success",
                             result: result[0],
