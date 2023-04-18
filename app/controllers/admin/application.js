@@ -16,7 +16,10 @@ module.exports = function(model,config){
             let tra_cngapi = await sequelize_cngapi.transaction();
 		    try {
 		    	let sql = "SELECT DISTINCT(cl.id) AS id,CONCAT(cl.FlagAbv,'.png') as flag,cl.Country,cl.Continent,cl.FlagAbv FROM " + config.Table.CUNTRYLIST + " cl JOIN " + config.Table.LOTTOLIST + " ll ON cl.id=ll.CountryId";
-		        let country_result = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
+		        let country_result = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+                for(let i=0;i<country_result.length;i++){
+                    country_result[i]['countryFlag'] = config.baseUrl+'/flags/'+country_result[i].flag;
+                }
 				
 				sql = "SELECT GROUP_CONCAT(lottoId) as lottoId FROM (SELECT lottoId,COUNT(lottoId) as total FROM `played_event_details` group by lottoId ORDER by total DESC LIMIT 10) as t";
                 let result_fav_lotto = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.SELECT})
@@ -41,6 +44,10 @@ module.exports = function(model,config){
                         return 0;
                         });
                     }
+                }
+                for(let i=0;i<popular_game.length;i++){
+                    popular_game[i]['countryFlag'] = config.baseUrl+'/flags/'+popular_game[i].FlagAbv+'.png';
+                    popular_game[i]['colorimage'] = config.lotto_img_url+'/'+popular_game[i].colorimage;
                 }
                 var d = new Date();
                 var dt = d.getDate()+2;
