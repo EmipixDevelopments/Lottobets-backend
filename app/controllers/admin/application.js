@@ -14,7 +14,7 @@ module.exports = function(model,config){
 			
 			let tra_lucky = await sequelize_luckynumberint.transaction();
             let tra_cngapi = await sequelize_cngapi.transaction();
-            console.log("homeScreen="request.body);
+            console.log("homeScreen=",request.body);
 		    try {
 		    	let sql = "SELECT DISTINCT(cl.id) AS id,CONCAT(cl.FlagAbv,'.png') as flag,cl.Country,cl.Continent,cl.FlagAbv FROM " + config.Table.CUNTRYLIST + " cl JOIN " + config.Table.LOTTOLIST + " ll ON cl.id=ll.CountryId";
 		        let country_result = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
