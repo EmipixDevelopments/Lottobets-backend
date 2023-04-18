@@ -11,7 +11,8 @@ module.exports = function(model){
 	   	var errors = req.validationErrors();
 	   	if(errors){
 	   		//req.flash('error',errors[0].msg);
-	      	res.send(errors[0]);
+	      	//res.send(errors[0]);
+	      	return res.send({status : 'fail', status_code:404, message : errors[0].msg})
 	   	}else{
 	      next();
 	   	}
