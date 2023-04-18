@@ -7,7 +7,7 @@ module.exports = function (app, model, controller) {
     /*Start: smsbomb routing*/
     app.post('/homeScreen',  controller.application.homeScreen);
     
-    app.post('/login',  controller.user.Login);
+    app.post('/login',  validation.admin.login,controller.user.Login);
     
 
    } 

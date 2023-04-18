@@ -4,14 +4,14 @@ module.exports = function(model){
 	
 	module.login = function(req, res, next){
 		
-		req.checkBody('email', 'Email Address is required').notEmpty();
-		req.checkBody('password', 'Password is required').notEmpty();
-		req.checkBody('email', 'Please enter valid email-id').isEmail();
+		req.checkBody('username', 'username is required').notEmpty();
+		req.checkBody('password', 'password is required').notEmpty();
+		//req.checkBody('email', 'Please enter valid email-id').isEmail();
 
 	   	var errors = req.validationErrors();
 	   	if(errors){
-	   		req.flash('error',errors[0].msg);
-	      	res.redirect('/');
+	   		//req.flash('error',errors[0].msg);
+	      	res.send(errors[0]);
 	   	}else{
 	      next();
 	   	}
