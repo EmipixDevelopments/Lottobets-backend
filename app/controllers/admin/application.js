@@ -66,7 +66,8 @@ module.exports = function(model,config){
                         var now = dateFormat(new Date(next_lotto_result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
                         now  = new Date(now);
                         
-
+                        next_lotto_result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
+                        next_lotto_result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
                         var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
                         CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                         next_lotto_result['CutTime'] = CutTime;
