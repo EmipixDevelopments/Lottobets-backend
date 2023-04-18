@@ -3,7 +3,11 @@ var currentDate = new Date();
 var Op = Sequelize.Op;
 var md5 = require('md5');
 var dateFormat = require('dateformat');
-const querystring = require("querystring")
+const querystring = require("querystring");
+var jwt = require('jsonwebtoken');
+var jwtcofig = {
+    'secret': 'AisJwtAuth'
+};
 module.exports = function(model,config){	
 	var module = {};
 
@@ -15,10 +19,13 @@ module.exports = function(model,config){
         console.log("ip==",request.socket.remoteAddress);
         console.log("ip==",request.connection.remoteAddress.replace(/^.*:/, ''));
             try {
-                	let sql = "SELECT userId,fullName,photo,mobile,countryCode,deviceId,userName,mobile_ip,mobile_device_id,token,mobile_ip FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND pin=" + sequelize_luckynumberint.escape(inputs.password) + " ORDER BY created_at DESC limit 1";
+                	let sql = "SELECT userId,fullName,photo,mobile,countryCode,deviceId,userName,mobile_ip,mobile_device_id,token,mobile_ip FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND pin=" + sequelize_luckynumberint.escape(inputs.password) + " AND platform='lottobets' ORDER BY created_at DESC limit 1";
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
                 	await tra_lucky.commit(); 
                 	if (result.length) {
+                        sql = "UPDATE " + config.Table.USER + "  SET token ="+tra_lucky.escape(result[0].userId)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
+                        console.log("sql==",sql);
+                        // await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE})
                         return response.send({
                             status: "success",
                             result: result[0],
