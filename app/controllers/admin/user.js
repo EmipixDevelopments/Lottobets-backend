@@ -30,6 +30,7 @@ module.exports = function(model,config){
                         });
                         sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+",mobile_ip="+sequelize_luckynumberint.escape(ip)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
                         await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE});
+                        result[0]['mobile_ip']=ip;
                         result[0]['token']=token;
                         await tra_lucky.commit();
                         return response.send({
