@@ -6,7 +6,7 @@ var dateFormat = require('dateformat');
 const querystring = require("querystring");
 var jwt = require('jsonwebtoken');
 var jwtcofig = {
-    'secret': 'lottobetsJwtAuth'
+    'secret': config.lottobetsJwtAuth
 };
 module.exports = function(model,config){	
 	var module = {};

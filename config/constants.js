@@ -9,6 +9,7 @@ var config = {
 		"baseUrl": "http://3.120.231.131:3000",
 		//"rootpath": "/var/www/html",
 		"rootpath": "/var/www/lucky",
+		"lottobetsJwtAuth": "lottobetsJwtAuth123!@#",
 		"lotto_img_url": "https://img.luckynumbersinternet.net/Colour",
 		"siteName": "lucky",
 		"jwt_secret": "appjwttokenfetyuhgbcase45w368w3a",
