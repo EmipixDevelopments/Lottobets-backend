@@ -16,8 +16,7 @@ module.exports = function(model,config){
 		let tra_lucky = await sequelize_luckynumberint.transaction();
         let inputs = request.body;
         console.log("Login==",inputs);
-        console.log("ip==",request.socket.remoteAddress);
-        console.log("ip==",request.connection.remoteAddress.replace(/^.*:/, ''));
+        let ip = request.connection.remoteAddress.replace(/^.*:/, '');
             try {
                 	let sql = "SELECT userId,fullName,photo,mobile,countryCode,deviceId,userName,mobile_ip,mobile_device_id,token,mobile_ip FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND pin=" + sequelize_luckynumberint.escape(inputs.password) + " AND platform='lottobets' ORDER BY created_at DESC limit 1";
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
@@ -29,7 +28,7 @@ module.exports = function(model,config){
                         }, jwtcofig.secret, {
                             //expiresIn: 60 * 60 * 24 // expires in 24 hours
                         });
-                        sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
+                        sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+",mobile_ip="+sequelize_luckynumberint.escape(ip)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
                         await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE});
                         result[0]['token']=token;
                         await tra_lucky.commit();
