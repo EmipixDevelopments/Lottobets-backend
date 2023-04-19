@@ -4,9 +4,12 @@ module.exports = function (app, model, controller) {
     var middleware = require('../app/middleware/index')(model);
     var validation = require('../app/validator/index')(model);
     
-    /*Start: smsbomb routing*/
+    /*Start: homescreen routing*/
     app.post('/homeScreen',  controller.application.homeScreen);
-    
+    app.post('/getCountry',  controller.application.getCountry);
+    app.post('/nextDraw',  controller.application.nextDraw);
+    app.post('/popularGames',  controller.application.popularGames);
+
     app.post('/login',  validation.admin.login,controller.user.Login);
     
 
