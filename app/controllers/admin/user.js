@@ -32,6 +32,7 @@ module.exports = function(model,config){
                         await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE});
                         result[0]['mobile_ip']=ip;
                         result[0]['token']=token;
+                        result[0]['walletId']=(result[0]['walletId'])?result[0]['walletId']:'';
                         await tra_lucky.commit();
                         return response.send({
                             status: "success",
