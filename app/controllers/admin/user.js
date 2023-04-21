@@ -8,8 +8,6 @@ var jwt = require('jsonwebtoken');
 var jwtcofig = {
     'secret': config.lottobetsJwtAuth
 };
- const fs = require('fs');
-const path = require('path');
 module.exports = function(model,config){	
 	var module = {};
 
@@ -18,10 +16,7 @@ module.exports = function(model,config){
 		let tra_lucky = await sequelize_luckynumberint.transaction();
         let inputs = request.body;
         console.log("Login==",inputs);
-        fs.readdir('https://img.luckynumbersinternet.net/Colour/', (error, files) => {
-            if (error) console.log(error)
-                files.forEach( file => console.log("file==",file))
-            })
+        
         let ip = request.connection.remoteAddress.replace(/^.*:/, '');
             try {
                 	let sql = "SELECT userId,fullName,photo,mobile,countryCode,deviceId,userName,mobile_ip,mobile_device_id,token,mobile_ip,walletId FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND pin=" + sequelize_luckynumberint.escape(inputs.password) + " AND platform='lottobets' ORDER BY created_at DESC limit 1";
