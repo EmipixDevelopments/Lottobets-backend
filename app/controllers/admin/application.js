@@ -59,7 +59,7 @@ module.exports = function(model,config){
                 }
                 for(let i=0;i<popular_game.length;i++){
                     popular_game[i]['countryFlag'] = config.baseUrl+'/flags/'+popular_game[i].FlagAbv+'.png';
-                    popular_game[i]['colorimage'] = config.lotto_img_url+'/'+popular_game[i].colorimage;
+                    popular_game[i]['colorimage'] = config.baseUrl+'/Lotto/'+popular_game[i].colorimage;
                 }
                 var d = new Date();
                 var dt = d.getDate()+2;
@@ -89,7 +89,7 @@ module.exports = function(model,config){
                         now  = new Date(now);
                         
                         next_lotto_result[i]['countryFlag'] = config.baseUrl+'/flags/'+next_lotto_result[i].countryFlag+'.png';
-                        next_lotto_result[i]['colorimage'] = config.lotto_img_url+'/'+next_lotto_result[i].colorimage;
+                        next_lotto_result[i]['colorimage'] = config.baseUrl+'/Lotto/'+next_lotto_result[i].colorimage;
                         var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
                         CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                         next_lotto_result['CutTime'] = CutTime;
@@ -162,7 +162,7 @@ module.exports = function(model,config){
                 }
                 for(let i=0;i<popular_game.length;i++){
                     popular_game[i]['countryFlag'] = config.baseUrl+'/flags/'+popular_game[i].FlagAbv+'.png';
-                    popular_game[i]['colorimage'] = config.lotto_img_url+'/'+popular_game[i].colorimage;
+                    popular_game[i]['colorimage'] = config.baseUrl+'/Lotto/'+popular_game[i].colorimage;
                 }
                 
                 await tra_lucky.commit();
@@ -270,7 +270,7 @@ module.exports = function(model,config){
                         now  = new Date(now);
                         
                         next_lotto_result[i]['countryFlag'] = config.baseUrl+'/flags/'+next_lotto_result[i].countryFlag+'.png';
-                        next_lotto_result[i]['colorimage'] = config.lotto_img_url+'/'+next_lotto_result[i].colorimage;
+                        next_lotto_result[i]['colorimage'] = config.baseUrl+'/Lotto/'+next_lotto_result[i].colorimage;
                         var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
                         CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                         next_lotto_result['CutTime'] = CutTime;
