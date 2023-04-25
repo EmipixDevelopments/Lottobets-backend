@@ -11,7 +11,7 @@ var jwtcofig = {
 module.exports = function(model,config){	
 	var module = {};
 
-    module.Login = async function(request, response){
+    module.login = async function(request, response){
 			
 		let tra_lucky = await sequelize_luckynumberint.transaction();
         let inputs = request.body;
