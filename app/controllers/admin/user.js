@@ -88,7 +88,7 @@ module.exports = function(model,config){
                         });
                     } else {
                         let walletId = await module.walletId(helper.randomNumber(2));
-                        sql = "INSERT INTO " + config.Table.USER + " (username,pin,mobile_ip,platform,walletId) VALUES("+sequelize_luckynumberint.escape(inputs.username)+","+sequelize_luckynumberint.escape(inputs.password)+","+sequelize_luckynumberint.escape(ip)+",'lottobets') ";
+                        sql = "INSERT INTO " + config.Table.USER + " (username,pin,mobile_ip,platform,walletId) VALUES("+sequelize_luckynumberint.escape(inputs.username)+","+sequelize_luckynumberint.escape(inputs.password)+","+sequelize_luckynumberint.escape(ip)+",'lottobets',"+walletId+") ";
                         console.log(sql)
                             await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                             await tra_lucky.commit();
