@@ -35,7 +35,7 @@ module.exports = function(model,config){
                         result[0]['token']=token;
                         result[0]['walletId']=(result[0]['walletId'])?result[0]['walletId']:'';
                         await tra_lucky.commit();
-                        sequelize_luckynumberint.release();
+                        //sequelize_luckynumberint.release();
                         return response.send({
                             status: "success",
                             result: result[0],
