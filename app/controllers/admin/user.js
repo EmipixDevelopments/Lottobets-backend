@@ -90,7 +90,7 @@ module.exports = function(model,config){
                         let walletId = await module.walletId(helper.randomNumber(2));
                         sql = "INSERT INTO " + config.Table.USER + " (username,pin,mobile_ip,platform,walletId) VALUES("+sequelize_luckynumberint.escape(inputs.username)+","+sequelize_luckynumberint.escape(inputs.password)+","+sequelize_luckynumberint.escape(ip)+",'lottobets','"+walletId+"') ";
                         console.log(sql)
-                            await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                            await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
                             await tra_lucky.commit();
                             return response.send({
                                 status: "success",
@@ -125,8 +125,18 @@ module.exports = function(model,config){
                 let sql = "SELECT favourite as lottoId  FROM " + config.Table.USER + " WHERE userId=" + sequelize_luckynumberint.escape(inputs.userId) + "";
                 let result_fav_lotto = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.SELECT})
                 let lotto_id = (result_fav_lotto[0].lottoId)?result_fav_lotto[0].lottoId.split(','):[];
-                console.log("lotto_id=",lotto_id);
-                     
+                let index = lotto_id.indexOf(inputs.lottoId);
+                 if(index<-1){
+                    lotto_id.push(inputs.lottoId);
+                    sql = "UPDATE " + config.Table.USER + " SET favourite ="+lotto_id.toString()+" WHERE userId='"+sequelize_luckynumberint.escape(inputs.userId)+"'";
+                    await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.UPDATE})
+                    return response.send({
+                        status: "success",
+                        result: inputs,
+                        message: "favourite successfully",
+                        status_code: 200
+                    });
+                 }
                     
             } catch (error) {
                 console.log('error',error);
