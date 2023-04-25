@@ -197,6 +197,7 @@ module.exports = function(model,config){
             let tra_lucky = await sequelize_luckynumberint.transaction();
             let tra_cngapi = await sequelize_cngapi.transaction();
             console.log("homeScreen=",request.body);
+            let inputs = request.body;
             let search='';
             if(request.body.hasOwnProperty('search') && request.body.search.trim()!=''){
                 search = request.body.search;
