@@ -140,7 +140,7 @@ module.exports = function(model,config){
                         status_code: 200
                     });
                  }
-                 if(index>-1 && inputs.flag=='no'){
+                 else if(index>-1 && inputs.flag=='no'){
                     lotto_id.splice(index, 1);
                     sql = "UPDATE " + config.Table.USER + " SET favourite ='"+lotto_id.toString()+"' WHERE userId="+sequelize_luckynumberint.escape(inputs.userId)+" ";
                     console.log("sql==",sql)
@@ -151,6 +151,12 @@ module.exports = function(model,config){
                         result: inputs,
                         message: "unfavourite successfully",
                         status_code: 200
+                    });
+                 }else{
+                   return response.send({
+                        status: 'fail',
+                        message: 'Please enter valid data',
+                        status_code: 422
                     });
                  }
                  
