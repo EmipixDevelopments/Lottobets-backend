@@ -32,6 +32,22 @@ module.exports = function(model){
 	      next();
 	   	}
 	};
+	module.addtoFavourite = function(req, res, next){
+		
+		req.checkBody('userId', 'userId is required').notEmpty();
+		req.checkBody('lottoId', 'lottoId is required').notEmpty();
+		req.checkBody('flag', 'flag is required').notEmpty();
+		//req.checkBody('email', 'Please enter valid email-id').isEmail();
+
+	   	var errors = req.validationErrors();
+	   	if(errors){
+	   		//req.flash('error',errors[0].msg);
+	      	//res.send(errors[0]);
+	      	return res.send({status : 'fail', status_code:404, message : errors[0].msg})
+	   	}else{
+	      next();
+	   	}
+	};
 	
 	//End: Validation for login
 
