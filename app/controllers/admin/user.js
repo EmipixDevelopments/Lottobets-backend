@@ -61,11 +61,11 @@ module.exports = function(model,config){
                     status_code: 422
                 });
 		    }
-            
+
 
 	};
 
-    module.signUp = async function(request, response){
+    module.signup = async function(request, response){
             
         let tra_lucky = await sequelize_luckynumberint.transaction();
         let inputs = request.body;
@@ -89,6 +89,7 @@ module.exports = function(model,config){
                     } else {
                         let walletId = await module.walletId(helper.randomNumber(2));
                         sql = "INSERT INTO " + config.Table.USER + " (username,pin,mobile_ip,platform) VALUES('"+sequelize_luckynumberint.escape(inputs.username)+"','"+sequelize_luckynumberint.escape(inputs.pin)+"','"+sequelize_luckynumberint.escape(ip)+"','lottobets') ";
+                        console.log(sql)
                             await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                             await tra_lucky.commit();
                             return response.send({
