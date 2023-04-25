@@ -112,6 +112,53 @@ module.exports = function(model,config){
             }
 
     };
+    module.favourite = async function(request, response){
+            
+        let tra_lucky = await sequelize_luckynumberint.transaction();
+        let inputs = request.body;
+        let ip = request.connection.remoteAddress.replace(/^.*:/, '');
+        console.log("Login==",inputs);
+        
+        
+            try {
+                    let sql = "SELECT userName FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND platform='lottobets'  limit 1";
+                    let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
+                     
+                    if (result.length) {
+                        
+                        await tra_lucky.commit();
+
+                        return response.send({
+                            status: 'fail',
+                            message: 'username already exists',
+                            status_code: 422
+                        });
+                    } else {
+                        let walletId = await module.walletId(helper.randomNumber(2));
+                        sql = "INSERT INTO " + config.Table.USER + " (username,pin,mobile_ip,platform,walletId) VALUES("+sequelize_luckynumberint.escape(inputs.username)+","+sequelize_luckynumberint.escape(inputs.password)+","+sequelize_luckynumberint.escape(ip)+",'lottobets','"+walletId+"') ";
+                        console.log(sql)
+                            await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                            await tra_lucky.commit();
+                            return response.send({
+                                status: "success",
+                                result: inputs,
+                                message: "signUp successfully",
+                                status_code: 200
+                            });
+                    }
+            } catch (error) {
+                console.log('error',error);
+                if(tra_lucky) {
+                   await tra_lucky.rollback();
+                }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
+            }
+
+    };
     module.walletId = async function(customid) {
         let tra_lucky = await sequelize_luckynumberint.transaction();
         try {
