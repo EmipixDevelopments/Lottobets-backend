@@ -124,7 +124,7 @@ module.exports = function(model,config){
                 
                 let sql = "SELECT favourite as lottoId  FROM " + config.Table.USER + " WHERE userId=" + sequelize_luckynumberint.escape(inputs.userId) + "";
                 let result_fav_lotto = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.SELECT})
-                let lotto_id = result_fav_lotto[0].lottoId.split(',');
+                let lotto_id = (result_fav_lotto[0].lottoId)?result_fav_lotto[0].lottoId.split(','):[];
                 console.log("lotto_id=",lotto_id);
                      
                     
