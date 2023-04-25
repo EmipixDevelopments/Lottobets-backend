@@ -62,6 +62,7 @@ module.exports = function(model,config){
                 });
 		    }finally {
             // all queries have executed, we can release the connection.
+            console.log("sequelize_luckynumberint=",sequelize_luckynumberint)
             sequelize_luckynumberint.release();
           }
 
