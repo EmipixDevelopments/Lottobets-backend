@@ -129,6 +129,7 @@ module.exports = function(model,config){
                  if(index<-1){
                     lotto_id.push(inputs.lottoId);
                     sql = "UPDATE " + config.Table.USER + " SET favourite ="+lotto_id.toString()+" WHERE userId='"+sequelize_luckynumberint.escape(inputs.userId)+"'";
+                    console.log("sql==",sql)
                     await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.UPDATE});
                     await tra_lucky.commit();
                  }
