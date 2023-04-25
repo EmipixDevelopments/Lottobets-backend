@@ -127,7 +127,7 @@ module.exports = function(model,config){
                 let lotto_id = (result_fav_lotto[0].lottoId)?result_fav_lotto[0].lottoId.split(','):[];
                 let index = lotto_id.indexOf(inputs.lottoId);
                 console.log("index==",index)
-                 if(index<-1){
+                 if(index<=-1){
                     lotto_id.push(inputs.lottoId);
                     sql = "UPDATE " + config.Table.USER + " SET favourite ="+lotto_id.toString()+" WHERE userId='"+sequelize_luckynumberint.escape(inputs.userId)+"'";
                     console.log("sql==",sql)
