@@ -71,7 +71,7 @@ module.exports = function(model,config){
         let ip = request.connection.remoteAddress.replace(/^.*:/, '');
         console.log("Login==",inputs);
         
-        let ip = request.connection.remoteAddress.replace(/^.*:/, '');
+        
             try {
                     let sql = "SELECT userName FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND platform='lottobets'  limit 1";
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
