@@ -117,7 +117,7 @@ module.exports = function(model,config){
         let tra_lucky = await sequelize_luckynumberint.transaction();
         let inputs = request.body;
         let ip = request.connection.remoteAddress.replace(/^.*:/, '');
-        console.log("Login==",inputs);
+        console.log("addtoFavourite==",inputs);
         
         
             try {
