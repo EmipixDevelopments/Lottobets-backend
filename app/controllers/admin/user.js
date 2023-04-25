@@ -129,14 +129,15 @@ module.exports = function(model,config){
                  if(index<-1){
                     lotto_id.push(inputs.lottoId);
                     sql = "UPDATE " + config.Table.USER + " SET favourite ="+lotto_id.toString()+" WHERE userId='"+sequelize_luckynumberint.escape(inputs.userId)+"'";
-                    await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.UPDATE})
-                    return response.send({
-                        status: "success",
-                        result: inputs,
-                        message: "favourite successfully",
-                        status_code: 200
-                    });
+                    await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.UPDATE});
+                    await tra_lucky.commit();
                  }
+                 return response.send({
+                    status: "success",
+                    result: inputs,
+                    message: "favourite successfully",
+                    status_code: 200
+                });
                     
             } catch (error) {
                 console.log('error',error);
