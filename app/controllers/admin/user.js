@@ -126,7 +126,7 @@ module.exports = function(model,config){
                 await module.walletId(custom_code[0]);
                 customid = custom_code[0];
             }
-
+            await tra_lucky.commit();
             return customid;
         } catch (error) {
             console.log('error',error);
