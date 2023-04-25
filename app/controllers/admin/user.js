@@ -60,11 +60,8 @@ module.exports = function(model,config){
                     message: error,
                     status_code: 422
                 });
-		    }finally {
-            // all queries have executed, we can release the connection.
-            console.log("sequelize_luckynumberint=",sequelize_luckynumberint)
-            sequelize_luckynumberint.release();
-          }
+		    }
+            
 
 	};
 
