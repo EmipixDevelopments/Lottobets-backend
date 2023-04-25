@@ -127,19 +127,33 @@ module.exports = function(model,config){
                 let lotto_id = (result_fav_lotto[0].lottoId)?result_fav_lotto[0].lottoId.split(','):[];
                 let index = lotto_id.indexOf(inputs.lottoId);
                 console.log("index==",index)
-                 if(index<=-1){
+                 if(index<=-1 && inputs.flag=='yes'){
                     lotto_id.push(inputs.lottoId);
                     sql = "UPDATE " + config.Table.USER + " SET favourite ='"+lotto_id.toString()+"' WHERE userId="+sequelize_luckynumberint.escape(inputs.userId)+" ";
                     console.log("sql==",sql)
                     await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.UPDATE});
                     await tra_lucky.commit();
+                    return response.send({
+                        status: "success",
+                        result: inputs,
+                        message: "favourite successfully",
+                        status_code: 200
+                    });
                  }
-                 return response.send({
-                    status: "success",
-                    result: inputs,
-                    message: "favourite successfully",
-                    status_code: 200
-                });
+                 if(index>-1 && inputs.flag=='no'){
+                    lotto_id.splice(index, 1);
+                    sql = "UPDATE " + config.Table.USER + " SET favourite ='"+lotto_id.toString()+"' WHERE userId="+sequelize_luckynumberint.escape(inputs.userId)+" ";
+                    console.log("sql==",sql)
+                    await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.UPDATE});
+                    await tra_lucky.commit();
+                    return response.send({
+                        status: "success",
+                        result: inputs,
+                        message: "unfavourite successfully",
+                        status_code: 200
+                    });
+                 }
+                 
                     
             } catch (error) {
                 console.log('error',error);
