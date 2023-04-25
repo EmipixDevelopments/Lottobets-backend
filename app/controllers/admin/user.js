@@ -116,7 +116,7 @@ module.exports = function(model,config){
         let tra_lucky = await sequelize_luckynumberint.transaction();
         try {
             let sql = "SELECT walletId FROM " + config.Table.USER + " WHERE walletId=" + sequelize_luckynumberint.escape(customid) + " AND platform='lottobets'  limit 1";
-            let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
+            let res = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
             if (res.length) {
                 var custom_code = [];
                 while (custom_code.length < 1) {
