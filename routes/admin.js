@@ -10,6 +10,7 @@ module.exports = function (app, model, controller) {
     app.post('/nextDraw',  controller.application.nextDraw);
     app.post('/popularGames',  controller.application.popularGames);
     app.post('/favourite',  controller.application.favourite);
+    app.post('/addtoFavourite',  controller.user.addtoFavourite);
 
     app.post('/login',  validation.admin.login,controller.user.login);
     app.post('/signup',  validation.admin.signup,controller.user.signup);

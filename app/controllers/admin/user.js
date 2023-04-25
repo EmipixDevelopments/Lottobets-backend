@@ -112,7 +112,7 @@ module.exports = function(model,config){
             }
 
     };
-    module.favourite = async function(request, response){
+    module.addtoFavourite = async function(request, response){
             
         let tra_lucky = await sequelize_luckynumberint.transaction();
         let inputs = request.body;
@@ -121,31 +121,13 @@ module.exports = function(model,config){
         
         
             try {
-                    let sql = "SELECT userName FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND platform='lottobets'  limit 1";
-                    let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
+                
+                let sql = "SELECT favourite as lottoId  FROM " + config.Table.USER + " WHERE userId=" + sequelize_luckynumberint.escape(inputs.userId) + "";
+                let result_fav_lotto = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.SELECT})
+                let lotto_id = result_fav_lotto[0].lottoId.replace(/,/g, "','");
+                console.log("lotto_id=",lotto_id);
                      
-                    if (result.length) {
-                        
-                        await tra_lucky.commit();
-
-                        return response.send({
-                            status: 'fail',
-                            message: 'username already exists',
-                            status_code: 422
-                        });
-                    } else {
-                        let walletId = await module.walletId(helper.randomNumber(2));
-                        sql = "INSERT INTO " + config.Table.USER + " (username,pin,mobile_ip,platform,walletId) VALUES("+sequelize_luckynumberint.escape(inputs.username)+","+sequelize_luckynumberint.escape(inputs.password)+","+sequelize_luckynumberint.escape(ip)+",'lottobets','"+walletId+"') ";
-                        console.log(sql)
-                            await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
-                            await tra_lucky.commit();
-                            return response.send({
-                                status: "success",
-                                result: inputs,
-                                message: "signUp successfully",
-                                status_code: 200
-                            });
-                    }
+                    
             } catch (error) {
                 console.log('error',error);
                 if(tra_lucky) {
