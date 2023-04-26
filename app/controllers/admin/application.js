@@ -420,18 +420,19 @@ module.exports = function(model,config){
                 let final_arrList = [];
                 let country = data.id ;
                 let Lottolist = "select ID,ProfileName,Country,CountryId,State,DrawTime,CutTime,RegUsed,BonusUsed,LastCreateDate,UpdateTime,TimeZone,StartNum,colorimage,grayscaleimage,Continent from " + config.Table.LOTTOLIST + " where Enable=1 AND  CountryId = '" + country + "'";
+                let result_lottolist = await sequelize_cngapi.query(Lottolist, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
                     
-                    
-                    let result_lottolist = await sequelize_cngapi.query(Lottolist, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
-                    
-                     sql = "SELECT favourite AS lottoId FROM " + config.Table.USER + " WHERE userId='" + inputs.userId + "' ";
-                        
-                    let result1 = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                     
                     let liek_lotto_array =[];
                    // console.log('====================w',Lottolist);
-                    if(result1[0].lottoId){
+                   if(request.body.hasOwnProperty('userId') && inputs.userId.trim()!=''){
+                       sql = "SELECT favourite AS lottoId FROM " + config.Table.USER + " WHERE userId='" + inputs.userId + "' ";
+                       let result1 = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                        if(result1[0].lottoId){
                          liek_lotto_array = result1[0].lottoId.split(',');
+                        }
                     }
+                    
                     
                     if(result_lottolist.length)
                     {
