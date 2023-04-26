@@ -48,6 +48,38 @@ module.exports = function(model){
 	      next();
 	   	}
 	};
+	module.countryWiseLottoList = function(req, res, next){
+		
+		req.checkBody('countryflag', 'countryflag is required').notEmpty();
+		req.checkBody('countryId', 'countryId is required').notEmpty();
+		//req.checkBody('flag', 'flag is required').notEmpty();
+		//req.checkBody('email', 'Please enter valid email-id').isEmail();
+
+	   	var errors = req.validationErrors();
+	   	if(errors){
+	   		//req.flash('error',errors[0].msg);
+	      	//res.send(errors[0]);
+	      	return res.send({status : 'fail', status_code:404, message : errors[0].msg})
+	   	}else{
+	      next();
+	   	}
+	};
+	module.lottoMarket = function(req, res, next){
+		
+		req.checkBody('userId', 'userId is required').notEmpty();
+		req.checkBody('profileId', 'profileId is required').notEmpty();
+		//req.checkBody('flag', 'flag is required').notEmpty();
+		//req.checkBody('email', 'Please enter valid email-id').isEmail();
+
+	   	var errors = req.validationErrors();
+	   	if(errors){
+	   		//req.flash('error',errors[0].msg);
+	      	//res.send(errors[0]);
+	      	return res.send({status : 'fail', status_code:404, message : errors[0].msg})
+	   	}else{
+	      next();
+	   	}
+	};
 	
 	//End: Validation for login
 

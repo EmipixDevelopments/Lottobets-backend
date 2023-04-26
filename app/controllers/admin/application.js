@@ -507,5 +507,496 @@ module.exports = function(model,config){
             }
 
     };
+    module.lottoMarket = async function(request, response){
+            
+            let tra_lucky = await sequelize_luckynumberint.transaction();
+            let tra_cngapi = await sequelize_cngapi.transaction();
+            console.log("lottoMarket=",request.body);
+            let inputs = request.body;
+              inputs.siteId ='1';
+            
+            try {
+                
+            let fields = "userId";
+            let userSql = "SELECT " + fields + " FROM " + config.Table.USER + " WHERE userId=" + sequelize_luckynumberint.escape(inputs.userId) + " limit 1";
+            //console.log("userSql",userSql);
+            let userResult = await sequelize_luckynumberint.query(userSql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+            if (!userResult.length > 0) {
+                return response.send({
+                    status: "fail",
+                    message: "User not found"
+                });
+            }
+            let userData = userResult[0];
+            //saveActivityLog(userData.id,userData.username+" in cashup screen",inputs); //User history log
+
+            //Get lotto profile data
+            let profileSql = "SELECT TimeZone,ProfileName,Country from " + config.Table.LOTTOLIST + " where ID=" + sequelize_cngapi.escape(inputs.profileId);
+            let profileResult = await sequelize_cngapi.query(profileSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+            if (!profileResult.length > 0) {
+                return response.send({
+                    status: "fail",
+                    message: "Profile not found"
+                });
+            }
+            let lottoListData = profileResult[0];
+            let profileTimezone = lottoListData['TimeZone'];
+            let timediff = (+2) - (profileTimezone);
+            
+            let timequery = '';
+            timediff = Math.abs(timediff);
+            timequery = 'DATE_ADD(t_e.CutTime, INTERVAL ' + timediff + ' HOUR)';
+
+            //Get site data
+            let siteSql = "SELECT * FROM " + config.Table.SITEPROFILEMANAGEMENT + " WHERE SiteID=" + inputs.siteId;
+            let siteResult = await sequelize_cngapi.query(siteSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+            //console.log("siteResult",siteResult);
+            if (!siteResult.length > 0) {
+                return response.send({
+                    status: "fail",
+                    message: "Site not found"
+                });
+            }
+            let continentListData = siteResult[0]['Continent'];
+            let drawType = siteResult[0]['DrawType'];
+            let drawingType = siteResult[0]['DrawingType'];
+
+            if (continentListData != '' && drawingType != '' && drawType != '') {
+                let today = dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss",true)
+                today = new Date(today);
+                today.setHours(today.getHours() + 2);
+                today = dateFormat(today, "yyyy-mm-dd HH:MM:ss"); 
+                
+                
+                let eventFields = 't_e.ID,t_e.ProfileID,t_e.Description,DATE_FORMAT(t_e.DrawTime,"%Y-%m-%d %H:%i:%s") AS DrawTime,DATE_FORMAT(t_e.CutTime,"%Y-%m-%d %H:%i:%s") AS CutTime,t_e.UpdateTime,t_e.IsClosed,t_e.Result';
+                let condition = ' AND t_e.ProfileID=' + sequelize_cngapi.escape(inputs.profileId);
+                //drawType replace with comma separeted single quote
+                drawType = '\'' + drawType.split(',').join('\',\'') + '\'';
+                drawingType = '\'' + drawingType.split(',').join('\',\'') + '\'';
+                continentListData = '\'' + continentListData.split(',').join('\',\'') + '\'';
+
+                condition += " AND t_l.DrawType IN (" + drawType + ") AND t_l.DrawingType IN (" + drawingType + ") AND t_l.Continent IN (" + continentListData + ")";
+                condition += " AND (('" + today + "' BETWEEN t_e.DrawTime AND " + timequery + ") OR " +
+                    " ('" + today + "' BETWEEN " + timequery + " AND t_e.DrawTime))";
+                
+                let eventResult = [];
+                //Get timezone of sitemanagement table 
+                let siteMgtSql = "SELECT TimeZone from " + config.Table.SITEMANAGEMENT + " where ID=" + inputs.siteId;
+                let siteMgtResult = await sequelize_cngapi.query(siteMgtSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+                let siteTimeZone = siteMgtResult[0]['TimeZone'];
+
+                let priceData;
+                
+                if (eventResult.length > 0) {
+                    priceData = eventResult[0];
+                } else {
+                    let condition = " AND t_e.ProfileID=" + sequelize_cngapi.escape(inputs.profileId);
+                    //condition += " AND t_e.DrawTime >= '" + today + "'";
+                    condition += " AND DATE_ADD(t_e.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR) >= '" + today + "'";
+                    condition += " AND t_l.DrawType IN (" + drawType + ") AND t_l.DrawingType IN (" + drawingType + ") AND t_l.Continent IN (" + continentListData + ")";
+                    orderby = " ORDER BY t_e.DrawTime";
+                    Limit = " Limit 1";
+                    eventSql = 'SELECT ' + eventFields + ',t_l.RegUsed, t_l.BonusUsed,t_l.StartNum,t_l.DrawDays,t_l.BonusFromReg,t_l.BonusDrawn, t_l.Price1 as Prices,t_l.RegColours from ' + config.Table.LOTTOEVENT + ' t_e left join ' + config.Table.LOTTOLIST + ' t_l on t_e.ProfileID=t_l.ID where ProfileID not in (select ProfileID from ' + config.Table.SITEPROFILE + ' where SiteID=' + inputs.siteId + ') ' +
+                        condition + ' UNION ' +
+                        'SELECT ' + eventFields + ',t_l.RegUsed,t_l.BonusUsed, t_l.StartNum,t_l.DrawDays,t_l.BonusFromReg,t_l.BonusDrawn,case when PriceIndex=1 then t_l.Price1 when PriceIndex=2 then t_l.Price2 when PriceIndex=3 then t_l.Price3 when PriceIndex=4 then t_l.Price4 when PriceIndex=5 then t_l.Price5 else \'None\' end as Prices,t_l.RegColours from ' + config.Table.LOTTOEVENT + ' t_e left join ' + config.Table.LOTTOLIST + ' t_l on t_e.ProfileID=t_l.ID left join siteprofile t_s on t_e.ProfileID=t_s.ProfileID WHERE SiteID=' + inputs.siteId + ' and t_s.Enable=1 and t_e.IsClosed!=1 and t_e.Result=""' +
+                        condition;
+                        //condition + Limit;
+                    eventSql = 'SELECT * FROM ('+eventSql+') as temp ORDER BY temp.DrawTime LIMIT 1';   
+                    eventResult = await sequelize_cngapi.query(eventSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+                    
+                   
+                }
+
+                let marketSql = "SELECT * FROM marketlist";
+                let marketlist = await sequelize_cngapi.query(marketSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+                //Start: Get market data logic
+                if (eventResult.length) {
+
+                    priceData = eventResult[0];
+                    //Timezone logic
+                    timediff = (priceData.DrawTime).split(" ");
+                    var gettime = (timediff[1]).split(":");
+
+                    
+                    timediff = (-parseFloat(profileTimezone) + parseFloat(siteTimeZone));
+                    //timediff =  siteTimeZone;
+                    
+
+                    /*var time = require('time');
+                    var now = new time.Date(priceData.DrawTime);
+                    now.setTimezone('UTC');*/
+                    var now = dateFormat(new Date(priceData.DrawTime), "yyyy-mm-dd HH:MM:ss");
+                    now  = new Date(now);
+
+                    var DrawTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
+
+                    if ((DrawTime.getMonth() + 1) >= 1 && (DrawTime.getMonth() + 1) <= 9) {
+                        var month = '0' + (DrawTime.getMonth() + 1)
+                    } else {
+                        var month = (DrawTime.getMonth() + 1)
+                    }
+                    if ((DrawTime.getDate()) >= 0 && (DrawTime.getDate()) <= 9) {
+                        var newdate = '0' + (DrawTime.getDate())
+                    } else {
+                        var newdate = (DrawTime.getDate())
+                    }
+                    if ((DrawTime.getHours()) >= 0 && (DrawTime.getHours()) <= 9) {
+                        var Hours = '0' + (DrawTime.getHours())
+                    } else {
+                        var Hours = (DrawTime.getHours())
+                    }
+                    if ((DrawTime.getMinutes()) >= 0 && (DrawTime.getMinutes()) <= 9) {
+                        var Minutes = '0' + (DrawTime.getMinutes())
+                    } else {
+                        var Minutes = (DrawTime.getMinutes())
+                    }
+
+                    var DrawTime = DrawTime.getFullYear() + '-' + (month) + '-' + newdate + ' ' + Hours + ':' + Minutes
+                    
+                    let prices = priceData.Prices.split(",");
+                    let regulararr = [];
+                    let bonusarr = [];
+                    let bonuspickarr = [];
+
+                    let regArr = [];
+                    let bonsArr = [];
+                    let bonsPickerArr = [];
+                    for (let index1 = 0; index1 < prices.length; ++index1) {
+
+                        var pricevalue = (prices[index1]).split(":");
+                        var marketid = pricevalue[0];
+                        var marketprice = pricevalue[1];
+                        if (marketid >= 1 && marketid <= 20) {
+                            for (var index = 0; index < marketlist.length; ++index) {
+                                if (marketlist[index].MarketID == marketid) {
+                                    var marketdesc = marketlist[index].MarketDescription;
+                                    regulararr[marketdesc] = prices[index1];
+                                    regArr.push({
+                                        "market": marketdesc,
+                                        "marketId": marketid,
+                                        "price": marketprice,
+                                    })
+
+                                }
+                            }
+
+
+                        }
+                        if (marketid >= 21 && marketid <= 40) {
+                            for (var index = 0; index < marketlist.length; ++index) {
+                                if (marketlist[index].MarketID == marketid) {
+                                    var marketdesc = marketlist[index].MarketDescription;
+                                    bonusarr[marketdesc] = prices[index1]
+                                    bonsArr.push({
+                                        "market": marketdesc,
+                                        "marketId": marketid,
+                                        "price": marketprice,
+                                    })
+
+                                }
+                            }
+                        }
+                        //market from 51 to 55
+                        if ((marketid >= 51 && marketid <= 55)) {
+                            for (var index = 0; index < marketlist.length; ++index) {
+                                if (marketlist[index].MarketID == marketid) {
+                                    var marketdesc = marketlist[index].MarketDescription;
+
+                                    bonuspickarr[marketdesc] = prices[index1]
+                                    bonsPickerArr.push({
+                                        "market": marketdesc,
+                                        "marketId": marketid,
+                                        "price": marketprice,
+                                    })
+                                }
+                            }
+                        }
+                        if ((marketid >= 81 && marketid < 82)) {
+                            for (var index = 0; index < marketlist.length; ++index) {
+                                if (marketlist[index].MarketID == marketid) {
+                                    var marketdesc = marketlist[index].MarketDescription;
+
+                                    bonuspickarr[marketdesc] = prices[index1]
+                                    bonsPickerArr.push({
+                                        "market": marketdesc,
+                                        "marketId": marketid,
+                                        "price": marketprice,
+                                    })
+                                }
+                            }
+                        }
+                    }
+
+                    //Start: Regular Ball color logic
+                        let regBallImages = [];
+                        
+                        let letters = [];
+                        if(priceData.RegColours){
+                            letters = priceData.RegColours.split("");
+                        }
+                        let strtNum = eventResult[0].StartNum;                        
+                        let endNum = eventResult[0].RegUsed;
+                        for(let z=strtNum;z<=endNum;z++){
+                            let ballImage = 'multi_color_ball.png';
+                            if(letters[z] && letters[z] == 'A'){
+                                ballImage = "white_ball.png";
+                            }
+                            if(letters[z] && letters[z] == 'B'){
+                                ballImage = "blue_ball.png";
+                            }
+                            if(letters[z] && letters[z] == 'C'){
+                                ballImage = "green_ball.png";
+                            }
+                            if(letters[z] && letters[z] == 'D'){
+                                ballImage = "orange_ball.png";
+                            }
+                            if(letters[z] && letters[z] == 'E'){
+                                ballImage = "pink_ball.png";
+                            }
+                            if(letters[z] && letters[z] == 'F'){
+                                ballImage = "purple_ball.png";
+                            }
+                            if(letters[z] && letters[z] == 'H'){
+                                ballImage = "red_ball.png";
+                            }
+                            if(letters[z] && letters[z] == 'G'){
+                                ballImage = "yellow_ball.png";
+                            }                   
+                            if(letters[z] && letters[z] == 'Z'){
+                                ballImage = "multi_color_ball.png";
+                            }
+                            if(letters[z] && (letters[z] == '*' || letters[z] == '')){
+                                ballImage = "multi_color_ball.png";
+                            }
+                            regBallImages.push(ballImage);
+                        }                        
+                        //End :Rgular  Ball color logic
+
+                    //Start: Bonus Ball color logic
+                    let bonusBallImages = [];
+                    
+                    letters = [];
+                    if(priceData.BonusColours){
+                        letters = priceData.BonusColours.split("");
+                    }
+                    strtNum = eventResult[0].StartNum;
+                    endNum = eventResult[0].BonusUsed;
+                    for(let z=strtNum;z<=endNum;z++){
+                        let ballImage = 'multi_color_ball.png';
+                        if(letters[z] && letters[z] == 'A'){
+                            ballImage = "white_ball.png";
+                        }
+                        if(letters[z] && letters[z] == 'B'){
+                            ballImage = "blue_ball.png";
+                        }
+                        if(letters[z] && letters[z] == 'C'){
+                            ballImage = "green_ball.png";
+                        }
+                        if(letters[z] && letters[z] == 'D'){
+                            ballImage = "orange_ball.png";
+                        }
+                        if(letters[z] && letters[z] == 'E'){
+                            ballImage = "pink_ball.png";
+                        }
+                        if(letters[z] && letters[z] == 'F'){
+                            ballImage = "purple_ball.png";
+                        }
+                        if(letters[z] && letters[z] == 'H'){
+                            ballImage = "red_ball.png";
+                        }
+                        if(letters[z] && letters[z] == 'G'){
+                            ballImage = "yellow_ball.png";
+                        }                   
+                        if(letters[z] && letters[z] == 'Z'){
+                            ballImage = "multi_color_ball.png";
+                        }
+                        if(letters[z] && (letters[z] == '*' || letters[z] == '')){
+                            ballImage = "multi_color_ball.png";
+                        }
+                        bonusBallImages.push(ballImage);
+                    }                        
+                    //End :Bonus  Ball color logic
+
+
+                    //Start: create regular and bonus array
+                    let regnewArr = [];
+                    for (let i = 0; i < regArr.length; i++) {
+                        let regBonusMarketId = '';
+                        
+                        if (bonsArr[i]) {
+                            regBonusMarketId = bonsArr[i].marketId;
+                        }
+                        var reglastChar = "";
+                        var bonuslastChar = "";
+                        if (regArr[i].marketId) {
+                            var reglastChar = regArr[i].marketId.substr(regArr[i].marketId.length - 1);
+                        }
+                        if (regBonusMarketId) {
+                            bonuslastChar = bonsArr[i].marketId.substr(bonsArr[i].marketId.length - 1);
+                        }
+                        
+
+                        //var reglastChar = regArr[i].marketId.substr(regArr[i].marketId.length - 1); 
+                        //var bonuslastChar = bonsArr[i].marketId.substr(bonsArr[i].marketId.length - 1); 
+                        regnewArr.push({
+                            "market": regArr[i].market,
+                            "StartNum": eventResult[0].StartNum,
+                            "RegUsed": eventResult[0].RegUsed,
+                            "regularMarketId": regArr[i].marketId,
+                            "regularMarketPrice": regArr[i].price,
+                            "bonusMarketId": (regBonusMarketId == "") ? "" : bonsArr[i].marketId,
+                            "bonusMarketprice": (regBonusMarketId == "") ? "" : bonsArr[i].price,
+                            "regularballselect": reglastChar,
+                            "bonusballselect": bonuslastChar,
+                        })
+                    }
+
+                    let bonusnewArr = [];
+                    let marketregularball = 1;
+                    let marketbonusball = 1;
+                    for (let i = 0; i < bonsPickerArr.length; i++) {
+
+                        if (bonsPickerArr[i].marketId == 51) {
+                            marketregularball = 1;
+                            marketbonusball = 1;
+
+                        } else if (bonsPickerArr[i].marketId == 52) {
+                            marketregularball = 2;
+                            marketbonusball = 1;
+
+                        } else if (bonsPickerArr[i].marketId == 53) {
+                            marketregularball = 3;
+                            marketbonusball = 1;
+
+                        } else if (bonsPickerArr[i].marketId == 54) {
+                            marketregularball = 4;
+                            marketbonusball = 1;
+
+                        } else if (bonsPickerArr[i].marketId == 55) {
+                            marketregularball = 5;
+                            marketbonusball = 1;
+
+                        }else if (bonsPickerArr[i].marketId == 81) {
+                            marketregularball = 0;
+                            marketbonusball = 1;
+
+                        }
+                        let RegUsed = eventResult[0].RegUsed;
+                        let BonusUsed = eventResult[0].RegUsed;
+                        if (bonsPickerArr[i].marketId == 81 && eventResult[0].BonusUsed != 0 && eventResult[0].BonusUsed != '0') {
+                            RegUsed = eventResult[0].BonusUsed;
+                            BonusUsed = eventResult[0].BonusUsed;
+                            
+                        }else if (bonsPickerArr[i].marketId != 81 && eventResult[0].BonusUsed != 0 && eventResult[0].BonusUsed != '0') {
+                            RegUsed = eventResult[0].RegUsed;
+                            BonusUsed = eventResult[0].BonusUsed;
+                            
+                        }
+
+                        bonusnewArr.push({
+                            "market": bonsPickerArr[i].market,
+                            "marketId": bonsPickerArr[i].marketId,
+                            "price": bonsPickerArr[i].price,
+                            "sameBallSet":priceData.BonusFromReg,
+                            "regularballselect": marketregularball,
+                            "bonusballselect": marketbonusball,
+                            "StartNum": eventResult[0].StartNum,
+                            "RegUsed": RegUsed,
+                            "BonusUsed": BonusUsed,
+                        })
+                    }
+
+                    //Start: Get general settings
+                    //Get site data
+                    let kioskSettingSql = "SELECT * FROM " + Sys.Config.Table.KIOSK_SETTING + " WHERE siteId=" + inputs.siteId;
+                    let kioskSettingResult = await sequelize_luckynumberint.query(kioskSettingSql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                    let minStake = 0;
+                    let maxStake = 0;
+                    let maxWin = 0;
+                    if (kioskSettingResult.length > 0) {
+                        minStake = kioskSettingResult[0].Min_Stack;
+                        maxStake = kioskSettingResult[0].Max_Stack;
+                        maxWin = kioskSettingResult[0].Max_Win;
+                    }
+                    //End: Get general settings
+                    
+                    //End: create regular and bonus array
+                    let CutTime = new Date(dateFormat(priceData.CutTime, "yyyy-mm-dd HH:MM:ss"));
+                    /*let mobileTimeZone = inputs.mobileTimeZone;//"+05:30";
+                    let convertTime = timeConvert(mobileTimeZone);
+                    if(mobileTimeZone.charAt(0)=="-"){
+                        CutTime.setMinutes(CutTime.getMinutes() + convertTime);
+                    }else{
+                        CutTime.setMinutes(CutTime.getMinutes() - convertTime);
+                    }*/
+                    CutTime = new Date(CutTime.getTime() + (timediff * 1000 * 60 * 60));    //Converted hour to microsecond
+                    CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
+                    
+                    let siteTime =  new Date(dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss",true));
+                    siteTime = new Date(siteTime.getTime() + (parseFloat(siteTimeZone) * 1000 * 60 * 60));
+
+                    siteTimeDate = dateFormat(siteTime, "yyyy-mm-dd HH:MM:ss");
+
+                   
+
+                    let finalResponse = {
+                        // "RegUsed":eventResult[0].RegUsed,
+                        "minStake" : minStake,
+                        "maxStake" : maxStake,
+                        "maxWin" : maxWin,
+                        "regBallImages" : regBallImages,
+                        "bonusBallImages" : (priceData.BonusFromReg)?regBallImages:bonusBallImages,
+                        "eventId": eventResult[0].ID,
+                        "day": priceData.Description,
+                        "country": lottoListData.Country,
+                        "profileName": lottoListData.ProfileName,
+                        "drawTime": DrawTime,
+                        "CutTime":  CutTime,
+                        "siteTime":  siteTime.getTime(),
+                        "siteDateTime":  siteTimeDate,
+                        "regular": regnewArr,
+                        "bonusPickArr": bonusnewArr
+                    };
+                        console.log("finalResponse===",finalResponse)
+
+                    return response.send({
+                        status: "success",
+                        result: finalResponse,
+                        message: "Market found successfully"
+                    });
+                } else {
+                    return response.send({
+                        status: "fail",
+                        status_code: 422,
+                        message: "Coming Soon"
+                    });
+                } //End : Get market data logic
+            } else {
+                return response.send({
+                    status: "fail",
+                    status_code: 422,
+                    message: "Data not found"
+                });
+            }
+                
+                
+
+                 
+            } catch (error) {
+                console.log('error',error);
+                if(tra_lucky) {
+                   await tra_lucky.rollback();
+                }
+                if(tra_cngapi) {
+                   await tra_cngapi.rollback();
+                }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
+            }
+
+    };
 	return module;
 }
