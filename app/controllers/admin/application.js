@@ -768,7 +768,7 @@ module.exports = function(model,config){
                             if(letters[z] && (letters[z] == '*' || letters[z] == '')){
                                 ballImage = "multi_color_ball.png";
                             }
-                            regBallImages.push(ballImage);
+                            regBallImages.push(config.baseUrl+'/ball/'+ballImage);
                         }                        
                         //End :Rgular  Ball color logic
 
