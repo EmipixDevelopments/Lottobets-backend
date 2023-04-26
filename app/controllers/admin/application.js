@@ -370,7 +370,6 @@ module.exports = function(model,config){
     };
     module.countryWiseLottoList = async function(request, response){
             
-            
             let tra_lucky = await sequelize_luckynumberint.transaction();
             let tra_cngapi = await sequelize_cngapi.transaction();
             console.log("countryWiseLottoList=",request.body);
@@ -400,9 +399,7 @@ module.exports = function(model,config){
                 let enableData = enable.toString(",");
                 let profileID = finalarr.toString(",");
 
-                if (ContinentListData != '' && DrawingType != '' && DrawType != '') {
-
-                
+            if (ContinentListData != '' && DrawingType != '' && DrawType != '') {
 
                 let sqlLottolist = "select CountryId from " + config.Table.LOTTOLIST + " where Enable=1  GROUP BY CountryId";
                  
@@ -477,9 +474,12 @@ module.exports = function(model,config){
                             status_code: 422
                         });
                     }
-
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
 
             } else {
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
                 response.send( {
                     status: 'fail',
                     message: "LottoList not available ",
@@ -487,8 +487,7 @@ module.exports = function(model,config){
                 });
             }
 
-                await tra_lucky.commit();
-                await tra_cngapi.commit();
+                
                 
 
                  
