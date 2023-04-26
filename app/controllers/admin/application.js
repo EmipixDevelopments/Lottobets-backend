@@ -368,6 +368,75 @@ module.exports = function(model,config){
             }
 
     };
+    module.countryWiseLottoList = async function(request, response){
+            
+            
+            let tra_lucky = await sequelize_luckynumberint.transaction();
+            let tra_cngapi = await sequelize_cngapi.transaction();
+            console.log("homeScreen=",request.body);
+            let search='';
+            if(request.body.hasOwnProperty('search') && request.body.search.trim()!=''){
+                search = request.body.search;
+            }
+            try {
+                let sql = "SELECT GROUP_CONCAT(lottoId) as lottoId FROM (SELECT lottoId,COUNT(lottoId) as total FROM `played_event_details` group by lottoId ORDER by total DESC LIMIT 10) as t";
+                let result_fav_lotto = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.SELECT})
+                let lotto_id = result_fav_lotto[0].lottoId.replace(/,/g, "','");
+                let popular_game=[];
+                if (lotto_id != '' || lotto_id != null || lotto_id != 'null' || lotto_id != 'NULL' || lotto_id != 'null') {
+                    sql = "SELECT DATE_FORMAT(l.CutTime,'%Y-%m-%d %H:%i:%s') AS CutTime,DATE_FORMAT(l.UpdateTime,'%Y-%m-%d %H:%i:%s') AS UpdateTime,DATE_FORMAT(l.DrawTime,'%Y-%m-%d %H:%i:%s') AS DrawTime,DATE_FORMAT(l.DaylightSavingBegin,'%Y-%m-%d %H:%i:%s') AS DaylightSavingBegin,l.ProfileName AS lottoName,l.ID as lottoId, l.Country,l.State,l.colorimage,l.grayscaleimage,cl.FlagAbv FROM " + config.Table.LOTTOLIST + " AS l LEFT JOIN countrylist cl ON l.CountryId=cl.Id WHERE l.id IN('" + lotto_id + "')";
+                    if(search!=''){
+                        sql = "SELECT DATE_FORMAT(l.CutTime,'%Y-%m-%d %H:%i:%s') AS CutTime,DATE_FORMAT(l.UpdateTime,'%Y-%m-%d %H:%i:%s') AS UpdateTime,DATE_FORMAT(l.DrawTime,'%Y-%m-%d %H:%i:%s') AS DrawTime,DATE_FORMAT(l.DaylightSavingBegin,'%Y-%m-%d %H:%i:%s') AS DaylightSavingBegin,l.ProfileName AS lottoName,l.ID as lottoId, l.Country,l.State,l.colorimage,l.grayscaleimage,cl.FlagAbv FROM " + config.Table.LOTTOLIST + " AS l LEFT JOIN countrylist cl ON l.CountryId=cl.Id WHERE l.id IN('" + lotto_id + "') AND l.ProfileName like '%"+search+"%' ";
+                    }
+                    
+                     popular_game = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
+                     if (popular_game.length) {
+                        popular_game.sort(function(a,b){
 
+                        var o1 = a.State.toLowerCase();
+                        var o2 = b.State.toLowerCase();
+                        if (o1 < o2) return -1;
+                        if (o1 > o2) return 1;
+
+                        var p1 = a.lottoName.toLowerCase();
+                        var p2 = b.lottoName.toLowerCase();
+                        if (p1 < p2) return -1;
+                        if (p1 > p2) return 1;
+
+                        return 0;
+                        });
+                    }
+                }
+                for(let i=0;i<popular_game.length;i++){
+                    popular_game[i]['countryFlag'] = config.baseUrl+'/flags/'+popular_game[i].FlagAbv+'.png';
+                    popular_game[i]['colorimage'] = config.baseUrl+'/Lotto/'+popular_game[i].colorimage;
+                }
+                
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
+                return response.send({
+                    status: "success",
+                    result: popular_game,
+                    message: (popular_game.length)? "Data found successfully":"Data not found",
+                    status_code: 200
+                });
+
+                 
+            } catch (error) {
+                console.log('error',error);
+                if(tra_lucky) {
+                   await tra_lucky.rollback();
+                }
+                if(tra_cngapi) {
+                   await tra_cngapi.rollback();
+                }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
+            }
+
+    };
 	return module;
 }
