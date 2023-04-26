@@ -908,7 +908,7 @@ module.exports = function(model,config){
 
                     //Start: Get general settings
                     //Get site data
-                    let kioskSettingSql = "SELECT * FROM " + Sys.Config.Table.KIOSK_SETTING + " WHERE siteId=" + inputs.siteId;
+                    let kioskSettingSql = "SELECT * FROM " + config.Table.KIOSK_SETTING + " WHERE siteId=" + inputs.siteId;
                     let kioskSettingResult = await sequelize_luckynumberint.query(kioskSettingSql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                     let minStake = 0;
                     let maxStake = 0;
