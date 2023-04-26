@@ -373,53 +373,122 @@ module.exports = function(model,config){
             
             let tra_lucky = await sequelize_luckynumberint.transaction();
             let tra_cngapi = await sequelize_cngapi.transaction();
-            console.log("homeScreen=",request.body);
+            console.log("countryWiseLottoList=",request.body);
+            let inputs = request.body;
             let search='';
             if(request.body.hasOwnProperty('search') && request.body.search.trim()!=''){
                 search = request.body.search;
             }
             try {
-                let sql = "SELECT GROUP_CONCAT(lottoId) as lottoId FROM (SELECT lottoId,COUNT(lottoId) as total FROM `played_event_details` group by lottoId ORDER by total DESC LIMIT 10) as t";
-                let result_fav_lotto = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_cngapi.QueryTypes.SELECT})
-                let lotto_id = result_fav_lotto[0].lottoId.replace(/,/g, "','");
-                let popular_game=[];
-                if (lotto_id != '' || lotto_id != null || lotto_id != 'null' || lotto_id != 'NULL' || lotto_id != 'null') {
-                    sql = "SELECT DATE_FORMAT(l.CutTime,'%Y-%m-%d %H:%i:%s') AS CutTime,DATE_FORMAT(l.UpdateTime,'%Y-%m-%d %H:%i:%s') AS UpdateTime,DATE_FORMAT(l.DrawTime,'%Y-%m-%d %H:%i:%s') AS DrawTime,DATE_FORMAT(l.DaylightSavingBegin,'%Y-%m-%d %H:%i:%s') AS DaylightSavingBegin,l.ProfileName AS lottoName,l.ID as lottoId, l.Country,l.State,l.colorimage,l.grayscaleimage,cl.FlagAbv FROM " + config.Table.LOTTOLIST + " AS l LEFT JOIN countrylist cl ON l.CountryId=cl.Id WHERE l.id IN('" + lotto_id + "')";
-                    if(search!=''){
-                        sql = "SELECT DATE_FORMAT(l.CutTime,'%Y-%m-%d %H:%i:%s') AS CutTime,DATE_FORMAT(l.UpdateTime,'%Y-%m-%d %H:%i:%s') AS UpdateTime,DATE_FORMAT(l.DrawTime,'%Y-%m-%d %H:%i:%s') AS DrawTime,DATE_FORMAT(l.DaylightSavingBegin,'%Y-%m-%d %H:%i:%s') AS DaylightSavingBegin,l.ProfileName AS lottoName,l.ID as lottoId, l.Country,l.State,l.colorimage,l.grayscaleimage,cl.FlagAbv FROM " + config.Table.LOTTOLIST + " AS l LEFT JOIN countrylist cl ON l.CountryId=cl.Id WHERE l.id IN('" + lotto_id + "') AND l.ProfileName like '%"+search+"%' ";
+                let sql = "select * from " + config.Table.SITEPROFILE + " WHERE Enable=0";
+                let stmt = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
+                
+                let finalarr = [];
+                let enable = [];
+
+                for (let i = 0; i < stmt.length; i++) {
+                    finalarr.push(stmt[i].ProfileID);
+                    enable.push(stmt[i].Enable);
+                }
+                let siteprofileSql = "select *, GROUP_CONCAT(Continent) AS Continent,GROUP_CONCAT(DrawType) AS DrawType,GROUP_CONCAT(DrawingType) AS DrawingType from " + config.Table.SITEPROFILEMANAGEMENT + "";
+                // console.log('=======1',siteprofileSql)
+                let result_siteprofileSql = await sequelize_cngapi.query(siteprofileSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
+
+                let ContinentListData = result_siteprofileSql[0].Continent;
+                let DrawType = result_siteprofileSql[0].DrawType;
+                let DrawingType = result_siteprofileSql[0].DrawingType;
+                let enableData = enable.toString(",");
+                let profileID = finalarr.toString(",");
+
+                if (ContinentListData != '' && DrawingType != '' && DrawType != '') {
+
+                
+
+                let sqlLottolist = "select CountryId from " + config.Table.LOTTOLIST + " where Enable=1  GROUP BY CountryId";
+                 
+                let result_sqlLottolist = await sequelize_cngapi.query(sqlLottolist, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
+
+                let finalarr = [];
+                let final_arrListdata = [];
+                for (let i = 0; i < result_sqlLottolist.length; i++) {
+                    final_arrListdata.push(result_sqlLottolist[i].CountryId);
+                }
+                let countryList = final_arrListdata.toString(',');
+                let countryid = inputs.countryflag;
+
+                
+                let final_arrList = [];
+                let country = data.id ;
+                let Lottolist = "select ID,ProfileName,Country,CountryId,State,DrawTime,CutTime,RegUsed,BonusUsed,LastCreateDate,UpdateTime,TimeZone,StartNum,colorimage,grayscaleimage,Continent from " + config.Table.LOTTOLIST + " where Enable=1 AND  CountryId = '" + country + "'";
+                    
+                    
+                    let result_lottolist = await sequelize_cngapi.query(Lottolist, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+                    
+                     sql = "SELECT favourite AS lottoId FROM " + config.Table.USER + " WHERE userId='" + inputs.userId + "' ";
+                        
+                    let result1 = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                    let liek_lotto_array =[];
+                   // console.log('====================w',Lottolist);
+                    if(result1[0].lottoId){
+                         liek_lotto_array = result1[0].lottoId.split(',');
                     }
                     
-                     popular_game = await sequelize_cngapi.query(sql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT})
-                     if (popular_game.length) {
-                        popular_game.sort(function(a,b){
+                    if(result_lottolist.length)
+                    {
+                        for (let i = 0; i < result_lottolist.length; i++) 
+                        {
+                       
+                            result_lottolist[i]['fav_flag'] = false;
+                           
+                            if (liek_lotto_array.indexOf(result_lottolist[i].ID.toString()) >= 0) {
+                                
+                                result_lottolist[i]['fav_flag'] = true;
+                            }
+                        }
 
-                        var o1 = a.State.toLowerCase();
-                        var o2 = b.State.toLowerCase();
-                        if (o1 < o2) return -1;
-                        if (o1 > o2) return 1;
+                        
 
-                        var p1 = a.lottoName.toLowerCase();
-                        var p2 = b.lottoName.toLowerCase();
-                        if (p1 < p2) return -1;
-                        if (p1 > p2) return 1;
+                        result_lottolist.sort(function(a,b){
+                          var o1 = a.State.toLowerCase();
+                          var o2 = b.State.toLowerCase();
+                          if (o1 < o2) return -1;
+                          if (o1 > o2) return 1;
+                            
+                          var p1 = a.ProfileName.toLowerCase();
+                          var p2 = b.ProfileName.toLowerCase();
+                          if (p1 < p2) return -1;
+                          if (p1 > p2) return 1;
 
-                        return 0;
+                          return 0;
+                        });
+        
+                        response.send({
+                            status: 'success',
+                            result: result_lottolist,
+                            message: "countryWiseLottoList",
+                            status_code: 200
+                        });
+                   
+                    } else {
+                        return response.send({
+                            status: 'fail',
+                            message: "LottoList not available ",
+                            status_code: 422
                         });
                     }
-                }
-                for(let i=0;i<popular_game.length;i++){
-                    popular_game[i]['countryFlag'] = config.baseUrl+'/flags/'+popular_game[i].FlagAbv+'.png';
-                    popular_game[i]['colorimage'] = config.baseUrl+'/Lotto/'+popular_game[i].colorimage;
-                }
-                
+
+
+            } else {
+                response.send( {
+                    status: 'fail',
+                    message: "LottoList not available ",
+                    status_code: 422
+                });
+            }
+
                 await tra_lucky.commit();
                 await tra_cngapi.commit();
-                return response.send({
-                    status: "success",
-                    result: popular_game,
-                    message: (popular_game.length)? "Data found successfully":"Data not found",
-                    status_code: 200
-                });
+                
 
                  
             } catch (error) {
