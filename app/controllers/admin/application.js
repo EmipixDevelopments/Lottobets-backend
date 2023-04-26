@@ -437,7 +437,7 @@ module.exports = function(model,config){
                         {
                        
                             result_lottolist[i]['fav_flag'] = false;
-                           
+                            result_lottolist[i]['colorimage'] = config.baseUrl+'/Lotto/'+result_lottolist[i].colorimage;
                             if (liek_lotto_array.indexOf(result_lottolist[i].ID.toString()) >= 0) {
                                 
                                 result_lottolist[i]['fav_flag'] = true;
