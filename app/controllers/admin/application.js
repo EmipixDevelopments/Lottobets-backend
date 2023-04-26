@@ -518,16 +518,18 @@ module.exports = function(model,config){
             try {
                 
             let fields = "userId";
+            if(request.body.hasOwnProperty('userId') && inputs.userId.trim()!=''){
             let userSql = "SELECT " + fields + " FROM " + config.Table.USER + " WHERE userId=" + sequelize_luckynumberint.escape(inputs.userId) + " limit 1";
             //console.log("userSql",userSql);
-            let userResult = await sequelize_luckynumberint.query(userSql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
-            if (!userResult.length > 0) {
-                return response.send({
-                    status: "fail",
-                    message: "User not found"
-                });
+                let userResult = await sequelize_luckynumberint.query(userSql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                if (!userResult.length > 0) {
+                    return response.send({
+                        status: "fail",
+                        message: "User not found"
+                    });
+                }
+                let userData = userResult[0];
             }
-            let userData = userResult[0];
             //saveActivityLog(userData.id,userData.username+" in cashup screen",inputs); //User history log
 
             //Get lotto profile data
