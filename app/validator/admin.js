@@ -66,7 +66,7 @@ module.exports = function(model){
 	};
 	module.lottoMarket = function(req, res, next){
 		
-		req.checkBody('userId', 'userId is required').notEmpty();
+		//req.checkBody('userId', 'userId is required').notEmpty();
 		req.checkBody('profileId', 'profileId is required').notEmpty();
 		//req.checkBody('flag', 'flag is required').notEmpty();
 		//req.checkBody('email', 'Please enter valid email-id').isEmail();
