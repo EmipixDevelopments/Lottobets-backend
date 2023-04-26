@@ -813,7 +813,7 @@ module.exports = function(model,config){
                         if(letters[z] && (letters[z] == '*' || letters[z] == '')){
                             ballImage = "multi_color_ball.png";
                         }
-                        bonusBallImages.push(ballImage);
+                        bonusBallImages.push(config.baseUrl+'/ball/'+ballImage);
                     }                        
                     //End :Bonus  Ball color logic
 
