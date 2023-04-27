@@ -1018,11 +1018,11 @@ module.exports = function(model,config){
               inputs.siteId ='1';
             console.log("request time", new Date());
             console.log('======confirmBet',inputs)
-            inputs.regSelection =JSON.parse(inputs.regSelection.replace(/\//g, ""));
+            /*inputs.regSelection =JSON.parse(inputs.regSelection.replace(/\//g, ""));
             inputs.bonusSelection = JSON.parse(inputs.bonusSelection.replace(/\//g, ""));
             inputs.balance = JSON.parse(inputs.balance.replace(/\//g, ""));
             inputs.winValue = JSON.parse(inputs.winValue.replace(/\//g, ""));
-            inputs.stake_value = JSON.parse(inputs.stake_value.replace(/\//g, ""));
+            inputs.stake_value = JSON.parse(inputs.stake_value.replace(/\//g, ""));*/
             ////////////////Block Iav Check////////////////////
             let sql_block_iav_check = "SELECT iav FROM " + config.Table.BLOCK_IAV_LIST + " WHERE iav="+sequelize_luckynumberint.escape(inputs.IAV)+"  LIMIT 1";
             let result_block_iav = await sequelize_luckynumberint.query(sql_block_iav_check, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
