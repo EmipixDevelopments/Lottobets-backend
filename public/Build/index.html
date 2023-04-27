@@ -10,7 +10,7 @@
 
 <body style="text-align: center; padding: 0; border: 0; margin: 0;">
     <canvas id="unity-canvas" width={{{  WIIDTH }}} height={{{ HEIGHT }}} style="width: 100%; height: 100%; background: #231F20"></canvas>
-    <script src="Build/BuildLottoBets_25April_525.loader.js"></script>
+    <script src="Build/Build27April.loader.js"></script>
     <script>
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             // Mobile device style: fill the whole browser client area with the game canvas:
@@ -28,9 +28,9 @@
         }
 
         createUnityInstance(document.querySelector("#unity-canvas"), {
-            dataUrl: "Build/BuildLottoBets_25April_525.data",
-            frameworkUrl: "Build/BuildLottoBets_25April_525.framework.js",
-            codeUrl: "Build/BuildLottoBets_25April_525.wasm",
+            dataUrl: "Build/Build27April.data",
+            frameworkUrl: "Build/Build27April.framework.js",
+            codeUrl: "Build/Build27April.wasm",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "Emipix",
             productName: "",
