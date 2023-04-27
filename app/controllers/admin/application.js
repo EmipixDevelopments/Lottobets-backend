@@ -1054,8 +1054,7 @@ module.exports = function(model,config){
 
             let result_lotto_check = await sequelize_cngapi.query(sql_lotto_result_check, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
             if(result_lotto_check.length>0){
-                await tra_lucky.commit();
-                await tra_cngapi.commit();
+                
                 return res.send({
                     status: 'fail',
                     message: "Event result already declared",
