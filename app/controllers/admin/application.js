@@ -1000,5 +1000,326 @@ module.exports = function(model,config){
             }
 
     };
+    module.confirmBet = async function(request, res){
+            try{
+            let tra_lucky = await sequelize_luckynumberint.transaction();
+            let tra_cngapi = await sequelize_cngapi.transaction();
+            console.log("lottoMarket=",request.body);
+            let inputs = request.body;
+              inputs.siteId ='1';
+            console.log("request time", new Date());
+            console.log('======confirmBet',inputs)
+            inputs.regSelection = JSON.parse(inputs.regSelection.replace(/\//g, ""));
+            inputs.bonusSelection = JSON.parse(inputs.bonusSelection.replace(/\//g, ""));
+            inputs.balance = JSON.parse(inputs.balance.replace(/\//g, ""));
+            inputs.winValue = JSON.parse(inputs.winValue.replace(/\//g, ""));
+            inputs.stake_value = JSON.parse(inputs.stake_value.replace(/\//g, ""));
+            ////////////////Block Iav Check////////////////////
+            let sql_block_iav_check = "SELECT iav FROM " + config.Table.BLOCK_IAV_LIST + " WHERE iav="+sequelize_luckynumberint.escape(inputs.IAV)+"  LIMIT 1";
+            let result_block_iav = await sequelize_luckynumberint.query(sql_block_iav_check, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+            if(result_block_iav.length>0){
+                return res.send({
+                    status: 'fail',
+                    message: "Your IAV Number has Blocked..!",
+                    status_code: 422
+                }).end();
+            }
+            if (inputs.regSelection.length > 0 || inputs.bonusSelection.length > 0) {
+                let Multi_NPV_No = helper.randomNPV();
+                let bonusSelection = 0;
+                if (inputs.regSelection.length > 0) {
+                    arrayLength = inputs.regSelection.length
+                }
+                if (inputs.bonusSelection.length > 0) {
+                    arrayLength = inputs.bonusSelection.length
+                }
+                
+            let verifyBetAmount =0;
+            for (let i = 0; i < arrayLength; i++) {
+                verifyBetAmount = parseFloat(verifyBetAmount) + parseFloat(inputs.stake_value[i]);
+            }
+           
+            let sql_lotto_result_check = "SELECT IsPost,ID FROM " + config.Table.LOTTOEVENT + " WHERE ID="+sequelize_cngapi.escape(inputs.eventId)+" and IsPost='1' AND `Result`!=''";
+
+            let result_lotto_check = await sequelize_cngapi.query(sql_lotto_result_check, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+            if(result_lotto_check.length>0){
+                return res.send({
+                    status: 'fail',
+                    message: "Event result already declared",
+                    status_code: 422
+                }).end();
+            }
+            var IAVNumber=inputs.IAV;
+            let sql2 = `CALL GetIAVBalance(`+IAVNumber+`)`; 
+            let finalbalance= await sequelize_luckynumberint.query(sql2, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+            finalbalance=Object.values(JSON.parse(JSON.stringify(finalbalance[0])));
+            finalbalance= finalbalance[0].IAV_Balance;
+            finalbalance = Math.round(finalbalance) ;
+           if(verifyBetAmount>finalbalance){
+                return res.send({
+                    status: 'fail',
+                    message: "Insufficient IAV balance",
+                    status_code: 422
+                }).end();
+            }
+            let siteSql = "SELECT SiteName FROM sitemanagement WHERE ID="+sequelize_cngapi.escape(inputs.siteId)+" LIMIT 1";
+                let siteData = await sequelize_cngapi.query(siteSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
+
+                console.log("response time", new Date())
+
+                console.log("response",{
+                    status: 'success',
+                    message: "Bet confirm successfully",
+                    status_code: 200
+                });
+                
+                let sql = "SELECT * FROM "+config.Table.GENERAL_SETTING+" WHERE status=true AND siteId="+sequelize_luckynumberint.escape(inputs.siteId);
+                console.log("GetTimeZoneData sql",sql);
+                let sitetimezone= await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                if(sitetimezone.length){
+                    var timezone=sitetimezone[0].timezone ;
+                }else{
+                    var timezone='+2';
+                }
+                
+                
+                
+                
+
+                let d2 = new Date(new Date().getTime() + (timezone*1000*60*60));
+                let d = new Date(d2).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+                let today =  dateFormat(d, "yyyy-mm-dd HH:MM:ss");
+                console.log("today",today);
+                
+                res.send({
+                    status: 'success',
+                    message: "Bet confirm successfully",
+                    status_code: 200
+                }).end();
+                let withDrawAmount =  "SELECT sum(last_running_iav) AS balance FROM  "+ config.Table.IAV_RUNNING +" WHERE IAV_number='"+inputs.IAV+"' AND refundDate IS NOT NULL order by id desc";
+                 withDrawAmount = await sequelize_luckynumberint.query(withDrawAmount, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+
+                 let sql_end_point_url = "SELECT end_point_url FROM " + config.Table.GENERAL_SETTING + " WHERE siteId="+sequelize_luckynumberint.escape(inputs.siteId)+"  LIMIT 1";
+           
+                let result_end_point_url =await sequelize_luckynumberint.query(sql_end_point_url, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+
+                let userInfo = "SELECT mobile,countryCode FROM " + config.Table.USER + " WHERE userId="+sequelize_luckynumberint.escape(inputs.userId)+"  LIMIT 1";
+           
+                userInfo = await sequelize_luckynumberint.query(userInfo, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+
+                let kiosk_setting = "SELECT NPV_FootNote FROM " + config.Table.KIOSK_SETTING + " WHERE siteId="+sequelize_luckynumberint.escape(inputs.siteId)+"  LIMIT 1";
+           
+                kiosk_setting = await sequelize_luckynumberint.query(kiosk_setting, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                let attachments = [];
+                let attachments2 = [];
+
+                for (let i = 0; i < arrayLength; i++) {
+                if(inputs.winValue[i]!='' && inputs.stake_value[i]!='' && inputs.winValue[i]!='undefined' && inputs.stake_value[i]!='undefined' && inputs.winValue[i]!='null' && inputs.stake_value[i]!='null' && inputs.winValue[i]!=null && inputs.stake_value[i]!=null && inputs.winValue[i]!=undefined && inputs.stake_value[i]!=undefined)
+                {
+                    /////////////NPV Logic///////////
+                    let length = 12;
+                    let timestamp = +new Date;
+
+                    var _getRandomInt = function( min, max ) {
+                    return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+                    }
+
+
+                    var ts = timestamp.toString();
+                    var parts = ts.split( "" ).reverse();
+                    var id = "";
+
+                    for( var j = 0; j < length; ++j ) {
+                    var index = _getRandomInt( 0, parts.length - 1 );
+                    id += parts[index];  
+                    }
+                   
+                    let npv_generate =  id;
+                    
+                    var M = new Date();
+                    let npv = npv_generate.toString()+''+i+''+M.getUTCMilliseconds().toString();
+                    //let npv = await Sys.App.Controllers.Application.checkNPV(npv_generate);
+                    if (typeof inputs.bonusSelection[i] === 'undefined') {
+                        inputs.bonusSelection[i] = "";
+                    }
+                    if (typeof inputs.regSelection[i] === 'undefined') {
+                        inputs.regSelection[i] = "";
+                    }
+                    let sql = "INSERT INTO " + config.Table.PLAYED_EVENT_DETAILS + " (IAV,eventId,lottoName,NPV,eventDrawTime,eventDay,regSelection,bonusSelection,marketId,winValue,stake_value,TotalNoSelection,status,siteid,country,Multi_NPV_No,userId,lottoId,createdate,mobile_betType) VALUES(" + sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(inputs.eventId) + "," + sequelize_luckynumberint.escape(inputs.lottoName) + "," + sequelize_luckynumberint.escape(npv) + "," + sequelize_luckynumberint.escape(inputs.eventDrawTime) + "," + sequelize_luckynumberint.escape(inputs.eventDay) + "," + sequelize_luckynumberint.escape(inputs.regSelection[i]) + "," + sequelize_luckynumberint.escape(inputs.bonusSelection[i]) + "," + sequelize_luckynumberint.escape(inputs.marketId) + "," + sequelize_luckynumberint.escape(inputs.winValue[i]) + "," + sequelize_luckynumberint.escape(inputs.stake_value[i]) + "," + sequelize_luckynumberint.escape(inputs.marketName) + ",'pending'," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.country) + "," + sequelize_luckynumberint.escape(Multi_NPV_No) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(inputs.lottoId) + ",'" + today + "'," + sequelize_luckynumberint.escape(inputs.betType) + ")";
+                    //console.log('===',sql)
+                    let result =  await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
+                    
+                    
+                    let sql_balance = `CALL GetIAVBalance(`+inputs.IAV+`)`; 
+                    let finalbalance= await sequelize_luckynumberint.query(sql_balance, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                    finalbalance=Object.values(JSON.parse(JSON.stringify(finalbalance[0])));
+                    finalbalance= finalbalance[0].IAV_Balance;
+                    let iav_balance = Math.round(finalbalance) ;
+                    if(parseFloat(iav_balance)>0 && parseFloat(withDrawAmount[0].balance)>0){
+                        iav_balance = parseFloat(iav_balance) - parseFloat(withDrawAmount[0].balance) ;
+                    }
+                    if (result) {
+                        let sql_iav_running = "INSERT INTO iav_running (IAV_number,last_running_iav,description,siteId,userId,timestamp) VALUES(" + sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(iav_balance) + "," + sequelize_luckynumberint.escape(result.insertId) + "," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(today) + ")";
+                         sequelize_luckynumberint.query(sql_iav_running, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
+                    }
+
+                    let iavBalance = inputs.iavBalance;
+                    
+                    if (i > 0) {
+                        iavBalance = iavBalance - inputs.stake_value[i];
+                    }
+                     sql2 = "INSERT INTO " + config.Table.MOBILE_USER_BET_HISTORY + " (regSelection,bonusSelection,sitename,IAV,eventId,lottoName,NPV,eventDrawTime,eventDay,marketId,winValue,stake_value,marketName,status,siteid,country,userId,lottoId,credit,mobile_betType,created_at) VALUES("+sequelize_luckynumberint.escape(inputs.regSelection[i])+","+sequelize_luckynumberint.escape(inputs.bonusSelection[i])+","+sequelize_luckynumberint.escape(siteData[0].SiteName)+","+ sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(inputs.eventId) + "," + sequelize_luckynumberint.escape(inputs.lottoName) + "," + sequelize_luckynumberint.escape(npv) + "," + sequelize_luckynumberint.escape(inputs.eventDrawTime) + "," + sequelize_luckynumberint.escape(inputs.eventDay) + "," + sequelize_luckynumberint.escape(inputs.marketId) + "," + sequelize_luckynumberint.escape(inputs.winValue[i]) + "," + sequelize_luckynumberint.escape(inputs.stake_value[i]) + "," + sequelize_luckynumberint.escape(inputs.marketName) + ",'pending'," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.country) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(inputs.lottoId) + "," + sequelize_luckynumberint.escape(iavBalance) + "," + sequelize_luckynumberint.escape(inputs.betType) + "," + sequelize_luckynumberint.escape(today) + ")";
+                    let result2 =  sequelize_luckynumberint.query(sql2, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
+
+
+                    ////////////////json file data///////////////////
+                    let d3 = new Date(new Date().getTime() + (timezone*1000*60*60));
+                    let djson = new Date(d3).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+                    let SendTime =  dateFormat(djson, "yyyy-mm-dd HH:MM:ss");
+                    let json_data = {}
+                    let Selection = '';
+
+                    let len = inputs.IAV.length -4;
+                    var regex = new RegExp(".{1,"+len+"}");
+                    let IAV = inputs.IAV;
+                    //IAV = IAV.replace(regex, (m) => "*".repeat(m.length));
+                    IAV =  IAV.substr(id.length - 5);
+                    IAV =  '*'+IAV;
+                    if(inputs.regSelection[i]!=''){
+                        Selection = inputs.regSelection[i].replace(/,/g, "-");
+                    }
+                    if(inputs.bonusSelection[i]!=''){
+                        Selection = inputs.bonusSelection[i].replace(/,/g, "-")
+                    }
+                    json_data.SendTime = SendTime;
+                    json_data.CreateTime = today;
+                    json_data.Type = "NPV";
+                    json_data.NPVNumber = npv;
+                    json_data.IAVNumber = IAV;
+                    json_data.ContactNumber = userInfo[0].countryCode+''+userInfo[0].mobile;
+                    json_data.SiteID = inputs.siteId;
+                    json_data.SiteName =siteData[0].SiteName;
+                    json_data.Country =inputs.country;
+                    json_data.ProfileName =inputs.lottoName;
+                    json_data.DrawDate =inputs.eventDrawTime;
+                    json_data.DrawDay =inputs.eventDay;
+                    json_data.EventID =inputs.eventId;
+                    json_data.Market =inputs.marketName;
+                    json_data.Selection =Selection;
+                    json_data.WinStake =inputs.winValue[i]+'/'+inputs.stake_value[i];
+                    json_data.AdditionalInfo =kiosk_setting[0].NPV_FootNote;
+
+                    // specify the path to the file, and create a buffer with characters we want to write
+                    let path = config.rootpath_npv +npv+'.cng';
+                    //let buffer = Buffer.from(JSON.stringify(json_data));
+                    let buffer = JSON.stringify(json_data);
+
+                    attachments.push(npv);
+                    if(result_end_point_url.length){
+                        if(result_end_point_url[0].end_point_url){
+                            let end_point = JSON.parse(result_end_point_url[0].end_point_url);
+                            if((end_point.url_1_access  && end_point.url_1) || (end_point.url_2_access  && end_point.url_2)){
+                                await fs.open(path, 'w', async function(err, fd) {
+                                    if (err) {
+                                        console.log('file Error====',err);
+                                    }else{
+                                        await fs.write(fd, buffer, async function(err) {
+                                            if (err) {
+                                                console.log('file Error write====',err);
+                                            }else{
+                                                fs.close(fd, function() {
+                                                    console.log('wrote the file successfully');
+                                                });
+                                            }
+                                            
+                                        });
+                                    }
+
+                                    // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
+                                    
+                                });
+                        }
+
+                    }
+                }
+                 
+
+                }
+            }
+
+            if(result_end_point_url.length){
+                
+                    if(result_end_point_url[0].end_point_url){
+                    let end_point_url = JSON.parse(result_end_point_url[0].end_point_url);
+                    var formData = {};
+                    formData.my_field ='filename';
+                        for(let f=0;f<attachments.length;f++){
+                            if (fs.existsSync(config.rootpath_npv+ attachments[f]+'.cng')) {
+                                formData['filename_'+f] = fs.createReadStream(config.rootpath_npv+ attachments[f]+'.cng');
+                            }
+                        }
+                    if(end_point_url.url_1_access  && end_point_url.url_1){
+                       await request.post({
+                            url: end_point_url.url_1,
+                            formData: formData
+                        }, function optionalCallback(err, httpResponse, body) {
+                            if (err) {
+                                console.log('upload failed:', err);
+                            }
+                            console.log('Upload successful!  Server responded with:',body);
+                        });
+
+                    }
+                    if(end_point_url.url_2_access && end_point_url.url_2){
+                        await request.post({
+                            url: end_point_url.url_2,
+                            formData: formData
+                        }, function optionalCallback(err, httpResponse, body) {
+                            if (err) {
+                                 console.log('upload failed:', err);
+                            }
+                            console.log('Upload successful!  Server responded with:',body);
+                        });
+                    }
+
+                    
+                    
+                    for(let f=0;f<attachments.length;f++){
+                        if (fs.existsSync(config.rootpath_npv+ attachments[f]+'.cng')) {
+                            fs.unlink(config.rootpath_npv+ attachments[f]+'.cng', function(err) {
+                            if (err){
+                                console.log('File deleted err',err);
+                            }else{
+                                console.log('File deleted!');
+                            }
+                            
+                            });
+                        }
+                        
+                    }
+
+
+                    }
+                
+            }
+                
+            } else {
+                return res.send({
+                    status: 'fail',
+                    message: "Please select ball..!",
+                    status_code: 422
+                }).end();
+            }
+
+        } catch (e) {
+            console.log("error ",e);
+            //Sys.Log.eror("Error in addIAV :", e);
+            return res.send({
+                status: 'fail',
+                message: e,
+                status_code: 422
+            }).end();
+        }
+    };
 	return module;
 }

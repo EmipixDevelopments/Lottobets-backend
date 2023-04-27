@@ -15,7 +15,20 @@ module.exports.randomNumber = function (length) {
     let id = crypto.randomBytes(length).toString("hex");
     return id;
 };
+module.exports.randomNPV = function () {
+   
+            //let inputs = req.body ;
+            var alphabet = '1234567890';
+            var pass = '' //remember to declare $pass as an array
+            var alphaLength = (alphabet.length) - 1; //put the length -1 in cache
+            for (var i = 0; i < 11; i++) {
+                var n = Math.floor((Math.random() * alphaLength) + 1);
+                pass += alphabet[n]
+            }
+            return (pass); //turn the array into a string
 
+        
+};
 module.exports.arrUnique = function (values) {
      let concatArray = values.map(eachValue => {
         return Object.values(eachValue).join('')

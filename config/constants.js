@@ -8,7 +8,7 @@ var config = {
 		"port": 3000,
 		"baseUrl": "http://3.120.231.131:3000",
 		//"rootpath": "/var/www/html",
-		"rootpath": "/var/www/lucky",
+		"rootpath_npv": "/public_html/Lottobets-backend/npv/",
 		"lottobetsJwtAuth": "lottobetsJwtAuth123!@#",
 		"lotto_img_url": "https://img.luckynumbersinternet.net/Colour",
 		"siteName": "lucky",

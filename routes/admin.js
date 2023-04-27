@@ -13,6 +13,7 @@ module.exports = function (app, model, controller) {
     app.post('/countryWiseLottoList',validation.admin.countryWiseLottoList, controller.application.countryWiseLottoList);
     app.post('/addtoFavourite',  validation.admin.addtoFavourite,controller.user.addtoFavourite);
     app.post('/lottoMarket',  validation.admin.lottoMarket,controller.application.lottoMarket);
+    app.post('/confirmBet',  controller.application.confirmBet);
 
     app.post('/login',  validation.admin.login,controller.user.login);
     app.post('/signup',  validation.admin.signup,controller.user.signup);
