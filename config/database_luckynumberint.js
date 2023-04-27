@@ -30,7 +30,7 @@ module.exports = function (dataBaseType) {
 		logging: false, // true when you want to seen query 
 		port: port,
 		pool: {
-			max: 5,
+			max: 10000,
 			min: 0,
 			acquire: 30000,
 			idle: 10000
