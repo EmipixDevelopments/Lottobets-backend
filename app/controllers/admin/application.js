@@ -1013,7 +1013,7 @@ module.exports = function(model,config){
             try{
             let tra_lucky = await sequelize_luckynumberint.transaction();
             let tra_cngapi = await sequelize_cngapi.transaction();
-            console.log("lottoMarket=",request.body);
+            console.log("confirmBet=",request.body);
             let inputs = request.body;
               inputs.siteId ='1';
             console.log("request time", new Date());
