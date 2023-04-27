@@ -1018,7 +1018,7 @@ module.exports = function(model,config){
               inputs.siteId ='1';
             console.log("request time", new Date());
             console.log('======confirmBet',inputs)
-            inputs.regSelection =JSON.parse(inputs.regSelection.replace(/\//g, "");
+            inputs.regSelection =JSON.parse(inputs.regSelection.replace(/\//g, ""));
             inputs.bonusSelection = JSON.parse(inputs.bonusSelection.replace(/\//g, ""));
             inputs.balance = JSON.parse(inputs.balance.replace(/\//g, ""));
             inputs.winValue = JSON.parse(inputs.winValue.replace(/\//g, ""));
