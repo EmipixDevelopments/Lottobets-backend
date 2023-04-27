@@ -30,6 +30,7 @@ module.exports = function(model,config){
                             //expiresIn: 60 * 60 * 24 // expires in 24 hours
                         });
                         let walletId = (result[0]['walletId'])?result[0]['walletId']: await module.walletId(helper.randomNumber(3));
+                        console.log("walletId=",walletId)
                         sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+",mobile_ip="+sequelize_luckynumberint.escape(ip)+", walletId="+ (result[0]['walletId'])?result[0]['walletId']:walletId +" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
                         await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE});
                         result[0]['mobile_ip']=ip;
