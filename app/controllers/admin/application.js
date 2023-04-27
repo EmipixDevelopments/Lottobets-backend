@@ -1010,9 +1010,9 @@ module.exports = function(model,config){
 
     };
     module.confirmBet = async function(request, res){
-            try{
             let tra_lucky = await sequelize_luckynumberint.transaction();
             let tra_cngapi = await sequelize_cngapi.transaction();
+            try{
             console.log("confirmBet=",request.body);
             let inputs = request.body;
               inputs.siteId ='1';
