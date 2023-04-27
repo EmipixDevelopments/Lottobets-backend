@@ -1169,10 +1169,13 @@ module.exports = function(model,config){
                     console.log("finalbalance===",finalbalance)
                     finalbalance=Object.values(JSON.parse(JSON.stringify(finalbalance[0])));
                     finalbalance= finalbalance[0].IAV_Balance;
+                    console.log("finalbalance=1==",finalbalance)
                     let iav_balance = Math.round(finalbalance) ;
+                    console.log("finalbalance=2==",finalbalance)
                     if(parseFloat(iav_balance)>0 && parseFloat(withDrawAmount[0].balance)>0){
                         iav_balance = parseFloat(iav_balance) - parseFloat(withDrawAmount[0].balance) ;
                     }
+                    console.log("finalbalance==3=",iav_balance)
                     if (result) {
                         let sql_iav_running = "INSERT INTO iav_running (IAV_number,last_running_iav,description,siteId,userId,timestamp) VALUES(" + sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(iav_balance) + "," + sequelize_luckynumberint.escape(result.insertId) + "," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(today) + ")";
                          sequelize_luckynumberint.query(sql_iav_running, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
