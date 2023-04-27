@@ -1264,8 +1264,7 @@ module.exports = function(model,config){
 
                 }
             }
-            await tra_lucky.commit();
-            await tra_cngapi.commit();
+            
             if(result_end_point_url.length){
                 
                     if(result_end_point_url[0].end_point_url){
