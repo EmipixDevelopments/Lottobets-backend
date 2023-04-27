@@ -523,6 +523,8 @@ module.exports = function(model,config){
             //console.log("userSql",userSql);
                 let userResult = await sequelize_luckynumberint.query(userSql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                 if (!userResult.length > 0) {
+                    await tra_lucky.commit();
+                    await tra_cngapi.commit();
                     return response.send({
                         status: "fail",
                         message: "User not found"
@@ -536,6 +538,8 @@ module.exports = function(model,config){
             let profileSql = "SELECT TimeZone,ProfileName,Country from " + config.Table.LOTTOLIST + " where ID=" + sequelize_cngapi.escape(inputs.profileId);
             let profileResult = await sequelize_cngapi.query(profileSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
             if (!profileResult.length > 0) {
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
                 return response.send({
                     status: "fail",
                     message: "Profile not found"
@@ -960,13 +964,16 @@ module.exports = function(model,config){
                         "bonusPickArr": bonusnewArr
                     };
                         console.log("finalResponse===",finalResponse)
-
+                    await tra_lucky.commit();
+                    await tra_cngapi.commit();
                     return response.send({
                         status: "success",
                         result: finalResponse,
                         message: "Market found successfully"
                     });
                 } else {
+                    await tra_lucky.commit();
+                    await tra_cngapi.commit();
                     return response.send({
                         status: "fail",
                         status_code: 422,
@@ -974,6 +981,8 @@ module.exports = function(model,config){
                     });
                 } //End : Get market data logic
             } else {
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
                 return response.send({
                     status: "fail",
                     status_code: 422,
@@ -1018,6 +1027,8 @@ module.exports = function(model,config){
             let sql_block_iav_check = "SELECT iav FROM " + config.Table.BLOCK_IAV_LIST + " WHERE iav="+sequelize_luckynumberint.escape(inputs.IAV)+"  LIMIT 1";
             let result_block_iav = await sequelize_luckynumberint.query(sql_block_iav_check, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
             if(result_block_iav.length>0){
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
                 return res.send({
                     status: 'fail',
                     message: "Your IAV Number has Blocked..!",
@@ -1043,6 +1054,8 @@ module.exports = function(model,config){
 
             let result_lotto_check = await sequelize_cngapi.query(sql_lotto_result_check, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
             if(result_lotto_check.length>0){
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
                 return res.send({
                     status: 'fail',
                     message: "Event result already declared",
@@ -1056,6 +1069,8 @@ module.exports = function(model,config){
             finalbalance= finalbalance[0].IAV_Balance;
             finalbalance = Math.round(finalbalance) ;
            if(verifyBetAmount>finalbalance){
+            await tra_lucky.commit();
+                await tra_cngapi.commit();
                 return res.send({
                     status: 'fail',
                     message: "Insufficient IAV balance",
@@ -1170,7 +1185,8 @@ module.exports = function(model,config){
                     }
                      sql2 = "INSERT INTO " + config.Table.MOBILE_USER_BET_HISTORY + " (regSelection,bonusSelection,sitename,IAV,eventId,lottoName,NPV,eventDrawTime,eventDay,marketId,winValue,stake_value,marketName,status,siteid,country,userId,lottoId,credit,mobile_betType,created_at) VALUES("+sequelize_luckynumberint.escape(inputs.regSelection[i])+","+sequelize_luckynumberint.escape(inputs.bonusSelection[i])+","+sequelize_luckynumberint.escape(siteData[0].SiteName)+","+ sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(inputs.eventId) + "," + sequelize_luckynumberint.escape(inputs.lottoName) + "," + sequelize_luckynumberint.escape(npv) + "," + sequelize_luckynumberint.escape(inputs.eventDrawTime) + "," + sequelize_luckynumberint.escape(inputs.eventDay) + "," + sequelize_luckynumberint.escape(inputs.marketId) + "," + sequelize_luckynumberint.escape(inputs.winValue[i]) + "," + sequelize_luckynumberint.escape(inputs.stake_value[i]) + "," + sequelize_luckynumberint.escape(inputs.marketName) + ",'pending'," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.country) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(inputs.lottoId) + "," + sequelize_luckynumberint.escape(iavBalance) + "," + sequelize_luckynumberint.escape(inputs.betType) + "," + sequelize_luckynumberint.escape(today) + ")";
                     let result2 =  sequelize_luckynumberint.query(sql2, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
-
+                    await tra_lucky.commit();
+                    await tra_cngapi.commit();
 
                     ////////////////json file data///////////////////
                     let d3 = new Date(new Date().getTime() + (timezone*1000*60*60));
@@ -1314,6 +1330,12 @@ module.exports = function(model,config){
         } catch (e) {
             console.log("error ",e);
             //Sys.Log.eror("Error in addIAV :", e);
+            if(tra_lucky) {
+               await tra_lucky.rollback();
+            }
+            if(tra_cngapi) {
+               await tra_cngapi.rollback();
+            }
             return res.send({
                 status: 'fail',
                 message: e,
