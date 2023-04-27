@@ -1166,6 +1166,7 @@ module.exports = function(model,config){
                     
                     let sql_balance = `CALL GetIAVBalance(`+inputs.IAV+`)`; 
                     let finalbalance= await sequelize_luckynumberint.query(sql_balance, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                    console.log("finalbalance===",finalbalance)
                     finalbalance=Object.values(JSON.parse(JSON.stringify(finalbalance[0])));
                     finalbalance= finalbalance[0].IAV_Balance;
                     let iav_balance = Math.round(finalbalance) ;
