@@ -29,11 +29,12 @@ module.exports = function(model,config){
                         }, jwtcofig.secret, {
                             //expiresIn: 60 * 60 * 24 // expires in 24 hours
                         });
-                        sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+",mobile_ip="+sequelize_luckynumberint.escape(ip)+" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
+                        let walletId = (result[0]['walletId'])?result[0]['walletId']: await module.walletId(helper.randomNumber(3));
+                        sql = "UPDATE " + config.Table.USER + "  SET token ="+sequelize_luckynumberint.escape(token)+",mobile_ip="+sequelize_luckynumberint.escape(ip)+", walletId="+ (result[0]['walletId'])?result[0]['walletId']:walletId +" WHERE userId="+sequelize_luckynumberint.escape(result[0].userId)+"";
                         await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.UPDATE});
                         result[0]['mobile_ip']=ip;
                         result[0]['token']=token;
-                        result[0]['walletId']=(result[0]['walletId'])?result[0]['walletId']:'';
+                        result[0]['walletId']=(result[0]['walletId'])?result[0]['walletId']:walletId;
                         await tra_lucky.commit();
                         //sequelize_luckynumberint.release();
                         return response.send({
@@ -182,7 +183,7 @@ module.exports = function(model,config){
             if (res.length) {
                 var custom_code = [];
                 while (custom_code.length < 1) {
-                    var r = await helper.randomNumber(2);
+                    var r = await helper.randomNumber(3);
                     if (custom_code.indexOf(r) === -1) custom_code.push(r);
                 }
                 await module.walletId(custom_code[0]);
