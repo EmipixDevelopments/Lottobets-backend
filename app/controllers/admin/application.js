@@ -1054,7 +1054,8 @@ module.exports = function(model,config){
 
             let result_lotto_check = await sequelize_cngapi.query(sql_lotto_result_check, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
             if(result_lotto_check.length>0){
-                
+                await tra_lucky.commit();
+                await tra_cngapi.commit();
                 return res.send({
                     status: 'fail',
                     message: "Event result already declared",
@@ -1178,7 +1179,7 @@ module.exports = function(model,config){
                     console.log("finalbalance==3=",iav_balance)
                     if (result) {
                         let sql_iav_running = "INSERT INTO iav_running (IAV_number,last_running_iav,description,siteId,userId,timestamp) VALUES(" + sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(iav_balance) + "," + sequelize_luckynumberint.escape(result.insertId) + "," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(today) + ")";
-                         sequelize_luckynumberint.query(sql_iav_running, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
+                        await sequelize_luckynumberint.query(sql_iav_running, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
                     }
 
                     let iavBalance = inputs.iavBalance;
@@ -1187,7 +1188,7 @@ module.exports = function(model,config){
                         iavBalance = iavBalance - inputs.stake_value[i];
                     }
                      sql2 = "INSERT INTO " + config.Table.MOBILE_USER_BET_HISTORY + " (regSelection,bonusSelection,sitename,IAV,eventId,lottoName,NPV,eventDrawTime,eventDay,marketId,winValue,stake_value,marketName,status,siteid,country,userId,lottoId,credit,mobile_betType,created_at) VALUES("+sequelize_luckynumberint.escape(inputs.regSelection[i])+","+sequelize_luckynumberint.escape(inputs.bonusSelection[i])+","+sequelize_luckynumberint.escape(siteData[0].SiteName)+","+ sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(inputs.eventId) + "," + sequelize_luckynumberint.escape(inputs.lottoName) + "," + sequelize_luckynumberint.escape(npv) + "," + sequelize_luckynumberint.escape(inputs.eventDrawTime) + "," + sequelize_luckynumberint.escape(inputs.eventDay) + "," + sequelize_luckynumberint.escape(inputs.marketId) + "," + sequelize_luckynumberint.escape(inputs.winValue[i]) + "," + sequelize_luckynumberint.escape(inputs.stake_value[i]) + "," + sequelize_luckynumberint.escape(inputs.marketName) + ",'pending'," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.country) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(inputs.lottoId) + "," + sequelize_luckynumberint.escape(iavBalance) + "," + sequelize_luckynumberint.escape(inputs.betType) + "," + sequelize_luckynumberint.escape(today) + ")";
-                    let result2 =  sequelize_luckynumberint.query(sql2, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
+                    let result2 =  await sequelize_luckynumberint.query(sql2, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
                     
 
                     ////////////////json file data///////////////////
@@ -1264,7 +1265,8 @@ module.exports = function(model,config){
 
                 }
             }
-            
+            await tra_lucky.commit();
+            await tra_cngapi.commit();
             if(result_end_point_url.length){
                 
                     if(result_end_point_url[0].end_point_url){
