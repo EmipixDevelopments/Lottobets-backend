@@ -36,6 +36,13 @@ module.exports = function(model,config){
                         result[0]['mobile_ip']=ip;
                         result[0]['token']=token;
                         result[0]['walletId']=walletId;
+                        
+                        let sql2 = `CALL GetIAVBalance(`+walletId+`)`; 
+                        let finalbalance= await sequelize_luckynumberint.query(sql2, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                        finalbalance=Object.values(JSON.parse(JSON.stringify(finalbalance[0])));
+                        finalbalance= finalbalance[0].IAV_Balance;
+                        finalbalance = Math.round(finalbalance) ;
+                        result[0]['walletBalance']=finalbalance;
                         await tra_lucky.commit();
                         //sequelize_luckynumberint.release();
                         return response.send({
