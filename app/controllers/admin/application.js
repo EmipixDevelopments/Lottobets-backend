@@ -1120,6 +1120,7 @@ module.exports = function(model,config){
                 let attachments = [];
                 let attachments2 = [];
                 let betHistory = [];
+                let iavBalance = inputs.iavBalance;
                 for (let i = 0; i < arrayLength; i++) {
                 if(inputs.winValue[i]!='' && inputs.stake_value[i]!='' && inputs.winValue[i]!='undefined' && inputs.stake_value[i]!='undefined' && inputs.winValue[i]!='null' && inputs.stake_value[i]!='null' && inputs.winValue[i]!=null && inputs.stake_value[i]!=null && inputs.winValue[i]!=undefined && inputs.stake_value[i]!=undefined)
                 {
@@ -1175,7 +1176,7 @@ module.exports = function(model,config){
                         await sequelize_luckynumberint.query(sql_iav_running, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
                     }
 
-                    let iavBalance = inputs.iavBalance;
+                    
                     
                     if (i > 0) {
                         iavBalance = iavBalance - inputs.stake_value[i];
