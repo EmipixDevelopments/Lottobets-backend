@@ -1260,6 +1260,11 @@ module.exports = function(model,config){
 
                 }
             }
+            let walletSql = `CALL GetIAVBalance(`+IAVNumber+`)`; 
+            let walletBalance= await sequelize_luckynumberint.query(walletSql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+            walletBalance=Object.values(JSON.parse(JSON.stringify(walletBalance[0])));
+            walletBalance= walletBalance[0].IAV_Balance;
+            walletBalance = Math.round(walletBalance) ;
             await tra_lucky.commit();
             await tra_cngapi.commit();
             const sum = inputs.stake_value.reduce((partialSum, a) => partialSum + Number(a), 0);
@@ -1268,6 +1273,7 @@ module.exports = function(model,config){
                     result:betHistory,
                     message: "Bet confirm successfully",
                     total:sum,
+                    walletBalance:walletBalance,
                     status_code: 200
                 }).end();
             if(result_end_point_url.length){
