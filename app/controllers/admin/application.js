@@ -1260,10 +1260,12 @@ module.exports = function(model,config){
             }
             await tra_lucky.commit();
             await tra_cngapi.commit();
+            const sum = inputs.stake_value.reduce((partialSum, a) => partialSum + Number(a), 0);
             res.send({
                     status: 'success',
                     result:betHistory,
                     message: "Bet confirm successfully",
+                    total:sum,
                     status_code: 200
                 }).end();
             if(result_end_point_url.length){
