@@ -1262,6 +1262,7 @@ module.exports = function(model,config){
             await tra_cngapi.commit();
             res.send({
                     status: 'success',
+                    result:betHistory,
                     message: "Bet confirm successfully",
                     status_code: 200
                 }).end();
