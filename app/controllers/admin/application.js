@@ -1097,20 +1097,12 @@ module.exports = function(model,config){
                     var timezone='+2';
                 }
                 
-                
-                
-                
-
                 let d2 = new Date(new Date().getTime() + (timezone*1000*60*60));
                 let d = new Date(d2).toISOString().replace(/T/, ' ').replace(/\..+/, '');
                 let today =  dateFormat(d, "yyyy-mm-dd HH:MM:ss");
                 console.log("today",today);
                 
-                res.send({
-                    status: 'success',
-                    message: "Bet confirm successfully",
-                    status_code: 200
-                }).end();
+                
                 let withDrawAmount =  "SELECT sum(last_running_iav) AS balance FROM  "+ config.Table.IAV_RUNNING +" WHERE IAV_number='"+inputs.IAV+"' AND refundDate IS NOT NULL order by id desc";
                  withDrawAmount = await sequelize_luckynumberint.query(withDrawAmount, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
 
@@ -1127,7 +1119,7 @@ module.exports = function(model,config){
                 kiosk_setting = await sequelize_luckynumberint.query(kiosk_setting, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                 let attachments = [];
                 let attachments2 = [];
-
+                let betHistory = [];
                 for (let i = 0; i < arrayLength; i++) {
                 if(inputs.winValue[i]!='' && inputs.stake_value[i]!='' && inputs.winValue[i]!='undefined' && inputs.stake_value[i]!='undefined' && inputs.winValue[i]!='null' && inputs.stake_value[i]!='null' && inputs.winValue[i]!=null && inputs.stake_value[i]!=null && inputs.winValue[i]!=undefined && inputs.stake_value[i]!=undefined)
                 {
@@ -1160,6 +1152,7 @@ module.exports = function(model,config){
                     if (typeof inputs.regSelection[i] === 'undefined') {
                         inputs.regSelection[i] = "";
                     }
+                    betHistory.push({"ball":(inputs.regSelection[i])?inputs.regSelection[i]:inputs.regSelection[i],"market":inputs.marketName[i],"stake":inputs.stake_value[i],"winValue":inputs.winValue[i],ref:npv});
                     let sql = "INSERT INTO " + config.Table.PLAYED_EVENT_DETAILS + " (IAV,eventId,lottoName,NPV,eventDrawTime,eventDay,regSelection,bonusSelection,marketId,winValue,stake_value,TotalNoSelection,status,siteid,country,Multi_NPV_No,userId,lottoId,createdate,mobile_betType) VALUES(" + sequelize_luckynumberint.escape(inputs.IAV) + "," + sequelize_luckynumberint.escape(inputs.eventId) + "," + sequelize_luckynumberint.escape(inputs.lottoName) + "," + sequelize_luckynumberint.escape(npv) + "," + sequelize_luckynumberint.escape(inputs.eventDrawTime) + "," + sequelize_luckynumberint.escape(inputs.eventDay) + "," + sequelize_luckynumberint.escape(inputs.regSelection[i]) + "," + sequelize_luckynumberint.escape(inputs.bonusSelection[i]) + "," + sequelize_luckynumberint.escape(inputs.marketId[i]) + "," + sequelize_luckynumberint.escape(inputs.winValue[i]) + "," + sequelize_luckynumberint.escape(inputs.stake_value[i]) + "," + sequelize_luckynumberint.escape(inputs.marketName[i]) + ",'pending'," + sequelize_luckynumberint.escape(inputs.siteId) + "," + sequelize_luckynumberint.escape(inputs.country) + "," + sequelize_luckynumberint.escape(Multi_NPV_No) + "," + sequelize_luckynumberint.escape(inputs.userId) + "," + sequelize_luckynumberint.escape(inputs.lottoId) + ",'" + today + "'," + sequelize_luckynumberint.escape(inputs.betType[i]) + ")";
                     //console.log('===',sql)
                     let result =  await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
@@ -1267,6 +1260,11 @@ module.exports = function(model,config){
             }
             await tra_lucky.commit();
             await tra_cngapi.commit();
+            res.send({
+                    status: 'success',
+                    message: "Bet confirm successfully",
+                    status_code: 200
+                }).end();
             if(result_end_point_url.length){
                 
                     if(result_end_point_url[0].end_point_url){
