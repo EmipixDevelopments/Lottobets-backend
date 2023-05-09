@@ -6,7 +6,7 @@ var config = {
 	},
 	production: {
 		"port": 3000,
-		"baseUrl": "http://3.120.231.131:3000",
+		"baseUrl": "https://lottobets.co",
 		//"rootpath": "/var/www/html",
 		"rootpath_npv": "/public_html/Lottobets-backend/npv/",
 		"lottobetsJwtAuth": "lottobetsJwtAuth123!@#",
