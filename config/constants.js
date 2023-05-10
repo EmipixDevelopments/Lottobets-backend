@@ -17,7 +17,7 @@ var config = {
 		"siteId": "1",
 		"twilio_accountSid" : "AC410eaddccc14b5133cd96e35e0b3e499",
 		"twilio_authToken" : "d80659226e00cd2022048e00e3198dd2",
-		"twilio_fromNumber" : "+27600703069"
+		"twilio_fromNumber" : "+27600703069",
 		"purchase_value": "10000",
 		"Table":{	USER:'mobile_user',
 					QUESTIONLIST:'question_list',
