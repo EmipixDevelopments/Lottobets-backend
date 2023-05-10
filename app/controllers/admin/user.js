@@ -150,10 +150,10 @@ module.exports = function(model,config){
                             let d3 = new Date(new Date().getTime() + (timezone*1000*60*60));
                             let djson = new Date(d3).toISOString().replace(/T/, ' ').replace(/\..+/, '');
                             let timestamp =  dateFormat(djson, "yyyy-mm-dd HH:MM:ss");
-                            sql = "INSERT INTO " + config.Table.IAV_PURCHASE + " (shiftID,purchase_value,purchase_type,IAV_number,IAV_type,createDate) VALUES("+sequelize_luckynumberint.escape(float_result[0].ShiftID)+","+sequelize_luckynumberint.escape(config.purchase_value)+","+sequelize_luckynumberint.escape('cash')+","+sequelize_luckynumberint.escape(walletId)+",'purchased',"+sequelize_luckynumberint.escape(config.timestamp)+") ";
+                            sql = "INSERT INTO " + config.Table.IAV_PURCHASE + " (shiftID,purchase_value,purchase_type,IAV_number,IAV_type,createDate) VALUES("+sequelize_luckynumberint.escape(float_result[0].ShiftID)+","+sequelize_luckynumberint.escape(config.purchase_value)+","+sequelize_luckynumberint.escape('cash')+","+sequelize_luckynumberint.escape(walletId)+",'purchased',"+sequelize_luckynumberint.escape(timestamp)+") ";
                             await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
 
-                            sql = "INSERT INTO " + config.Table.IAV_RUNNING + " (IAV_number,last_running_iav,timestamp) VALUES("+sequelize_luckynumberint.escape(walletId)+","+sequelize_luckynumberint.escape(config.purchase_value)+","+sequelize_luckynumberint.escape(config.timestamp)+") ";
+                            sql = "INSERT INTO " + config.Table.IAV_RUNNING + " (IAV_number,last_running_iav,timestamp) VALUES("+sequelize_luckynumberint.escape(walletId)+","+sequelize_luckynumberint.escape(config.purchase_value)+","+sequelize_luckynumberint.escape(timestamp)+") ";
                             await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
                         }
 
