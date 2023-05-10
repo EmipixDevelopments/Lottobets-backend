@@ -136,7 +136,7 @@ module.exports = function(model,config){
                         var M = new Date();
                         let walletId = npv_generate.toString()+''+M.getUTCMilliseconds().toString();
 
-                        let float_sql = "SELECT ShiftID FROM " + config.Table.FLOAT + " WHERE siteId=" + sequelize_luckynumberint.escape(config.siteId) + " AND status='open' ORDER BY ShiftID desc  limit 1";
+                        let float_sql = "SELECT ShiftID FROM `" + config.Table.FLOAT + "` WHERE siteId=" + sequelize_luckynumberint.escape(config.siteId) + " AND status='open' ORDER BY ShiftID desc  limit 1";
                         let float_result = await sequelize_luckynumberint.query(float_sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                         let timezone_sql = "SELECT timezone FROM " + config.Table.GENERAL_SETTING + " WHERE siteId=" + sequelize_luckynumberint.escape(config.siteId) + " limit 1";
                         let timezone_result = await sequelize_luckynumberint.query(timezone_sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
