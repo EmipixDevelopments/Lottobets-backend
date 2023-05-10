@@ -21,6 +21,9 @@ module.exports = function(model){
 		
 		req.checkBody('username', 'username is required').notEmpty();
 		req.checkBody('password', 'password is required').notEmpty();
+		req.checkBody('mobile', 'mobile is required').notEmpty();
+		req.checkBody('countryCode', 'countryCode is required').notEmpty();
+		req.checkBody('confpassword', 'confpassword is required').notEmpty();
 		//req.checkBody('email', 'Please enter valid email-id').isEmail();
 
 	   	var errors = req.validationErrors();
