@@ -15,6 +15,9 @@ var config = {
 		"jwt_secret": "appjwttokenfetyuhgbcase45w368w3a",
 		"jwt_expire": "365d",
 		"siteId": "1",
+		"twilio_accountSid" : "AC410eaddccc14b5133cd96e35e0b3e499",
+		"twilio_authToken" : "d80659226e00cd2022048e00e3198dd2",
+		"twilio_fromNumber" : "+27600703069"
 		"purchase_value": "10000",
 		"Table":{	USER:'mobile_user',
 					QUESTIONLIST:'question_list',

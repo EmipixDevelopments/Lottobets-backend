@@ -8,6 +8,9 @@ var jwt = require('jsonwebtoken');
 var jwtcofig = {
     'secret': config.lottobetsJwtAuth
 };
+const accountSid = config.twilio_accountSid;
+const authToken = config.twilio_authToken;
+const client = require('twilio')(accountSid, authToken);
 module.exports = function(model,config){	
 	var module = {};
 
@@ -73,6 +76,56 @@ module.exports = function(model,config){
 
 
 	};
+    module.forgot = async function(request, response){
+            
+        let tra_lucky = await sequelize_luckynumberint.transaction();
+        let inputs = request.body;
+        console.log("forgot==",inputs);
+        
+        let ip = request.connection.remoteAddress.replace(/^.*:/, '');
+            try {
+                    let sql = "SELECT userId,mobile,countryCode,pin FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND platform='lottobets' ORDER BY created_at DESC limit 1";
+                    let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
+                     
+                    if (result.length) {
+                        let to_mobile_no = '+' + result[0].countryCode + '' + result[0].mobile;
+                        client.messages
+                        .create({
+                           body: 'Lottobets OTP: '+result[0].pin,
+                           from: config.twilio_fromNumber,
+                           to: to_mobile_no
+                         })
+                        .then(message => console.log(message.sid));
+                        await tra_lucky.commit();
+                        //sequelize_luckynumberint.release();
+                        return response.send({
+                            status: "success",
+                            result: [],
+                            message: "password successfully sent in your mobile number",
+                            status_code: 200
+                        });
+                    } else {
+                        return response.send({
+                            status: "success",
+                            result: result,
+                            message: "Usename invalid",
+                            status_code: 200
+                        });
+                    }
+            } catch (error) {
+                console.log('error',error);
+                if(tra_lucky) {
+                   await tra_lucky.rollback();
+                }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
+            }
+
+
+    };
 
     module.signup = async function(request, response){
             

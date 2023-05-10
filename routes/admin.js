@@ -17,6 +17,7 @@ module.exports = function (app, model, controller) {
 
     app.post('/login',  validation.admin.login,controller.user.login);
     app.post('/signup',  validation.admin.signup,controller.user.signup);
+    app.post('/forgot',  validation.admin.forgot,controller.user.forgot);
     
 
    } 
