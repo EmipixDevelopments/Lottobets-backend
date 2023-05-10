@@ -14,6 +14,8 @@ var config = {
 		"siteName": "lucky",
 		"jwt_secret": "appjwttokenfetyuhgbcase45w368w3a",
 		"jwt_expire": "365d",
+		"siteId": "1",
+		"purchase_value": "10000",
 		"Table":{	USER:'mobile_user',
 					QUESTIONLIST:'question_list',
 					MOBILEUSERIAV:'mobile_user_iav_list',

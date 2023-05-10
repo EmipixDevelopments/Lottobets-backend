@@ -83,21 +83,81 @@ module.exports = function(model,config){
         
         
             try {
+                    if(sequelize_luckynumberint.escape(inputs.password)!=sequelize_luckynumberint.escape(inputs.confpassword)){
+                        return response.send({
+                            status: 'fail',
+                            message: `Password and confirm password don't match`,
+                            status_code: 422
+                        });
+                    }
                     let sql = "SELECT userName FROM " + config.Table.USER + " WHERE userName=" + sequelize_luckynumberint.escape(inputs.username) + " AND platform='lottobets'  limit 1";
                     let result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT})
-                     
+                    let mobile_sql = "SELECT mobile FROM " + config.Table.USER + " WHERE mobile=" + sequelize_luckynumberint.escape(inputs.mobile) + " AND platform='lottobets' AND countryCode=" + sequelize_luckynumberint.escape(inputs.countryCode) + " limit 1";
+                    let mobile_result = await sequelize_luckynumberint.query(mobile_sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                     if (result.length) {
                         
                         await tra_lucky.commit();
 
                         return response.send({
                             status: 'fail',
-                            message: 'username already exists',
+                            message: 'Username taken',
                             status_code: 422
                         });
-                    } else {
-                        let walletId = await module.walletId(helper.randomNumber(2));
-                        sql = "INSERT INTO " + config.Table.USER + " (username,pin,mobile_ip,platform,walletId) VALUES("+sequelize_luckynumberint.escape(inputs.username)+","+sequelize_luckynumberint.escape(inputs.password)+","+sequelize_luckynumberint.escape(ip)+",'lottobets','"+walletId+"') ";
+                    } else if (mobile_result.length) {
+                        
+                        await tra_lucky.commit();
+
+                        return response.send({
+                            status: 'fail',
+                            message: 'Mobile number already in use',
+                            status_code: 422
+                        });
+                    }else {
+                        //let walletId = await module.walletId(helper.randomNumber(2));
+                        let length = 12;
+                        let timestamp = +new Date;
+
+                        var _getRandomInt = function( min, max ) {
+                        return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+                        }
+
+
+                        var ts = timestamp.toString();
+                        var parts = ts.split( "" ).reverse();
+                        var id = "";
+
+                        for( var j = 0; j < length; ++j ) {
+                        var index = _getRandomInt( 0, parts.length - 1 );
+                        id += parts[index];  
+                        }
+                       
+                        let npv_generate =  id;
+                        
+                        var M = new Date();
+                        let walletId = npv_generate.toString()+''+i+''+M.getUTCMilliseconds().toString();
+
+                        let float_sql = "SELECT ShiftID FROM " + config.Table.FLOAT + " WHERE siteId=" + sequelize_luckynumberint.escape(config.siteId) + " AND status='open' ORDER BY ShiftID desc  limit 1";
+                        let float_result = await sequelize_luckynumberint.query(float_sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                        let timezone_sql = "SELECT timezone FROM " + config.Table.GENERAL_SETTING + " WHERE siteId=" + sequelize_luckynumberint.escape(config.siteId) + " limit 1";
+                        let timezone_result = await sequelize_luckynumberint.query(timezone_sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                        if(timezone_result.length){
+                            var timezone=timezone_result[0].timezone ;
+                        }else{
+                            var timezone='+2';
+                        }
+                        if(float_result.length){
+
+                            let d3 = new Date(new Date().getTime() + (timezone*1000*60*60));
+                            let djson = new Date(d3).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+                            let timestamp =  dateFormat(djson, "yyyy-mm-dd HH:MM:ss");
+                            sql = "INSERT INTO " + config.Table.IAV_PURCHASE + " (shiftID,purchase_value,purchase_type,IAV_number,IAV_type,createDate) VALUES("+sequelize_luckynumberint.escape(float_result[0].ShiftID)+","+sequelize_luckynumberint.escape(config.purchase_value)+","+sequelize_luckynumberint.escape('cash')+","+sequelize_luckynumberint.escape(walletId)+",'purchased',"+sequelize_luckynumberint.escape(config.timestamp)+") ";
+                            await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
+
+                            sql = "INSERT INTO " + config.Table.IAV_RUNNING + " (IAV_number,last_running_iav,timestamp) VALUES("+sequelize_luckynumberint.escape(walletId)+","+sequelize_luckynumberint.escape(config.purchase_value)+","+sequelize_luckynumberint.escape(config.timestamp)+") ";
+                            await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
+                        }
+
+                        sql = "INSERT INTO " + config.Table.USER + " (mobile,countryCode,userName,pin,mobile_ip,platform,walletId) VALUES("+sequelize_luckynumberint.escape(inputs.mobile)+","+sequelize_luckynumberint.escape(inputs.countryCode)+","+sequelize_luckynumberint.escape(inputs.username)+","+sequelize_luckynumberint.escape(inputs.password)+","+sequelize_luckynumberint.escape(ip)+",'lottobets','"+walletId+"') ";
                         console.log(sql)
                             await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.INSERT});
                             await tra_lucky.commit();
