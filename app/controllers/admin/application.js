@@ -967,7 +967,7 @@ module.exports = function(model,config){
                         "regular": regnewArr,
                         "bonusPickArr": bonusnewArr
                     };
-                        console.log("finalResponse===",finalResponse)
+                        //console.log("finalResponse===",finalResponse)
                     await tra_lucky.commit();
                     await tra_cngapi.commit();
                     return response.send({
