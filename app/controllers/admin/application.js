@@ -377,8 +377,6 @@ module.exports = function(model,config){
             let search='';
             
             try {
-                
-                
                 let sql = "SELECT country,dialling_code_1 as countryCode, abv1 as abbreviation FROM countries";
                 let result = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
                 for(let i=0;i<result.length;i++){
