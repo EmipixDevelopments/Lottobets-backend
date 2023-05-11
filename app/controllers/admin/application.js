@@ -234,6 +234,8 @@ module.exports = function(model,config){
                 for(let i=0;i<popular_game.length;i++){
                     popular_game[i]['countryFlag'] = config.baseUrl+'/flags/'+popular_game[i].FlagAbv+'.png';
                     popular_game[i]['colorimage'] = config.baseUrl+'/Lotto/'+popular_game[i].colorimage;
+                    popular_game[i]['jackpotValue'] = (popular_game[i].jackpotValue)?popular_game[i].jackpotValue:'';
+                    popular_game[i]['jackpotDate'] = (popular_game[i].jackpotDate)?popular_game[i].jackpotDate:'';
                 }
                 
                 await tra_lucky.commit();
