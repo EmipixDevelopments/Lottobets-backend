@@ -370,6 +370,41 @@ module.exports = function(model,config){
             }
 
     };
+    module.country = async function(request, response){
+            
+            let tra_lucky = await sequelize_luckynumberint.transaction();
+            console.log("homeScreen=",request.body);
+            let search='';
+            
+            try {
+                
+                
+                let sql = "SELECT country,dialling_code_1 as countryCode, abv1 as abbreviation FROM countries";
+                let result = await sequelize_cngapi.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                for(let i=0;i<result.length;i++){
+                    result[i]['abbreviation']=config.baseUrl+'/flags/'+result[i].abbreviation+'.png';
+                }
+                await tra_lucky.commit();
+                return response.send({
+                    status: "success",
+                    result: result,
+                    message: "Data found successfully",
+                    status_code: 200
+                });
+
+                 
+            } catch (error) {
+                if(tra_lucky) {
+                   await tra_lucky.rollback();
+                }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
+            }
+
+    };
     module.countryWiseLottoList = async function(request, response){
             
             let tra_lucky = await sequelize_luckynumberint.transaction();

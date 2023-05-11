@@ -7,6 +7,7 @@ module.exports = function (app, model, controller) {
     /*Start: homescreen routing*/
     app.post('/homeScreen',  controller.application.homeScreen);
     app.post('/getCountry',  controller.application.getCountry);
+    app.post('/country',  controller.application.country);
     app.post('/nextDraw',  controller.application.nextDraw);
     app.post('/popularGames',  controller.application.popularGames);
     app.post('/favourite',  controller.application.favourite);
