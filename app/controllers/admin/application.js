@@ -1403,6 +1403,7 @@ module.exports = function(model,config){
                 await tra_lucky.commit();
                 let fav_lotto = "SELECT ped.*,DATE_FORMAT(ped.eventDrawTime,'%Y-%m-%d %H:%i:%s') AS eventDrawTime,DATE_FORMAT(ped.created_at,'%Y-%m-%d %H:%i:%s') AS created_at,rel.colorimage,cl.FlagAbv,TO_BASE64(ped.NPV) AS BASE64_ENCODED_NPV FROM " + config.Table.MOBILE_USER_BET_HISTORY + " ped left join " + config.Table.CRON_LOTTOLIST + " rel on ped.lottoId=rel.profileId left join " + config.Table.CUNTRYLIST + " cl ON rel.CountryId=cl.id WHERE ped.userId='" + inputs.userId + "'  and DATE(created_at) >= DATE(NOW()) - INTERVAL 7 DAY ORDER BY ped.created_at DESC";
                 let result_fav_lotto = await sequelize_luckynumberint.query(fav_lotto, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                await tra_lucky.commit();
                 return response.send({
                     status: "success",
                     result: result_fav_lotto,
