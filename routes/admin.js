@@ -11,6 +11,7 @@ module.exports = function (app, model, controller) {
     app.post('/nextDraw',  controller.application.nextDraw);
     app.post('/popularGames',  controller.application.popularGames);
     app.post('/favourite',  controller.application.favourite);
+    app.post('/betHistory',  controller.application.betHistory);
     app.post('/countryWiseLottoList',validation.admin.countryWiseLottoList, controller.application.countryWiseLottoList);
     app.post('/addtoFavourite',  validation.admin.addtoFavourite,controller.user.addtoFavourite);
     app.post('/lottoMarket',  validation.admin.lottoMarket,controller.application.lottoMarket);
