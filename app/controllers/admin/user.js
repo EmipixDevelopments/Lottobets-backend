@@ -91,7 +91,7 @@ module.exports = function(model,config){
                         let to_mobile_no = '+' + result[0].countryCode + '' + result[0].mobile;
                         client.messages
                         .create({
-                           body: 'Lottobets Password: '+result[0].pin,
+                           body: 'Lottobets OTP: '+result[0].pin,
                            from: config.twilio_fromNumber,
                            to: to_mobile_no
                          })
