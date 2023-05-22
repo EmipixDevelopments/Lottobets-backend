@@ -27,7 +27,7 @@ module.exports = function (dataBaseType) {
 		host: host,
 		dialect: 'mysql',
 		operatorsAliases: false,
-		logging: true, // true when you want to seen query 
+		logging: false, // true when you want to seen query 
 		port: port,
 		pool: {
 			max: 10000,
