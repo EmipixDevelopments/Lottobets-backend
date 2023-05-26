@@ -217,7 +217,7 @@ module.exports = function(model,config){
                             return response.send({
                                 status: "success",
                                 result: inputs,
-                                message: "signUp successfully",
+                                message: "Registration Successful",
                                 status_code: 200
                             });
                     }
