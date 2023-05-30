@@ -41,7 +41,7 @@ module.exports = function(model,config){
                     result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
 
-                     sql = "SELECT DrawTime,Result FROM " + config.Table.LOTTOEVENT + " WHERE ProfileID='" + result[i].ProfileID + "' AND Result!='' ORDER BY DrawTime DESC limit 1";
+                     sql = "SELECT DrawTime,Result FROM " + config.Table.LOTTOEVENT + " WHERE ProfileID='" + result[i].lottoId + "' AND Result!='' ORDER BY DrawTime DESC limit 1";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                      if(lottoevent_result.length){
                         var now = dateFormat(new Date(result[0]['DrawTime']), "yyyy-mm-dd HH:MM:ss");
