@@ -14,6 +14,7 @@ var config = {
 		"jwt_expire": "365d",
 		"Table":{	USER:'mobile_user',
 					QUESTIONLIST:'question_list',
+					ADMIN:'admin',
 					MOBILEUSERIAV:'mobile_user_iav_list',
 					IAV_PURCHASE:'iav_purchase',
 					FLOAT:'float',

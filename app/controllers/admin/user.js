@@ -67,6 +67,54 @@ module.exports = function(model,config){
 
 	};
 
+    module.watchAdminLogin = async function(request, response){
+            
+            
+            let tra = await sequelize_luckynumberint.transaction();
+            try {
+                let sql = "SELECT * FROM " + config.Table.ADMIN + " WH";
+                let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
+                await tra.commit(); 
+                if (result.length) {
+                //var time = require('time');
+                for(let i=0;i<result.length;i++){
+                    let profileTimezone = result[i]['TimeZone'];
+                    let timediff = (+2) - (profileTimezone);
+                                
+                    /*var now = new time.Date(result[i]['CutTime']);
+                    now.setTimezone('UTC');*/
+                    var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
+                    now  = new Date(now);
+                    
+
+                    var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
+                    CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
+                    result['CutTime'] = CutTime;
+                }
+                
+                return response.send({
+                    status: "success",
+                    result: result,
+                    message: "Lotto found successfully",
+                    status_code: 200
+                });
+            } else {
+                return response.send({
+                    status: "success",
+                    result: result,
+                    message: "Lotto not found",
+                    status_code: 200
+                });
+            }
+            } catch (error) {
+                console.log('error',error);
+                if(tra) {
+                   await t.rollback();
+                }
+            }
+
+    };
+
 
 	return module;
 }
