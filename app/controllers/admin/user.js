@@ -73,7 +73,7 @@ module.exports = function(model,config){
             let tra = await sequelize_luckynumberint.transaction();
             let input = request.body;
             try {
-                let sql = "SELECT username,password,fullname FROM " + config.Table.ADMIN + " WHERE username="+sequelize_luckynumberint.escape(input.username)+" AND password="+sequelize_luckynumberint.escape(input.password)+" limit 1";
+                let sql = "SELECT id,username,password,fullname FROM " + config.Table.ADMIN + " WHERE username="+sequelize_luckynumberint.escape(input.username)+" AND password="+sequelize_luckynumberint.escape(input.password)+" limit 1";
                 //console.log(sql)
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                 
