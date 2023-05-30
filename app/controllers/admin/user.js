@@ -72,7 +72,7 @@ module.exports = function(model,config){
             
             let tra = await sequelize_luckynumberint.transaction();
             try {
-                let sql = "SELECT * FROM " + config.Table.ADMIN + " WH";
+                let sql = "SELECT * FROM " + config.Table.ADMIN + " WHERE username";
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                 await tra.commit(); 
                 if (result.length) {
