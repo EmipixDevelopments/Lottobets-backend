@@ -71,46 +71,37 @@ module.exports = function(model,config){
             
             
             let tra = await sequelize_luckynumberint.transaction();
+            let input = request.body;
             try {
-                let sql = "SELECT * FROM " + config.Table.ADMIN + " WHERE username";
+                let sql = "SELECT username,password,fullname FROM " + config.Table.ADMIN + " WHERE username='"+sequelize_luckynumberint.escape(input.username)+"' AND password='"+sequelize_luckynumberint.escape(input.username)+"' limit 1";
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
-                await tra.commit(); 
-                if (result.length) {
-                //var time = require('time');
-                for(let i=0;i<result.length;i++){
-                    let profileTimezone = result[i]['TimeZone'];
-                    let timediff = (+2) - (profileTimezone);
-                                
-                    /*var now = new time.Date(result[i]['CutTime']);
-                    now.setTimezone('UTC');*/
-                    var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
-                    now  = new Date(now);
-                    
-
-                    var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
-                    CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
-                    result['CutTime'] = CutTime;
-                }
                 
-                return response.send({
-                    status: "success",
-                    result: result,
-                    message: "Lotto found successfully",
-                    status_code: 200
-                });
-            } else {
-                return response.send({
-                    status: "success",
-                    result: result,
-                    message: "Lotto not found",
-                    status_code: 200
-                });
-            }
+                if (result.length) {
+                 await tra.commit(); 
+                    return response.send({
+                        status: "success",
+                        result: result[0],
+                        message: "Login successfully",
+                        status_code: 200
+                    });
+                } else {
+                    return response.send({
+                        status: "fail",
+                        result: '',
+                        message: "Username Or Password is Wrong",
+                        status_code: 422
+                    });
+                }
             } catch (error) {
                 console.log('error',error);
                 if(tra) {
                    await t.rollback();
                 }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
             }
 
     };
