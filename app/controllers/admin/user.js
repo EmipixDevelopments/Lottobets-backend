@@ -85,6 +85,7 @@ module.exports = function(model,config){
                         status_code: 200
                     });
                 } else {
+                    await tra.commit();
                     return response.send({
                         status: "fail",
                         result: '',
