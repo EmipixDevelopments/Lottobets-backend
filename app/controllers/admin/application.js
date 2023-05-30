@@ -81,7 +81,7 @@ module.exports = function(model,config){
                 console.log("current==",current);
 
                 var t = new Date();
-                t.setDate(t.getDate() + 8);
+                t.setDate(t.getDate() - 8);
                 var next = new Date(dateFormat(new Date(t), "yyyy-mm-dd HH:MM:ss",true));
                 next.setHours(next.getHours() + 2);
                 next = dateFormat(next, "yyyy-mm-dd HH:MM:ss");
