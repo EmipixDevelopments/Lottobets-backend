@@ -41,15 +41,11 @@ module.exports = function(model,config){
                     result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
 
-                     sql = "SELECT DrawTime,Result FROM " + config.Table.LOTTOEVENT + " WHERE ProfileID='" + result[i].lottoId + "' AND Result!='' ORDER BY DrawTime DESC limit 1";
+                     sql = "SELECT le.ProfileID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' ORDER BY le.DrawTime DESC limit 1";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                      if(lottoevent_result.length){
-                        var now = dateFormat(new Date(result[0]['DrawTime']), "yyyy-mm-dd HH:MM:ss");
-                        now  = new Date(now);
-                    
-                        var DrawTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
-                        DrawTime = dateFormat(DrawTime, "yyyy-mm-dd HH:MM:ss");
-                        result[i]['lastDrawTime'] = DrawTime;
+                       
+                        result[i]['lastDrawTime'] = lottoevent_result[0].DrawTime;
                         result[i]['lastResult'] = lottoevent_result[0].Result;
                      }else{
                         result[i]['lastDrawTime'] = '';
