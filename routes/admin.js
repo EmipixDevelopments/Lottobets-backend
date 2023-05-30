@@ -7,6 +7,6 @@ module.exports = function (app, model, controller) {
     /*Start: smsbomb routing*/
     app.get('/nextDraw',  controller.application.nextDraw);
     app.get('/listAllLotteries',  controller.application.listAllLotteries);
-    
+    app.post('/watchAdminLogin',  validation.admin.watchAdminLogin,controller.user.watchAdminLogin);
 
    } 
