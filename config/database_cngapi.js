@@ -15,7 +15,7 @@ module.exports = function (dataBaseType) {
 		password = 'Cn9Ap12o!7';
 		port = 3306;
 		//host = "live.serveftp.net";
-		host = "cng.luckynumbersinternet.ne";
+		host = "cng.luckynumbersinternet.net";
 	} else if (env == "localhost") {
 		database = "mlm";
 		username = "root";
