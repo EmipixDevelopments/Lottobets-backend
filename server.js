@@ -41,11 +41,11 @@ app.get('/', (req, res) => {
   
 });
 //backend Admin
-app.post('https://lottobets.co/watchAdminLogin', (req, res) => {
+app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   
-  if (res.status=='success') {
+  if (username !='') {
 	req.session.loggedIn = true;
 	req.session.username = username;
     res.redirect('/admin');
