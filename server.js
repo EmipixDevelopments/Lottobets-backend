@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
     // { lottoImage: 'images/unitedstatestexasallornothingnight.png',lottoName : 'All or Nothing Night', country: 'USA Texas', countryFlag : 'images/usa_flag.png', startTime : '00:00:00', startDate : '03 May 2023', watchLink : 'https://www.youtube.com/embed/El5nwzOEpDQ', drawLink: '' },
   // ];
 
-	axios.get('http://3.120.224.214:3002/nextdraw')
+	axios.get('https://lottobets.co/nextdrawWatch')
 	  .then(response => {
 		const data = response.data.result;
 		res.render('index', { data });
@@ -56,7 +56,7 @@ app.post('/login', (req, res) => {
 
 // app.use('/admin', express.static('./node_modules/admin-lte'));
 app.get('/admin', checkAuth, (req, res) => {
-	axios.get('http://3.120.224.214:3002/listAllLotteries')
+	axios.get('https://lottobets.co/listAllLotteriesWatch')
 	  .then(response => {
 		const data = response.data.result;
 		
