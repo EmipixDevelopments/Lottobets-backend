@@ -152,7 +152,7 @@ module.exports = function(model,config){
     module.watchLottoUpdate = async function(request, response){
             
             
-            let tra = await sequelize_luckynumberint.transaction();
+            let tra = await sequelize_cngapi.transaction();
             let input = request.body;
             try {
                 let sql = "SELECT ID FROM " + config.Table.LOTTOLIST + " WHERE ID="+sequelize_luckynumberint.escape(input.lottoId)+" limit 1";
