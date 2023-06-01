@@ -1,1 +1,329 @@
-function t(t,e,r){for(var n in e||(e={}),t)!t.hasOwnProperty(n)||!1===r&&e.hasOwnProperty(n)||(e[n]=t[n]);return e}function e(t,e,r,n,i){null==e&&-1==(e=t.search(/[^\s\u00a0]/))&&(e=t.length);for(var o=n||0,s=i||0;;){var a=t.indexOf("\t",o);if(a<0||a>=e)return s+(e-o);s+=a-o,s+=r-s%r,o=a+1}}function r(){}function n(e,n){var i;return Object.create?i=Object.create(e):(r.prototype=e,i=new r),n&&t(n,i),i}var i=function(t,e,r){this.pos=this.start=0,this.string=t,this.tabSize=e||8,this.lastColumnPos=this.lastColumnValue=0,this.lineStart=0,this.lineOracle=r};i.prototype.eol=function(){return this.pos>=this.string.length},i.prototype.sol=function(){return this.pos==this.lineStart},i.prototype.peek=function(){return this.string.charAt(this.pos)||void 0},i.prototype.next=function(){if(this.pos<this.string.length)return this.string.charAt(this.pos++)},i.prototype.eat=function(t){var e=this.string.charAt(this.pos);if("string"==typeof t?e==t:e&&(t.test?t.test(e):t(e)))return++this.pos,e},i.prototype.eatWhile=function(t){for(var e=this.pos;this.eat(t););return this.pos>e},i.prototype.eatSpace=function(){for(var t=this.pos;/[\s\u00a0]/.test(this.string.charAt(this.pos));)++this.pos;return this.pos>t},i.prototype.skipToEnd=function(){this.pos=this.string.length},i.prototype.skipTo=function(t){var e=this.string.indexOf(t,this.pos);if(e>-1)return this.pos=e,!0},i.prototype.backUp=function(t){this.pos-=t},i.prototype.column=function(){return this.lastColumnPos<this.start&&(this.lastColumnValue=e(this.string,this.start,this.tabSize,this.lastColumnPos,this.lastColumnValue),this.lastColumnPos=this.start),this.lastColumnValue-(this.lineStart?e(this.string,this.lineStart,this.tabSize):0)},i.prototype.indentation=function(){return e(this.string,null,this.tabSize)-(this.lineStart?e(this.string,this.lineStart,this.tabSize):0)},i.prototype.match=function(t,e,r){if("string"!=typeof t){var n=this.string.slice(this.pos).match(t);return n&&n.index>0?null:(n&&!1!==e&&(this.pos+=n[0].length),n)}var i=function(t){return r?t.toLowerCase():t};if(i(this.string.substr(this.pos,t.length))==i(t))return!1!==e&&(this.pos+=t.length),!0},i.prototype.current=function(){return this.string.slice(this.start,this.pos)},i.prototype.hideFirstChars=function(t,e){this.lineStart+=t;try{return e()}finally{this.lineStart-=t}},i.prototype.lookAhead=function(t){var e=this.lineOracle;return e&&e.lookAhead(t)},i.prototype.baseToken=function(){var t=this.lineOracle;return t&&t.baseToken(this.pos)};var o={},s={};function a(t,e){arguments.length>2&&(e.dependencies=Array.prototype.slice.call(arguments,2)),o[t]=e}function p(t,e){s[t]=e}function u(t){if("string"==typeof t&&s.hasOwnProperty(t))t=s[t];else if(t&&"string"==typeof t.name&&s.hasOwnProperty(t.name)){var e=s[t.name];"string"==typeof e&&(e={name:e}),(t=n(e,t)).name=e.name}else{if("string"==typeof t&&/^[\w\-]+\/[\w\-]+\+xml$/.test(t))return u("application/xml");if("string"==typeof t&&/^[\w\-]+\/[\w\-]+\+json$/.test(t))return u("application/json")}return"string"==typeof t?{name:t}:t||{name:"null"}}function l(t,e){e=u(e);var r=o[e.name];if(!r)return l(t,"text/plain");var n=r(t,e);if(h.hasOwnProperty(e.name)){var i=h[e.name];for(var s in i)i.hasOwnProperty(s)&&(n.hasOwnProperty(s)&&(n["_"+s]=n[s]),n[s]=i[s])}if(n.name=e.name,e.helperType&&(n.helperType=e.helperType),e.modeProps)for(var a in e.modeProps)n[a]=e.modeProps[a];return n}var h={};function c(e,r){t(r,h.hasOwnProperty(e)?h[e]:h[e]={})}function f(t,e){if(!0===e)return e;if(t.copyState)return t.copyState(e);var r={};for(var n in e){var i=e[n];i instanceof Array&&(i=i.concat([])),r[n]=i}return r}function d(t,e){for(var r;t.innerMode&&(r=t.innerMode(e))&&r.mode!=t;)e=r.state,t=r.mode;return r||{mode:t,state:e}}function m(t,e,r){return!t.startState||t.startState(e,r)}var y,v={__proto__:null,modes:o,mimeModes:s,defineMode:a,defineMIME:p,resolveMode:u,getMode:l,modeExtensions:h,extendMode:c,copyState:f,innerMode:d,startState:m};for(var g in exports.StringStream=i,exports.countColumn=e,v)exports[g]=v[g];require.cache[require.resolve("../../lib/codemirror")]=require.cache[require.resolve("./runmode.node")],require.cache[require.resolve("../../addon/runmode/runmode")]=require.cache[require.resolve("./runmode.node")],exports.defineMode("null",(function(){return{token:function(t){return t.skipToEnd()}}})),exports.defineMIME("text/plain","null"),exports.registerHelper=exports.registerGlobalHelper=Math.min,exports.splitLines=function(t){return t.split(/\r?\n|\r/)},exports.defaults={indentUnit:2},y=function(t){t.runMode=function(e,r,n,i){var o=t.getMode(t.defaults,r),s=i&&i.tabSize||t.defaults.tabSize;if(n.appendChild){var a=/MSIE \d/.test(navigator.userAgent)&&(null==document.documentMode||document.documentMode<9),p=n,u=0;p.innerHTML="",n=function(t,e){if("\n"==t)return p.appendChild(document.createTextNode(a?"\r":t)),void(u=0);for(var r="",n=0;;){var i=t.indexOf("\t",n);if(-1==i){r+=t.slice(n),u+=t.length-n;break}u+=i-n,r+=t.slice(n,i);var o=s-u%s;u+=o;for(var l=0;l<o;++l)r+=" ";n=i+1}if(e){var h=p.appendChild(document.createElement("span"));h.className="cm-"+e.replace(/ +/g," cm-"),h.appendChild(document.createTextNode(r))}else p.appendChild(document.createTextNode(r))}}for(var l=t.splitLines(e),h=i&&i.state||t.startState(o),c=0,f=l.length;c<f;++c){c&&n("\n");var d=new t.StringStream(l[c],null,{lookAhead:function(t){return l[c+t]},baseToken:function(){}});for(!d.string&&o.blankLine&&o.blankLine(h);!d.eol();){var m=o.token(d,h);n(d.current(),m,c,d.start,h,o),d.start=d.pos}}}},"object"==typeof exports&&"object"==typeof module?y(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],y):y(CodeMirror);
+'use strict';
+
+function copyObj(obj, target, overwrite) {
+  if (!target) { target = {}; }
+  for (var prop in obj)
+    { if (obj.hasOwnProperty(prop) && (overwrite !== false || !target.hasOwnProperty(prop)))
+      { target[prop] = obj[prop]; } }
+  return target
+}
+
+// Counts the column offset in a string, taking tabs into account.
+// Used mostly to find indentation.
+function countColumn(string, end, tabSize, startIndex, startValue) {
+  if (end == null) {
+    end = string.search(/[^\s\u00a0]/);
+    if (end == -1) { end = string.length; }
+  }
+  for (var i = startIndex || 0, n = startValue || 0;;) {
+    var nextTab = string.indexOf("\t", i);
+    if (nextTab < 0 || nextTab >= end)
+      { return n + (end - i) }
+    n += nextTab - i;
+    n += tabSize - (n % tabSize);
+    i = nextTab + 1;
+  }
+}
+
+function nothing() {}
+
+function createObj(base, props) {
+  var inst;
+  if (Object.create) {
+    inst = Object.create(base);
+  } else {
+    nothing.prototype = base;
+    inst = new nothing();
+  }
+  if (props) { copyObj(props, inst); }
+  return inst
+}
+
+// STRING STREAM
+
+// Fed to the mode parsers, provides helper functions to make
+// parsers more succinct.
+
+var StringStream = function(string, tabSize, lineOracle) {
+  this.pos = this.start = 0;
+  this.string = string;
+  this.tabSize = tabSize || 8;
+  this.lastColumnPos = this.lastColumnValue = 0;
+  this.lineStart = 0;
+  this.lineOracle = lineOracle;
+};
+
+StringStream.prototype.eol = function () {return this.pos >= this.string.length};
+StringStream.prototype.sol = function () {return this.pos == this.lineStart};
+StringStream.prototype.peek = function () {return this.string.charAt(this.pos) || undefined};
+StringStream.prototype.next = function () {
+  if (this.pos < this.string.length)
+    { return this.string.charAt(this.pos++) }
+};
+StringStream.prototype.eat = function (match) {
+  var ch = this.string.charAt(this.pos);
+  var ok;
+  if (typeof match == "string") { ok = ch == match; }
+  else { ok = ch && (match.test ? match.test(ch) : match(ch)); }
+  if (ok) {++this.pos; return ch}
+};
+StringStream.prototype.eatWhile = function (match) {
+  var start = this.pos;
+  while (this.eat(match)){}
+  return this.pos > start
+};
+StringStream.prototype.eatSpace = function () {
+  var start = this.pos;
+  while (/[\s\u00a0]/.test(this.string.charAt(this.pos))) { ++this.pos; }
+  return this.pos > start
+};
+StringStream.prototype.skipToEnd = function () {this.pos = this.string.length;};
+StringStream.prototype.skipTo = function (ch) {
+  var found = this.string.indexOf(ch, this.pos);
+  if (found > -1) {this.pos = found; return true}
+};
+StringStream.prototype.backUp = function (n) {this.pos -= n;};
+StringStream.prototype.column = function () {
+  if (this.lastColumnPos < this.start) {
+    this.lastColumnValue = countColumn(this.string, this.start, this.tabSize, this.lastColumnPos, this.lastColumnValue);
+    this.lastColumnPos = this.start;
+  }
+  return this.lastColumnValue - (this.lineStart ? countColumn(this.string, this.lineStart, this.tabSize) : 0)
+};
+StringStream.prototype.indentation = function () {
+  return countColumn(this.string, null, this.tabSize) -
+    (this.lineStart ? countColumn(this.string, this.lineStart, this.tabSize) : 0)
+};
+StringStream.prototype.match = function (pattern, consume, caseInsensitive) {
+  if (typeof pattern == "string") {
+    var cased = function (str) { return caseInsensitive ? str.toLowerCase() : str; };
+    var substr = this.string.substr(this.pos, pattern.length);
+    if (cased(substr) == cased(pattern)) {
+      if (consume !== false) { this.pos += pattern.length; }
+      return true
+    }
+  } else {
+    var match = this.string.slice(this.pos).match(pattern);
+    if (match && match.index > 0) { return null }
+    if (match && consume !== false) { this.pos += match[0].length; }
+    return match
+  }
+};
+StringStream.prototype.current = function (){return this.string.slice(this.start, this.pos)};
+StringStream.prototype.hideFirstChars = function (n, inner) {
+  this.lineStart += n;
+  try { return inner() }
+  finally { this.lineStart -= n; }
+};
+StringStream.prototype.lookAhead = function (n) {
+  var oracle = this.lineOracle;
+  return oracle && oracle.lookAhead(n)
+};
+StringStream.prototype.baseToken = function () {
+  var oracle = this.lineOracle;
+  return oracle && oracle.baseToken(this.pos)
+};
+
+// Known modes, by name and by MIME
+var modes = {}, mimeModes = {};
+
+// Extra arguments are stored as the mode's dependencies, which is
+// used by (legacy) mechanisms like loadmode.js to automatically
+// load a mode. (Preferred mechanism is the require/define calls.)
+function defineMode(name, mode) {
+  if (arguments.length > 2)
+    { mode.dependencies = Array.prototype.slice.call(arguments, 2); }
+  modes[name] = mode;
+}
+
+function defineMIME(mime, spec) {
+  mimeModes[mime] = spec;
+}
+
+// Given a MIME type, a {name, ...options} config object, or a name
+// string, return a mode config object.
+function resolveMode(spec) {
+  if (typeof spec == "string" && mimeModes.hasOwnProperty(spec)) {
+    spec = mimeModes[spec];
+  } else if (spec && typeof spec.name == "string" && mimeModes.hasOwnProperty(spec.name)) {
+    var found = mimeModes[spec.name];
+    if (typeof found == "string") { found = {name: found}; }
+    spec = createObj(found, spec);
+    spec.name = found.name;
+  } else if (typeof spec == "string" && /^[\w\-]+\/[\w\-]+\+xml$/.test(spec)) {
+    return resolveMode("application/xml")
+  } else if (typeof spec == "string" && /^[\w\-]+\/[\w\-]+\+json$/.test(spec)) {
+    return resolveMode("application/json")
+  }
+  if (typeof spec == "string") { return {name: spec} }
+  else { return spec || {name: "null"} }
+}
+
+// Given a mode spec (anything that resolveMode accepts), find and
+// initialize an actual mode object.
+function getMode(options, spec) {
+  spec = resolveMode(spec);
+  var mfactory = modes[spec.name];
+  if (!mfactory) { return getMode(options, "text/plain") }
+  var modeObj = mfactory(options, spec);
+  if (modeExtensions.hasOwnProperty(spec.name)) {
+    var exts = modeExtensions[spec.name];
+    for (var prop in exts) {
+      if (!exts.hasOwnProperty(prop)) { continue }
+      if (modeObj.hasOwnProperty(prop)) { modeObj["_" + prop] = modeObj[prop]; }
+      modeObj[prop] = exts[prop];
+    }
+  }
+  modeObj.name = spec.name;
+  if (spec.helperType) { modeObj.helperType = spec.helperType; }
+  if (spec.modeProps) { for (var prop$1 in spec.modeProps)
+    { modeObj[prop$1] = spec.modeProps[prop$1]; } }
+
+  return modeObj
+}
+
+// This can be used to attach properties to mode objects from
+// outside the actual mode definition.
+var modeExtensions = {};
+function extendMode(mode, properties) {
+  var exts = modeExtensions.hasOwnProperty(mode) ? modeExtensions[mode] : (modeExtensions[mode] = {});
+  copyObj(properties, exts);
+}
+
+function copyState(mode, state) {
+  if (state === true) { return state }
+  if (mode.copyState) { return mode.copyState(state) }
+  var nstate = {};
+  for (var n in state) {
+    var val = state[n];
+    if (val instanceof Array) { val = val.concat([]); }
+    nstate[n] = val;
+  }
+  return nstate
+}
+
+// Given a mode and a state (for that mode), find the inner mode and
+// state at the position that the state refers to.
+function innerMode(mode, state) {
+  var info;
+  while (mode.innerMode) {
+    info = mode.innerMode(state);
+    if (!info || info.mode == mode) { break }
+    state = info.state;
+    mode = info.mode;
+  }
+  return info || {mode: mode, state: state}
+}
+
+function startState(mode, a1, a2) {
+  return mode.startState ? mode.startState(a1, a2) : true
+}
+
+var modeMethods = {
+  __proto__: null,
+  modes: modes,
+  mimeModes: mimeModes,
+  defineMode: defineMode,
+  defineMIME: defineMIME,
+  resolveMode: resolveMode,
+  getMode: getMode,
+  modeExtensions: modeExtensions,
+  extendMode: extendMode,
+  copyState: copyState,
+  innerMode: innerMode,
+  startState: startState
+};
+
+// Copy StringStream and mode methods into exports (CodeMirror) object.
+exports.StringStream = StringStream;
+exports.countColumn = countColumn;
+for (var exported in modeMethods) { exports[exported] = modeMethods[exported]; }
+
+// Shim library CodeMirror with the minimal CodeMirror defined above.
+require.cache[require.resolve("../../lib/codemirror")] = require.cache[require.resolve("./runmode.node")];
+require.cache[require.resolve("../../addon/runmode/runmode")] = require.cache[require.resolve("./runmode.node")];
+
+// Minimal default mode.
+exports.defineMode("null", function () { return ({token: function (stream) { return stream.skipToEnd(); }}); });
+exports.defineMIME("text/plain", "null");
+
+exports.registerHelper = exports.registerGlobalHelper = Math.min;
+exports.splitLines = function(string) { return string.split(/\r?\n|\r/) };
+
+exports.defaults = { indentUnit: 2 };
+
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    { mod(require("../../lib/codemirror")); }
+  else if (typeof define == "function" && define.amd) // AMD
+    { define(["../../lib/codemirror"], mod); }
+  else // Plain browser env
+    { mod(CodeMirror); }
+})(function(CodeMirror) {
+
+CodeMirror.runMode = function(string, modespec, callback, options) {
+  var mode = CodeMirror.getMode(CodeMirror.defaults, modespec);
+  var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize;
+
+  // Create a tokenizing callback function if passed-in callback is a DOM element.
+  if (callback.appendChild) {
+    var ie = /MSIE \d/.test(navigator.userAgent);
+    var ie_lt9 = ie && (document.documentMode == null || document.documentMode < 9);
+    var node = callback, col = 0;
+    node.innerHTML = "";
+    callback = function(text, style) {
+      if (text == "\n") {
+        // Emitting LF or CRLF on IE8 or earlier results in an incorrect display.
+        // Emitting a carriage return makes everything ok.
+        node.appendChild(document.createTextNode(ie_lt9 ? '\r' : text));
+        col = 0;
+        return;
+      }
+      var content = "";
+      // replace tabs
+      for (var pos = 0;;) {
+        var idx = text.indexOf("\t", pos);
+        if (idx == -1) {
+          content += text.slice(pos);
+          col += text.length - pos;
+          break;
+        } else {
+          col += idx - pos;
+          content += text.slice(pos, idx);
+          var size = tabSize - col % tabSize;
+          col += size;
+          for (var i = 0; i < size; ++i) { content += " "; }
+          pos = idx + 1;
+        }
+      }
+      // Create a node with token style and append it to the callback DOM element.
+      if (style) {
+        var sp = node.appendChild(document.createElement("span"));
+        sp.className = "cm-" + style.replace(/ +/g, " cm-");
+        sp.appendChild(document.createTextNode(content));
+      } else {
+        node.appendChild(document.createTextNode(content));
+      }
+    };
+  }
+
+  var lines = CodeMirror.splitLines(string), state = (options && options.state) || CodeMirror.startState(mode);
+  for (var i = 0, e = lines.length; i < e; ++i) {
+    if (i) { callback("\n"); }
+    var stream = new CodeMirror.StringStream(lines[i], null, {
+      lookAhead: function(n) { return lines[i + n] },
+      baseToken: function() {}
+    });
+    if (!stream.string && mode.blankLine) { mode.blankLine(state); }
+    while (!stream.eol()) {
+      var style = mode.token(stream, state);
+      callback(stream.current(), style, i, stream.start, state, mode);
+      stream.start = stream.pos;
+    }
+  }
+};
+
+});

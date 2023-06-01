@@ -1,0 +1,158 @@
+<%- include("partials/header"); %>
+
+<div class="wrapper">
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+	  <li class="nav-item">
+		<a class="nav-link" data-widget="logout" href="/logout" role="button" alt="Logout">
+			<i class="nav-icon fas fa-sign-out-alt" title="Logout" style='font-size:20px'></i>
+		</a>
+	  </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt" title="Full Screen"></i>
+        </a>
+      </li>
+      
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="#" class="brand-link">
+      <img src="/images/Logo.png" alt="Lottobets Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">Lottobets</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="images/avatar.jpg" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block"><%=user; %></a>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Dashboard
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Dashboard</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Lotto List</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Lotto List</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped centered">
+                  <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>Lotto Id</th>
+                    <th>Lotto Name</th>
+					<th>Country</th>
+                    <th>State</th>
+                    <th>Draw Days & Time</th>
+                    <th>Result</th>
+                    <th>Live Url</th>
+                    <th>Watch Url</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+					<% data.forEach(function(item, index) { %>
+						<tr>
+						  <td><%= index + 1 %>.</td>
+						  <td><%= item.lottoId %></td>
+						  <td><img src="<%= item.colorimage %>"/><br/><b><%= item.ProfileName %></b></td>
+						  <td><img class="countryFlag" src="<%= item.countryFlag %>" style="border:1px solid #ccc;" /> <br/><b><%= item.Country %></b></td>
+						  <td><%= item.State %></td>
+						  <td><%= item.DrawTime %></td>
+						  <td><%= item.Result %></td>
+						  <td><button type="button" class="btn btn-sm addLink" data-toggle="modal" data-target="#myModal2" data-lottoId="<%=item.lottoId %>" data-url="<%= item.live_url %>"  data-urltype="Live" data-lottoName="<%=item.ProfileName %>" ><% if(item.live_url !="") { %><%= item.live_url %><% } else { %>Add Live Link<% } %></button></td>
+						  <td><button type="button" class="btn btn-sm addLink" data-toggle="modal" data-target="#myModal2" data-lottoId="<%=item.lottoId %>" data-url="<%= item.drawLink %>" data-urltype="Watch" data-lottoName="<%=item.ProfileName %>" ><% if(item.drawLink !="") { %><%= item.drawLink %><% } else { %>Add Watch Link<% } %></button></td>
+						</tr>
+					  <% }); %>
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                    <th>Id</th>
+                    <th>Lotto Id</th>
+					<th>Lotto Name</th>
+                    <th>Country</th>
+                    <th>State</th>
+                    <th>Draw Days & Time</th>
+                    <th>Result</th>
+                    <th>Live Url</th>
+                    <th>Watch Url</th>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+
+<%- include("partials/footer"); %>

@@ -1,1 +1,133 @@
-var e;e=function(e){function t(e,t,i,r){this.cm=e,this.node=t,this.options=i,this.height=r,this.cleared=!1}function i(e){var t=e.getWrapperElement(),i=window.getComputedStyle?window.getComputedStyle(t):t.currentStyle,r=parseInt(i.height),n=e.state.panels={setHeight:t.style.height,panels:[],wrapper:document.createElement("div")},o=e.hasFocus(),s=e.getScrollInfo();t.parentNode.insertBefore(n.wrapper,t),n.wrapper.appendChild(t),e.scrollTo(s.left,s.top),o&&e.focus(),e._setSize=e.setSize,null!=r&&(e.setSize=function(t,i){if(i||(i=n.wrapper.offsetHeight),n.setHeight=i,"number"!=typeof i){var o=/^(\d+\.?\d*)px$/.exec(i);o?i=Number(o[1]):(n.wrapper.style.height=i,i=n.wrapper.offsetHeight)}var s=i-n.panels.map((function(e){return e.node.getBoundingClientRect().height})).reduce((function(e,t){return e+t}),0);e._setSize(t,s),r=i})}function r(e){var t=e.state.panels;e.state.panels=null;var i=e.getWrapperElement(),r=e.hasFocus(),n=e.getScrollInfo();t.wrapper.parentNode.replaceChild(i,t.wrapper),e.scrollTo(n.left,n.top),r&&e.focus(),i.style.height=t.setHeight,e.setSize=e._setSize,e.setSize()}function n(e,t){for(var i=t.nextSibling;i;i=i.nextSibling)if(i==e.getWrapperElement())return!0;return!1}e.defineExtension("addPanel",(function(e,r){r=r||{},this.state.panels||i(this);var o=this.state.panels,s=o.wrapper,l=this.getWrapperElement(),p=r.replace instanceof t&&!r.replace.cleared;r.after instanceof t&&!r.after.cleared?s.insertBefore(e,r.before.node.nextSibling):r.before instanceof t&&!r.before.cleared?s.insertBefore(e,r.before.node):p?(s.insertBefore(e,r.replace.node),r.replace.clear(!0)):"bottom"==r.position?s.appendChild(e):"before-bottom"==r.position?s.insertBefore(e,l.nextSibling):"after-top"==r.position?s.insertBefore(e,l):s.insertBefore(e,s.firstChild);var a=r&&r.height||e.offsetHeight,h=new t(this,e,r,a);return o.panels.push(h),this.setSize(),r.stable&&n(this,e)&&this.scrollTo(null,this.getScrollInfo().top+a),h})),t.prototype.clear=function(e){if(!this.cleared){this.cleared=!0;var t=this.cm.state.panels;t.panels.splice(t.panels.indexOf(this),1),this.cm.setSize(),this.options.stable&&n(this.cm,this.node)&&this.cm.scrollTo(null,this.cm.getScrollInfo().top-this.height),t.wrapper.removeChild(this.node),0!=t.panels.length||e||r(this.cm)}},t.prototype.changed=function(){this.height=this.node.getBoundingClientRect().height,this.cm.setSize()}},"object"==typeof exports&&"object"==typeof module?e(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],e):e(CodeMirror);
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function (mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function (CodeMirror) {
+  CodeMirror.defineExtension("addPanel", function (node, options) {
+    options = options || {};
+
+    if (!this.state.panels) initPanels(this);
+
+    var info = this.state.panels;
+    var wrapper = info.wrapper;
+    var cmWrapper = this.getWrapperElement();
+    var replace = options.replace instanceof Panel && !options.replace.cleared;
+
+    if (options.after instanceof Panel && !options.after.cleared) {
+      wrapper.insertBefore(node, options.before.node.nextSibling);
+    } else if (options.before instanceof Panel && !options.before.cleared) {
+      wrapper.insertBefore(node, options.before.node);
+    } else if (replace) {
+      wrapper.insertBefore(node, options.replace.node);
+      options.replace.clear(true);
+    } else if (options.position == "bottom") {
+      wrapper.appendChild(node);
+    } else if (options.position == "before-bottom") {
+      wrapper.insertBefore(node, cmWrapper.nextSibling);
+    } else if (options.position == "after-top") {
+      wrapper.insertBefore(node, cmWrapper);
+    } else {
+      wrapper.insertBefore(node, wrapper.firstChild);
+    }
+
+    var height = (options && options.height) || node.offsetHeight;
+
+    var panel = new Panel(this, node, options, height);
+    info.panels.push(panel);
+
+    this.setSize();
+    if (options.stable && isAtTop(this, node))
+      this.scrollTo(null, this.getScrollInfo().top + height);
+
+    return panel;
+  });
+
+  function Panel(cm, node, options, height) {
+    this.cm = cm;
+    this.node = node;
+    this.options = options;
+    this.height = height;
+    this.cleared = false;
+  }
+
+  /* when skipRemove is true, clear() was called from addPanel().
+   * Thus removePanels() should not be called (issue 5518) */
+  Panel.prototype.clear = function (skipRemove) {
+    if (this.cleared) return;
+    this.cleared = true;
+    var info = this.cm.state.panels;
+    info.panels.splice(info.panels.indexOf(this), 1);
+    this.cm.setSize();
+    if (this.options.stable && isAtTop(this.cm, this.node))
+      this.cm.scrollTo(null, this.cm.getScrollInfo().top - this.height)
+    info.wrapper.removeChild(this.node);
+    if (info.panels.length == 0 && !skipRemove) removePanels(this.cm);
+  };
+
+  Panel.prototype.changed = function () {
+    this.height = this.node.getBoundingClientRect().height;
+    this.cm.setSize();
+  };
+
+  function initPanels(cm) {
+    var wrap = cm.getWrapperElement()
+    var style = window.getComputedStyle ? window.getComputedStyle(wrap) : wrap.currentStyle;
+    var height = parseInt(style.height);
+    var info = cm.state.panels = {
+      setHeight: wrap.style.height,
+      panels: [],
+      wrapper: document.createElement("div")
+    };
+    var hasFocus = cm.hasFocus(), scrollPos = cm.getScrollInfo()
+    wrap.parentNode.insertBefore(info.wrapper, wrap);
+    info.wrapper.appendChild(wrap);
+    cm.scrollTo(scrollPos.left, scrollPos.top)
+    if (hasFocus) cm.focus();
+
+    cm._setSize = cm.setSize;
+    if (height != null) cm.setSize = function (width, newHeight) {
+      if (!newHeight) newHeight = info.wrapper.offsetHeight;
+      info.setHeight = newHeight;
+      if (typeof newHeight != "number") {
+        var px = /^(\d+\.?\d*)px$/.exec(newHeight);
+        if (px) {
+          newHeight = Number(px[1]);
+        } else {
+          info.wrapper.style.height = newHeight;
+          newHeight = info.wrapper.offsetHeight;
+        }
+      }
+      var editorheight = newHeight - info.panels
+        .map(function (p) { return p.node.getBoundingClientRect().height; })
+        .reduce(function (a, b) { return a + b; }, 0);
+      cm._setSize(width, editorheight);
+      height = newHeight;
+    };
+  }
+
+  function removePanels(cm) {
+    var info = cm.state.panels;
+    cm.state.panels = null;
+
+    var wrap = cm.getWrapperElement()
+    var hasFocus = cm.hasFocus(), scrollPos = cm.getScrollInfo()
+    info.wrapper.parentNode.replaceChild(wrap, info.wrapper);
+    cm.scrollTo(scrollPos.left, scrollPos.top)
+    if (hasFocus) cm.focus();
+    wrap.style.height = info.setHeight;
+    cm.setSize = cm._setSize;
+    cm.setSize();
+  }
+
+  function isAtTop(cm, dom) {
+    for (var sibling = dom.nextSibling; sibling; sibling = sibling.nextSibling)
+      if (sibling == cm.getWrapperElement()) return true
+    return false
+  }
+});

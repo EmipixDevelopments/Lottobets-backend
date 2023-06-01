@@ -1,1 +1,195 @@
-var e;e=function(e){e.defineMode("ebnf",(function(t){var a={slash:0,parenthesis:1},r={comment:0,_string:1,characterClass:2},c=null;return t.bracesMode&&(c=e.getMode(t,t.bracesMode)),{startState:function(){return{stringType:null,commentType:null,braced:0,lhs:!0,localState:null,stack:[],inDefinition:!1}},token:function(t,n){if(t){switch(0===n.stack.length&&('"'==t.peek()||"'"==t.peek()?(n.stringType=t.peek(),t.next(),n.stack.unshift(r._string)):t.match("/*")?(n.stack.unshift(r.comment),n.commentType=a.slash):t.match("(*")&&(n.stack.unshift(r.comment),n.commentType=a.parenthesis)),n.stack[0]){case r._string:for(;n.stack[0]===r._string&&!t.eol();)t.peek()===n.stringType?(t.next(),n.stack.shift()):"\\"===t.peek()?(t.next(),t.next()):t.match(/^.[^\\\"\']*/);return n.lhs?"property string":"string";case r.comment:for(;n.stack[0]===r.comment&&!t.eol();)n.commentType===a.slash&&t.match("*/")||n.commentType===a.parenthesis&&t.match("*)")?(n.stack.shift(),n.commentType=null):t.match(/^.[^\*]*/);return"comment";case r.characterClass:for(;n.stack[0]===r.characterClass&&!t.eol();)t.match(/^[^\]\\]+/)||t.match(".")||n.stack.shift();return"operator"}var s=t.peek();if(null!==c&&(n.braced||"{"===s)){null===n.localState&&(n.localState=e.startState(c));var i=c.token(t,n.localState),o=t.current();if(!i)for(var m=0;m<o.length;m++)"{"===o[m]?(0===n.braced&&(i="matchingbracket"),n.braced++):"}"===o[m]&&(n.braced--,0===n.braced&&(i="matchingbracket"));return i}switch(s){case"[":return t.next(),n.stack.unshift(r.characterClass),"bracket";case":":case"|":case";":return t.next(),"operator";case"%":if(t.match("%%"))return"header";if(t.match(/[%][A-Za-z]+/))return"keyword";if(t.match(/[%][}]/))return"matchingbracket";break;case"/":if(t.match(/[\/][A-Za-z]+/))return"keyword";case"\\":if(t.match(/[\][a-z]+/))return"string-2";case".":if(t.match("."))return"atom";case"*":case"-":case"+":case"^":if(t.match(s))return"atom";case"$":if(t.match("$$"))return"builtin";if(t.match(/[$][0-9]+/))return"variable-3";case"<":if(t.match(/<<[a-zA-Z_]+>>/))return"builtin"}return t.match("//")?(t.skipToEnd(),"comment"):t.match("return")?"operator":t.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)?t.match(/(?=[\(.])/)?"variable":t.match(/(?=[\s\n]*[:=])/)?"def":"variable-2":-1!=["[","]","(",")"].indexOf(t.peek())?(t.next(),"bracket"):(t.eatSpace()||t.next(),null)}}}})),e.defineMIME("text/x-ebnf","ebnf")},"object"==typeof exports&&"object"==typeof module?e(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],e):e(CodeMirror);
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+  "use strict";
+
+  CodeMirror.defineMode("ebnf", function (config) {
+    var commentType = {slash: 0, parenthesis: 1};
+    var stateType = {comment: 0, _string: 1, characterClass: 2};
+    var bracesMode = null;
+
+    if (config.bracesMode)
+      bracesMode = CodeMirror.getMode(config, config.bracesMode);
+
+    return {
+      startState: function () {
+        return {
+          stringType: null,
+          commentType: null,
+          braced: 0,
+          lhs: true,
+          localState: null,
+          stack: [],
+          inDefinition: false
+        };
+      },
+      token: function (stream, state) {
+        if (!stream) return;
+
+        //check for state changes
+        if (state.stack.length === 0) {
+          //strings
+          if ((stream.peek() == '"') || (stream.peek() == "'")) {
+            state.stringType = stream.peek();
+            stream.next(); // Skip quote
+            state.stack.unshift(stateType._string);
+          } else if (stream.match('/*')) { //comments starting with /*
+            state.stack.unshift(stateType.comment);
+            state.commentType = commentType.slash;
+          } else if (stream.match('(*')) { //comments starting with (*
+            state.stack.unshift(stateType.comment);
+            state.commentType = commentType.parenthesis;
+          }
+        }
+
+        //return state
+        //stack has
+        switch (state.stack[0]) {
+        case stateType._string:
+          while (state.stack[0] === stateType._string && !stream.eol()) {
+            if (stream.peek() === state.stringType) {
+              stream.next(); // Skip quote
+              state.stack.shift(); // Clear flag
+            } else if (stream.peek() === "\\") {
+              stream.next();
+              stream.next();
+            } else {
+              stream.match(/^.[^\\\"\']*/);
+            }
+          }
+          return state.lhs ? "property string" : "string"; // Token style
+
+        case stateType.comment:
+          while (state.stack[0] === stateType.comment && !stream.eol()) {
+            if (state.commentType === commentType.slash && stream.match('*/')) {
+              state.stack.shift(); // Clear flag
+              state.commentType = null;
+            } else if (state.commentType === commentType.parenthesis && stream.match('*)')) {
+              state.stack.shift(); // Clear flag
+              state.commentType = null;
+            } else {
+              stream.match(/^.[^\*]*/);
+            }
+          }
+          return "comment";
+
+        case stateType.characterClass:
+          while (state.stack[0] === stateType.characterClass && !stream.eol()) {
+            if (!(stream.match(/^[^\]\\]+/) || stream.match('.'))) {
+              state.stack.shift();
+            }
+          }
+          return "operator";
+        }
+
+        var peek = stream.peek();
+
+        if (bracesMode !== null && (state.braced || peek === "{")) {
+          if (state.localState === null)
+            state.localState = CodeMirror.startState(bracesMode);
+
+          var token = bracesMode.token(stream, state.localState),
+          text = stream.current();
+
+          if (!token) {
+            for (var i = 0; i < text.length; i++) {
+              if (text[i] === "{") {
+                if (state.braced === 0) {
+                  token = "matchingbracket";
+                }
+                state.braced++;
+              } else if (text[i] === "}") {
+                state.braced--;
+                if (state.braced === 0) {
+                  token = "matchingbracket";
+                }
+              }
+            }
+          }
+          return token;
+        }
+
+        //no stack
+        switch (peek) {
+        case "[":
+          stream.next();
+          state.stack.unshift(stateType.characterClass);
+          return "bracket";
+        case ":":
+        case "|":
+        case ";":
+          stream.next();
+          return "operator";
+        case "%":
+          if (stream.match("%%")) {
+            return "header";
+          } else if (stream.match(/[%][A-Za-z]+/)) {
+            return "keyword";
+          } else if (stream.match(/[%][}]/)) {
+            return "matchingbracket";
+          }
+          break;
+        case "/":
+          if (stream.match(/[\/][A-Za-z]+/)) {
+          return "keyword";
+        }
+        case "\\":
+          if (stream.match(/[\][a-z]+/)) {
+            return "string-2";
+          }
+        case ".":
+          if (stream.match(".")) {
+            return "atom";
+          }
+        case "*":
+        case "-":
+        case "+":
+        case "^":
+          if (stream.match(peek)) {
+            return "atom";
+          }
+        case "$":
+          if (stream.match("$$")) {
+            return "builtin";
+          } else if (stream.match(/[$][0-9]+/)) {
+            return "variable-3";
+          }
+        case "<":
+          if (stream.match(/<<[a-zA-Z_]+>>/)) {
+            return "builtin";
+          }
+        }
+
+        if (stream.match('//')) {
+          stream.skipToEnd();
+          return "comment";
+        } else if (stream.match('return')) {
+          return "operator";
+        } else if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)) {
+          if (stream.match(/(?=[\(.])/)) {
+            return "variable";
+          } else if (stream.match(/(?=[\s\n]*[:=])/)) {
+            return "def";
+          }
+          return "variable-2";
+        } else if (["[", "]", "(", ")"].indexOf(stream.peek()) != -1) {
+          stream.next();
+          return "bracket";
+        } else if (!stream.eatSpace()) {
+          stream.next();
+        }
+        return null;
+      }
+    };
+  });
+
+  CodeMirror.defineMIME("text/x-ebnf", "ebnf");
+});

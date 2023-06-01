@@ -1,1 +1,140 @@
-var e;e=function(e){e.defineMode("tcl",(function(){function e(e){for(var r={},t=e.split(" "),n=0;n<t.length;++n)r[t[n]]=!0;return r}var r=e("Tcl safe after append array auto_execok auto_import auto_load auto_mkindex auto_mkindex_old auto_qualify auto_reset bgerror binary break catch cd close concat continue dde eof encoding error eval exec exit expr fblocked fconfigure fcopy file fileevent filename filename flush for foreach format gets glob global history http if incr info interp join lappend lindex linsert list llength load lrange lreplace lsearch lset lsort memory msgcat namespace open package parray pid pkg::create pkg_mkIndex proc puts pwd re_syntax read regex regexp registry regsub rename resource return scan seek set socket source split string subst switch tcl_endOfWord tcl_findLibrary tcl_startOfNextWord tcl_wordBreakAfter tcl_startOfPreviousWord tcl_wordBreakBefore tcltest tclvars tell time trace unknown unset update uplevel upvar variable vwait"),t=e("if elseif else and not or eq ne in ni for foreach while switch"),n=/[+\-*&%=<>!?^\/\|]/;function o(e,r,t){return r.tokenize=t,t(e,r)}function a(e,a){var c=a.beforeParams;a.beforeParams=!1;var u=e.next();if('"'!=u&&"'"!=u||!a.inParams){if(/[\[\]{}\(\),;\.]/.test(u))return"("==u&&c?a.inParams=!0:")"==u&&(a.inParams=!1),null;if(/\d/.test(u))return e.eatWhile(/[\w\.]/),"number";if("#"==u)return e.eat("*")?o(e,a,f):"#"==u&&e.match(/ *\[ *\[/)?o(e,a,l):(e.skipToEnd(),"comment");if('"'==u)return e.skipTo(/"/),"comment";if("$"==u)return e.eatWhile(/[$_a-z0-9A-Z\.{:]/),e.eatWhile(/}/),a.beforeParams=!0,"builtin";if(n.test(u))return e.eatWhile(n),"comment";e.eatWhile(/[\w\$_{}\xa1-\uffff]/);var s=e.current().toLowerCase();return r&&r.propertyIsEnumerable(s)?"keyword":t&&t.propertyIsEnumerable(s)?(a.beforeParams=!0,"keyword"):null}return o(e,a,i(u))}function i(e){return function(r,t){for(var n,o=!1,i=!1;null!=(n=r.next());){if(n==e&&!o){i=!0;break}o=!o&&"\\"==n}return i&&(t.tokenize=a),"string"}}function f(e,r){for(var t,n=!1;t=e.next();){if("#"==t&&n){r.tokenize=a;break}n="*"==t}return"comment"}function l(e,r){for(var t,n=0;t=e.next();){if("#"==t&&2==n){r.tokenize=a;break}"]"==t?n++:" "!=t&&(n=0)}return"meta"}return{startState:function(){return{tokenize:a,beforeParams:!1,inParams:!1}},token:function(e,r){return e.eatSpace()?null:r.tokenize(e,r)},lineComment:"#"}})),e.defineMIME("text/x-tcl","tcl")},"object"==typeof exports&&"object"==typeof module?e(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],e):e(CodeMirror);
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+//tcl mode by Ford_Lawnmower :: Based on Velocity mode by Steve O'Hara
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+"use strict";
+
+CodeMirror.defineMode("tcl", function() {
+  function parseWords(str) {
+    var obj = {}, words = str.split(" ");
+    for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
+    return obj;
+  }
+  var keywords = parseWords("Tcl safe after append array auto_execok auto_import auto_load " +
+        "auto_mkindex auto_mkindex_old auto_qualify auto_reset bgerror " +
+        "binary break catch cd close concat continue dde eof encoding error " +
+        "eval exec exit expr fblocked fconfigure fcopy file fileevent filename " +
+        "filename flush for foreach format gets glob global history http if " +
+        "incr info interp join lappend lindex linsert list llength load lrange " +
+        "lreplace lsearch lset lsort memory msgcat namespace open package parray " +
+        "pid pkg::create pkg_mkIndex proc puts pwd re_syntax read regex regexp " +
+        "registry regsub rename resource return scan seek set socket source split " +
+        "string subst switch tcl_endOfWord tcl_findLibrary tcl_startOfNextWord " +
+        "tcl_wordBreakAfter tcl_startOfPreviousWord tcl_wordBreakBefore tcltest " +
+        "tclvars tell time trace unknown unset update uplevel upvar variable " +
+    "vwait");
+    var functions = parseWords("if elseif else and not or eq ne in ni for foreach while switch");
+    var isOperatorChar = /[+\-*&%=<>!?^\/\|]/;
+    function chain(stream, state, f) {
+      state.tokenize = f;
+      return f(stream, state);
+    }
+    function tokenBase(stream, state) {
+      var beforeParams = state.beforeParams;
+      state.beforeParams = false;
+      var ch = stream.next();
+      if ((ch == '"' || ch == "'") && state.inParams) {
+        return chain(stream, state, tokenString(ch));
+      } else if (/[\[\]{}\(\),;\.]/.test(ch)) {
+        if (ch == "(" && beforeParams) state.inParams = true;
+        else if (ch == ")") state.inParams = false;
+          return null;
+      } else if (/\d/.test(ch)) {
+        stream.eatWhile(/[\w\.]/);
+        return "number";
+      } else if (ch == "#") {
+        if (stream.eat("*"))
+          return chain(stream, state, tokenComment);
+        if (ch == "#" && stream.match(/ *\[ *\[/))
+          return chain(stream, state, tokenUnparsed);
+        stream.skipToEnd();
+        return "comment";
+      } else if (ch == '"') {
+        stream.skipTo(/"/);
+        return "comment";
+      } else if (ch == "$") {
+        stream.eatWhile(/[$_a-z0-9A-Z\.{:]/);
+        stream.eatWhile(/}/);
+        state.beforeParams = true;
+        return "builtin";
+      } else if (isOperatorChar.test(ch)) {
+        stream.eatWhile(isOperatorChar);
+        return "comment";
+      } else {
+        stream.eatWhile(/[\w\$_{}\xa1-\uffff]/);
+        var word = stream.current().toLowerCase();
+        if (keywords && keywords.propertyIsEnumerable(word))
+          return "keyword";
+        if (functions && functions.propertyIsEnumerable(word)) {
+          state.beforeParams = true;
+          return "keyword";
+        }
+        return null;
+      }
+    }
+    function tokenString(quote) {
+      return function(stream, state) {
+      var escaped = false, next, end = false;
+      while ((next = stream.next()) != null) {
+        if (next == quote && !escaped) {
+          end = true;
+          break;
+        }
+        escaped = !escaped && next == "\\";
+      }
+      if (end) state.tokenize = tokenBase;
+        return "string";
+      };
+    }
+    function tokenComment(stream, state) {
+      var maybeEnd = false, ch;
+      while (ch = stream.next()) {
+        if (ch == "#" && maybeEnd) {
+          state.tokenize = tokenBase;
+          break;
+        }
+        maybeEnd = (ch == "*");
+      }
+      return "comment";
+    }
+    function tokenUnparsed(stream, state) {
+      var maybeEnd = 0, ch;
+      while (ch = stream.next()) {
+        if (ch == "#" && maybeEnd == 2) {
+          state.tokenize = tokenBase;
+          break;
+        }
+        if (ch == "]")
+          maybeEnd++;
+        else if (ch != " ")
+          maybeEnd = 0;
+      }
+      return "meta";
+    }
+    return {
+      startState: function() {
+        return {
+          tokenize: tokenBase,
+          beforeParams: false,
+          inParams: false
+        };
+      },
+      token: function(stream, state) {
+        if (stream.eatSpace()) return null;
+        return state.tokenize(stream, state);
+      },
+      lineComment: "#"
+    };
+});
+CodeMirror.defineMIME("text/x-tcl", "tcl");
+
+});

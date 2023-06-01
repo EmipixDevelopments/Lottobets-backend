@@ -1,1 +1,114 @@
-var e;e=function(e){e.defineMode("pegjs",(function(t){var r=e.getMode(t,"javascript");function n(e){return e.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)}return{startState:function(){return{inString:!1,stringType:null,inComment:!1,inCharacterClass:!1,braced:0,lhs:!0,localState:null}},token:function(t,i){if(t&&(i.inString||i.inComment||'"'!=t.peek()&&"'"!=t.peek()||(i.stringType=t.peek(),t.next(),i.inString=!0)),i.inString||i.inComment||!t.match("/*")||(i.inComment=!0),i.inString){for(;i.inString&&!t.eol();)t.peek()===i.stringType?(t.next(),i.inString=!1):"\\"===t.peek()?(t.next(),t.next()):t.match(/^.[^\\\"\']*/);return i.lhs?"property string":"string"}if(i.inComment){for(;i.inComment&&!t.eol();)t.match("*/")?i.inComment=!1:t.match(/^.[^\*]*/);return"comment"}if(i.inCharacterClass)for(;i.inCharacterClass&&!t.eol();)t.match(/^[^\]\\]+/)||t.match(/^\\./)||(i.inCharacterClass=!1);else{if("["===t.peek())return t.next(),i.inCharacterClass=!0,"bracket";if(t.match("//"))return t.skipToEnd(),"comment";if(i.braced||"{"===t.peek()){null===i.localState&&(i.localState=e.startState(r));var a=r.token(t,i.localState),o=t.current();if(!a)for(var c=0;c<o.length;c++)"{"===o[c]?i.braced++:"}"===o[c]&&i.braced--;return a}if(n(t))return":"===t.peek()?"variable":"variable-2";if(-1!=["[","]","(",")"].indexOf(t.peek()))return t.next(),"bracket";t.eatSpace()||t.next()}return null}}}),"javascript")},"object"==typeof exports&&"object"==typeof module?e(require("../../lib/codemirror"),require("../javascript/javascript")):"function"==typeof define&&define.amd?define(["../../lib/codemirror","../javascript/javascript"],e):e(CodeMirror);
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"), require("../javascript/javascript"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror", "../javascript/javascript"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+"use strict";
+
+CodeMirror.defineMode("pegjs", function (config) {
+  var jsMode = CodeMirror.getMode(config, "javascript");
+
+  function identifier(stream) {
+    return stream.match(/^[a-zA-Z_][a-zA-Z0-9_]*/);
+  }
+
+  return {
+    startState: function () {
+      return {
+        inString: false,
+        stringType: null,
+        inComment: false,
+        inCharacterClass: false,
+        braced: 0,
+        lhs: true,
+        localState: null
+      };
+    },
+    token: function (stream, state) {
+      if (stream)
+
+      //check for state changes
+      if (!state.inString && !state.inComment && ((stream.peek() == '"') || (stream.peek() == "'"))) {
+        state.stringType = stream.peek();
+        stream.next(); // Skip quote
+        state.inString = true; // Update state
+      }
+      if (!state.inString && !state.inComment && stream.match('/*')) {
+        state.inComment = true;
+      }
+
+      //return state
+      if (state.inString) {
+        while (state.inString && !stream.eol()) {
+          if (stream.peek() === state.stringType) {
+            stream.next(); // Skip quote
+            state.inString = false; // Clear flag
+          } else if (stream.peek() === '\\') {
+            stream.next();
+            stream.next();
+          } else {
+            stream.match(/^.[^\\\"\']*/);
+          }
+        }
+        return state.lhs ? "property string" : "string"; // Token style
+      } else if (state.inComment) {
+        while (state.inComment && !stream.eol()) {
+          if (stream.match('*/')) {
+            state.inComment = false; // Clear flag
+          } else {
+            stream.match(/^.[^\*]*/);
+          }
+        }
+        return "comment";
+      } else if (state.inCharacterClass) {
+          while (state.inCharacterClass && !stream.eol()) {
+            if (!(stream.match(/^[^\]\\]+/) || stream.match(/^\\./))) {
+              state.inCharacterClass = false;
+            }
+          }
+      } else if (stream.peek() === '[') {
+        stream.next();
+        state.inCharacterClass = true;
+        return 'bracket';
+      } else if (stream.match('//')) {
+        stream.skipToEnd();
+        return "comment";
+      } else if (state.braced || stream.peek() === '{') {
+        if (state.localState === null) {
+          state.localState = CodeMirror.startState(jsMode);
+        }
+        var token = jsMode.token(stream, state.localState);
+        var text = stream.current();
+        if (!token) {
+          for (var i = 0; i < text.length; i++) {
+            if (text[i] === '{') {
+              state.braced++;
+            } else if (text[i] === '}') {
+              state.braced--;
+            }
+          };
+        }
+        return token;
+      } else if (identifier(stream)) {
+        if (stream.peek() === ':') {
+          return 'variable';
+        }
+        return 'variable-2';
+      } else if (['[', ']', '(', ')'].indexOf(stream.peek()) != -1) {
+        stream.next();
+        return 'bracket';
+      } else if (!stream.eatSpace()) {
+        stream.next();
+      }
+      return null;
+    }
+  };
+}, "javascript");
+
+});

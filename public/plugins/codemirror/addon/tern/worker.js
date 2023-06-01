@@ -1,1 +1,44 @@
-var e;this.onmessage=function(t){var n=t.data;switch(n.type){case"init":return r(n.defs,n.plugins,n.scripts);case"add":return e.addFile(n.name,n.text);case"del":return e.delFile(n.name);case"req":return e.request(n.body,(function(e,t){postMessage({id:n.id,body:t,err:e&&String(e)})}));case"getFile":var i=s[n.id];return delete s[n.id],i(n.err,n.text);default:throw new Error("Unknown message type: "+n.type)}};var t=0,s={};function n(e,n){postMessage({type:"getFile",name:e,id:++t}),s[t]=n}function r(t,s,r){r&&importScripts.apply(null,r),e=new tern.Server({getFile:n,async:!0,defs:t,plugins:s})}this.console={log:function(e){postMessage({type:"debug",message:e})}};
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+// declare global: tern, server
+
+var server;
+
+this.onmessage = function(e) {
+  var data = e.data;
+  switch (data.type) {
+  case "init": return startServer(data.defs, data.plugins, data.scripts);
+  case "add": return server.addFile(data.name, data.text);
+  case "del": return server.delFile(data.name);
+  case "req": return server.request(data.body, function(err, reqData) {
+    postMessage({id: data.id, body: reqData, err: err && String(err)});
+  });
+  case "getFile":
+    var c = pending[data.id];
+    delete pending[data.id];
+    return c(data.err, data.text);
+  default: throw new Error("Unknown message type: " + data.type);
+  }
+};
+
+var nextId = 0, pending = {};
+function getFile(file, c) {
+  postMessage({type: "getFile", name: file, id: ++nextId});
+  pending[nextId] = c;
+}
+
+function startServer(defs, plugins, scripts) {
+  if (scripts) importScripts.apply(null, scripts);
+
+  server = new tern.Server({
+    getFile: getFile,
+    async: true,
+    defs: defs,
+    plugins: plugins
+  });
+}
+
+this.console = {
+  log: function(v) { postMessage({type: "debug", message: v}); }
+};

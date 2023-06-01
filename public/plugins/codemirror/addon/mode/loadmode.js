@@ -1,1 +1,66 @@
-var e;e=function(e,r){e.modeURL||(e.modeURL="../mode/%N/%N.js");var o={};function n(e,r){var o=r;return function(){0==--o&&e()}}function t(r,o,t){var i=e.modes[r],d=i&&i.dependencies;if(!d)return o();for(var a=[],f=0;f<d.length;++f)e.modes.hasOwnProperty(d[f])||a.push(d[f]);if(!a.length)return o();var u=n(o,a.length);for(f=0;f<a.length;++f)e.requireMode(a[f],u,t)}e.requireMode=function(n,i,d){if("string"!=typeof n&&(n=n.name),e.modes.hasOwnProperty(n))return t(n,i,d);if(o.hasOwnProperty(n))return o[n].push(i);var a=d&&d.path?d.path(n):e.modeURL.replace(/%N/g,n);if(d&&d.loadMode)d.loadMode(a,(function(){t(n,i,d)}));else if("plain"==r){var f=document.createElement("script");f.src=a;var u=document.getElementsByTagName("script")[0],c=o[n]=[i];e.on(f,"load",(function(){t(n,(function(){for(var e=0;e<c.length;++e)c[e]()}),d)})),u.parentNode.insertBefore(f,u)}else"cjs"==r?(require(a),i()):"amd"==r&&requirejs([a],i)},e.autoLoadMode=function(r,o,n){e.modes.hasOwnProperty(o)||e.requireMode(o,(function(){r.setOption("mode",r.getOption("mode"))}),n)}},"object"==typeof exports&&"object"==typeof module?e(require("../../lib/codemirror"),"cjs"):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],(function(r){e(r,"amd")})):e(CodeMirror,"plain");
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"), "cjs");
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], function(CM) { mod(CM, "amd"); });
+  else // Plain browser env
+    mod(CodeMirror, "plain");
+})(function(CodeMirror, env) {
+  if (!CodeMirror.modeURL) CodeMirror.modeURL = "../mode/%N/%N.js";
+
+  var loading = {};
+  function splitCallback(cont, n) {
+    var countDown = n;
+    return function() { if (--countDown == 0) cont(); };
+  }
+  function ensureDeps(mode, cont, options) {
+    var modeObj = CodeMirror.modes[mode], deps = modeObj && modeObj.dependencies;
+    if (!deps) return cont();
+    var missing = [];
+    for (var i = 0; i < deps.length; ++i) {
+      if (!CodeMirror.modes.hasOwnProperty(deps[i]))
+        missing.push(deps[i]);
+    }
+    if (!missing.length) return cont();
+    var split = splitCallback(cont, missing.length);
+    for (var i = 0; i < missing.length; ++i)
+      CodeMirror.requireMode(missing[i], split, options);
+  }
+
+  CodeMirror.requireMode = function(mode, cont, options) {
+    if (typeof mode != "string") mode = mode.name;
+    if (CodeMirror.modes.hasOwnProperty(mode)) return ensureDeps(mode, cont, options);
+    if (loading.hasOwnProperty(mode)) return loading[mode].push(cont);
+
+    var file = options && options.path ? options.path(mode) : CodeMirror.modeURL.replace(/%N/g, mode);
+    if (options && options.loadMode) {
+      options.loadMode(file, function() { ensureDeps(mode, cont, options) })
+    } else if (env == "plain") {
+      var script = document.createElement("script");
+      script.src = file;
+      var others = document.getElementsByTagName("script")[0];
+      var list = loading[mode] = [cont];
+      CodeMirror.on(script, "load", function() {
+        ensureDeps(mode, function() {
+          for (var i = 0; i < list.length; ++i) list[i]();
+        }, options);
+      });
+      others.parentNode.insertBefore(script, others);
+    } else if (env == "cjs") {
+      require(file);
+      cont();
+    } else if (env == "amd") {
+      requirejs([file], cont);
+    }
+  };
+
+  CodeMirror.autoLoadMode = function(instance, mode, options) {
+    if (!CodeMirror.modes.hasOwnProperty(mode))
+      CodeMirror.requireMode(mode, function() {
+        instance.setOption("mode", instance.getOption("mode"));
+      }, options);
+  };
+});

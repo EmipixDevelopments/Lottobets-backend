@@ -1,7 +1,43 @@
 /*! FixedColumns 4.0.1
  * 2019-2021 SpryMedia Ltd - datatables.net/license
  */
-var e;
-/*! Bootstrap 4 integration for DataTables' FixedColumns
+(function () {
+    'use strict';
+
+    /*! Bootstrap 4 integration for DataTables' FixedColumns
      * ©2016 SpryMedia Ltd - datatables.net/license
-     */e=function(e){return e.fn.dataTable.fixedColumns},"function"==typeof define&&define.amd?define(["jquery","datatables.net-bs4","datatables.net-fixedcolumns"],(function(t){return e(t)})):"object"==typeof exports?module.exports=function(t,n){return t||(t=window),n&&n.fn.dataTable||(n=require("datatables.net-bs4")(t,n).$),n.fn.dataTable.SearchPanes||require("datatables.net-fixedcolumns")(t,n),e(n)}:e(jQuery);
+     */
+    (function (factory) {
+        if (typeof define === 'function' && define.amd) {
+            // AMD
+            define(['jquery', 'datatables.net-bs4', 'datatables.net-fixedcolumns'], function ($) {
+                return factory($);
+            });
+        }
+        else if (typeof exports === 'object') {
+            // CommonJS
+            module.exports = function (root, $) {
+                if (!root) {
+                    root = window;
+                }
+                if (!$ || !$.fn.dataTable) {
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    $ = require('datatables.net-bs4')(root, $).$;
+                }
+                if (!$.fn.dataTable.SearchPanes) {
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    require('datatables.net-fixedcolumns')(root, $);
+                }
+                return factory($);
+            };
+        }
+        else {
+            // Browser
+            factory(jQuery);
+        }
+    }(function ($) {
+        var dataTable = $.fn.dataTable;
+        return dataTable.fixedColumns;
+    }));
+
+}());

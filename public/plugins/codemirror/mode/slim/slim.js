@@ -1,1 +1,575 @@
-var t;t=function(t){t.defineMode("slim",(function(e){var n=t.getMode(e,{name:"htmlmixed"}),i=t.getMode(e,"ruby"),r={html:n,ruby:i},o={ruby:"ruby",javascript:"javascript",css:"text/css",sass:"text/x-sass",scss:"text/x-scss",less:"text/x-less",styl:"text/x-styl",coffee:"coffeescript",asciidoc:"text/x-asciidoc",markdown:"text/x-markdown",textile:"text/x-textile",creole:"text/x-creole",wiki:"text/x-wiki",mediawiki:"text/x-mediawiki",rdoc:"text/x-rdoc",builder:"text/x-builder",nokogiri:"text/x-nokogiri",erb:"application/x-erb"},u=function(t){var e=[];for(var n in t)e.push(n);return new RegExp("^("+e.join("|")+"):")}(o),a={commentLine:"comment",slimSwitch:"operator special",slimTag:"tag",slimId:"attribute def",slimClass:"attribute qualifier",slimAttribute:"attribute",slimSubmode:"keyword special",closeAttributeTag:null,slimDoctype:null,lineContinuation:null},c={"{":"}","[":"]","(":")"},l="_a-zA-ZÀ-ÖØ-öø-˿Ͱ-ͽͿ-῿‌-‍⁰-↏Ⰰ-⿯、-퟿豈-﷏ﷰ-�",s=l+"\\-0-9·̀-ͯ‿-⁀",k=new RegExp("^[:"+l+"](?::["+s+"]|["+s+"]*)"),d=new RegExp("^[:"+l+"][:\\."+s+"]*(?=\\s*=)"),m=new RegExp("^[:"+l+"][:\\."+s+"]*"),f=/^\.-?[_a-zA-Z]+[\w\-]*/,b=/^#[_a-zA-Z]+[\w\-]*/;function z(t,e,n){var i=function(i,r){return r.tokenize=e,i.pos<t?(i.pos=t,n):r.tokenize(i,r)};return function(t,n){return n.tokenize=i,e(t,n)}}function p(t,e,n,i,r){var o=t.current(),u=o.search(n);return u>-1&&(e.tokenize=z(t.pos,e.tokenize,r),t.backUp(o.length-u-i)),r}function x(t,e){t.stack={parent:t.stack,style:"continuation",indented:e,tokenize:t.line},t.line=t.tokenize}function h(t){t.line==t.tokenize&&(t.line=t.stack.tokenize,t.stack=t.stack.parent)}function y(t,e){return function(n,i){if(h(i),n.match(/^\\$/))return x(i,t),"lineContinuation";var r=e(n,i);return n.eol()&&n.current().match(/(?:^|[^\\])(?:\\\\)*\\$/)&&n.backUp(1),r}}function S(t,e){return function(n,i){h(i);var r=e(n,i);return n.eol()&&n.current().match(/,$/)&&x(i,t),r}}function v(t,e){return function(n,i){return n.peek()==t&&1==i.rubyState.tokenize.length?(n.next(),i.tokenize=e,"closeAttributeTag"):g(n,i)}}function w(e){var n,r=function(t,i){if(1==i.rubyState.tokenize.length&&!i.rubyState.context.prev){if(t.backUp(1),t.eatSpace())return i.rubyState=n,i.tokenize=e,e(t,i);t.next()}return g(t,i)};return function(e,o){return n=o.rubyState,o.rubyState=t.startState(i),o.tokenize=r,g(e,o)}}function g(t,e){return i.token(t,e.rubyState)}function M(t,e){return t.match(/^\\$/)?"lineContinuation":C(t,e)}function C(t,e){return t.match(/^#\{/)?(e.tokenize=v("}",e.tokenize),null):p(t,e,/[^\\]#\{/,1,n.token(t,e.htmlState))}function E(t){return function(e,n){var i=M(e,n);return e.eol()&&(n.tokenize=t),i}}function A(t,e,n){return e.stack={parent:e.stack,style:"html",indented:t.column()+n,tokenize:e.line},e.line=e.tokenize=C,null}function L(t,e){return t.skipToEnd(),e.stack.style}function $(t,e){return e.stack={parent:e.stack,style:"comment",indented:e.indented+1,tokenize:e.line},e.line=L,L(t,e)}function T(t,e){return t.eat(e.stack.endQuote)?(e.line=e.stack.line,e.tokenize=e.stack.tokenize,e.stack=e.stack.parent,null):t.match(m)?(e.tokenize=U,"slimAttribute"):(t.next(),null)}function U(t,e){return t.match(/^==?/)?(e.tokenize=j,null):T(t,e)}function j(t,e){var n=t.peek();return'"'==n||"'"==n?(e.tokenize=N(n,"string",!0,!1,T),t.next(),e.tokenize(t,e)):"["==n?w(T)(t,e):t.match(/^(true|false|nil)\b/)?(e.tokenize=T,"keyword"):w(T)(t,e)}function O(t,e,n){return t.stack={parent:t.stack,style:"wrapper",indented:t.indented+1,tokenize:n,line:t.line,endQuote:e},t.line=t.tokenize=T,null}function R(e,n){if(e.match(/^#\{/))return n.tokenize=v("}",n.tokenize),null;var i=new t.StringStream(e.string.slice(n.stack.indented),e.tabSize);i.pos=e.pos-n.stack.indented,i.start=e.start-n.stack.indented,i.lastColumnPos=e.lastColumnPos-n.stack.indented,i.lastColumnValue=e.lastColumnValue-n.stack.indented;var r=n.subMode.token(i,n.subState);return e.pos=i.pos+n.stack.indented,r}function q(t,e){return e.stack.indented=t.column(),e.line=e.tokenize=R,e.tokenize(t,e)}function I(n){var i=o[n],r=t.mimeModes[i];if(r)return t.getMode(e,r);var u=t.modes[i];return u?u(e,{name:i}):t.getMode(e,"null")}function P(t){return r.hasOwnProperty(t)?r[t]:r[t]=I(t)}function Z(e,n){var i=P(e),r=t.startState(i);return n.subMode=i,n.subState=r,n.stack={parent:n.stack,style:"sub",indented:n.indented+1,tokenize:n.line},n.line=n.tokenize=q,"slimSubmode"}function _(t,e){return t.skipToEnd(),"slimDoctype"}function D(t,e){if("<"==t.peek())return(e.tokenize=E(e.tokenize))(t,e);if(t.match(/^[|']/))return A(t,e,1);if(t.match(/^\/(!|\[\w+])?/))return $(t,e);if(t.match(/^(-|==?[<>]?)/))return e.tokenize=y(t.column(),S(t.column(),g)),"slimSwitch";if(t.match(/^doctype\b/))return e.tokenize=_,"keyword";var n=t.match(u);return n?Z(n[1],e):V(t,e)}function Q(t,e){return e.startOfLine?D(t,e):V(t,e)}function V(t,e){return t.eat("*")?(e.tokenize=w(B),null):t.match(k)?(e.tokenize=B,"slimTag"):F(t,e)}function B(t,e){return t.match(/^(<>?|><?)/)?(e.tokenize=F,null):F(t,e)}function F(t,e){return t.match(b)?(e.tokenize=F,"slimId"):t.match(f)?(e.tokenize=F,"slimClass"):G(t,e)}function G(t,e){return t.match(/^([\[\{\(])/)?O(e,c[RegExp.$1],G):t.match(d)?(e.tokenize=H,"slimAttribute"):"*"==t.peek()?(t.next(),e.tokenize=w(W),null):W(t,e)}function H(t,e){return t.match(/^==?/)?(e.tokenize=J,null):G(t,e)}function J(t,e){var n=t.peek();return'"'==n||"'"==n?(e.tokenize=N(n,"string",!0,!1,G),t.next(),e.tokenize(t,e)):"["==n?w(G)(t,e):":"==n?w(K)(t,e):t.match(/^(true|false|nil)\b/)?(e.tokenize=G,"keyword"):w(G)(t,e)}function K(t,e){return t.backUp(1),t.match(/^[^\s],(?=:)/)?(e.tokenize=w(K),null):(t.next(),G(t,e))}function N(t,e,n,i,r){return function(o,u){h(u);var a=0==o.current().length;if(o.match(/^\\$/,a))return a?(x(u,u.indented),"lineContinuation"):e;if(o.match(/^#\{/,a))return a?(u.tokenize=v("}",u.tokenize),null):e;for(var c,l=!1;null!=(c=o.next());){if(c==t&&(i||!l)){u.tokenize=r;break}if(n&&"#"==c&&!l&&o.eat("{")){o.backUp(2);break}l=!l&&"\\"==c}return o.eol()&&l&&o.backUp(1),e}}function W(t,e){return t.match(/^==?/)?(e.tokenize=g,"slimSwitch"):t.match(/^\/$/)?(e.tokenize=Q,null):t.match(/^:/)?(e.tokenize=V,"slimSwitch"):(A(t,e,0),e.tokenize(t,e))}var X={startState:function(){return{htmlState:t.startState(n),rubyState:t.startState(i),stack:null,last:null,tokenize:Q,line:Q,indented:0}},copyState:function(e){return{htmlState:t.copyState(n,e.htmlState),rubyState:t.copyState(i,e.rubyState),subMode:e.subMode,subState:e.subMode&&t.copyState(e.subMode,e.subState),stack:e.stack,last:e.last,tokenize:e.tokenize,line:e.line}},token:function(t,e){if(t.sol())for(e.indented=t.indentation(),e.startOfLine=!0,e.tokenize=e.line;e.stack&&e.stack.indented>e.indented&&"slimSubmode"!=e.last;)e.line=e.tokenize=e.stack.tokenize,e.stack=e.stack.parent,e.subMode=null,e.subState=null;if(t.eatSpace())return null;var n=e.tokenize(t,e);return e.startOfLine=!1,n&&(e.last=n),a.hasOwnProperty(n)?a[n]:n},blankLine:function(t){if(t.subMode&&t.subMode.blankLine)return t.subMode.blankLine(t.subState)},innerMode:function(t){return t.subMode?{state:t.subState,mode:t.subMode}:{state:t,mode:X}}};return X}),"htmlmixed","ruby"),t.defineMIME("text/x-slim","slim"),t.defineMIME("application/x-slim","slim")},"object"==typeof exports&&"object"==typeof module?t(require("../../lib/codemirror"),require("../htmlmixed/htmlmixed"),require("../ruby/ruby")):"function"==typeof define&&define.amd?define(["../../lib/codemirror","../htmlmixed/htmlmixed","../ruby/ruby"],t):t(CodeMirror);
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+// Slim Highlighting for CodeMirror copyright (c) HicknHack Software Gmbh
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"), require("../htmlmixed/htmlmixed"), require("../ruby/ruby"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror", "../htmlmixed/htmlmixed", "../ruby/ruby"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+"use strict";
+
+  CodeMirror.defineMode("slim", function(config) {
+    var htmlMode = CodeMirror.getMode(config, {name: "htmlmixed"});
+    var rubyMode = CodeMirror.getMode(config, "ruby");
+    var modes = { html: htmlMode, ruby: rubyMode };
+    var embedded = {
+      ruby: "ruby",
+      javascript: "javascript",
+      css: "text/css",
+      sass: "text/x-sass",
+      scss: "text/x-scss",
+      less: "text/x-less",
+      styl: "text/x-styl", // no highlighting so far
+      coffee: "coffeescript",
+      asciidoc: "text/x-asciidoc",
+      markdown: "text/x-markdown",
+      textile: "text/x-textile", // no highlighting so far
+      creole: "text/x-creole", // no highlighting so far
+      wiki: "text/x-wiki", // no highlighting so far
+      mediawiki: "text/x-mediawiki", // no highlighting so far
+      rdoc: "text/x-rdoc", // no highlighting so far
+      builder: "text/x-builder", // no highlighting so far
+      nokogiri: "text/x-nokogiri", // no highlighting so far
+      erb: "application/x-erb"
+    };
+    var embeddedRegexp = function(map){
+      var arr = [];
+      for(var key in map) arr.push(key);
+      return new RegExp("^("+arr.join('|')+"):");
+    }(embedded);
+
+    var styleMap = {
+      "commentLine": "comment",
+      "slimSwitch": "operator special",
+      "slimTag": "tag",
+      "slimId": "attribute def",
+      "slimClass": "attribute qualifier",
+      "slimAttribute": "attribute",
+      "slimSubmode": "keyword special",
+      "closeAttributeTag": null,
+      "slimDoctype": null,
+      "lineContinuation": null
+    };
+    var closing = {
+      "{": "}",
+      "[": "]",
+      "(": ")"
+    };
+
+    var nameStartChar = "_a-zA-Z\xC0-\xD6\xD8-\xF6\xF8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD";
+    var nameChar = nameStartChar + "\\-0-9\xB7\u0300-\u036F\u203F-\u2040";
+    var nameRegexp = new RegExp("^[:"+nameStartChar+"](?::["+nameChar+"]|["+nameChar+"]*)");
+    var attributeNameRegexp = new RegExp("^[:"+nameStartChar+"][:\\."+nameChar+"]*(?=\\s*=)");
+    var wrappedAttributeNameRegexp = new RegExp("^[:"+nameStartChar+"][:\\."+nameChar+"]*");
+    var classNameRegexp = /^\.-?[_a-zA-Z]+[\w\-]*/;
+    var classIdRegexp = /^#[_a-zA-Z]+[\w\-]*/;
+
+    function backup(pos, tokenize, style) {
+      var restore = function(stream, state) {
+        state.tokenize = tokenize;
+        if (stream.pos < pos) {
+          stream.pos = pos;
+          return style;
+        }
+        return state.tokenize(stream, state);
+      };
+      return function(stream, state) {
+        state.tokenize = restore;
+        return tokenize(stream, state);
+      };
+    }
+
+    function maybeBackup(stream, state, pat, offset, style) {
+      var cur = stream.current();
+      var idx = cur.search(pat);
+      if (idx > -1) {
+        state.tokenize = backup(stream.pos, state.tokenize, style);
+        stream.backUp(cur.length - idx - offset);
+      }
+      return style;
+    }
+
+    function continueLine(state, column) {
+      state.stack = {
+        parent: state.stack,
+        style: "continuation",
+        indented: column,
+        tokenize: state.line
+      };
+      state.line = state.tokenize;
+    }
+    function finishContinue(state) {
+      if (state.line == state.tokenize) {
+        state.line = state.stack.tokenize;
+        state.stack = state.stack.parent;
+      }
+    }
+
+    function lineContinuable(column, tokenize) {
+      return function(stream, state) {
+        finishContinue(state);
+        if (stream.match(/^\\$/)) {
+          continueLine(state, column);
+          return "lineContinuation";
+        }
+        var style = tokenize(stream, state);
+        if (stream.eol() && stream.current().match(/(?:^|[^\\])(?:\\\\)*\\$/)) {
+          stream.backUp(1);
+        }
+        return style;
+      };
+    }
+    function commaContinuable(column, tokenize) {
+      return function(stream, state) {
+        finishContinue(state);
+        var style = tokenize(stream, state);
+        if (stream.eol() && stream.current().match(/,$/)) {
+          continueLine(state, column);
+        }
+        return style;
+      };
+    }
+
+    function rubyInQuote(endQuote, tokenize) {
+      // TODO: add multi line support
+      return function(stream, state) {
+        var ch = stream.peek();
+        if (ch == endQuote && state.rubyState.tokenize.length == 1) {
+          // step out of ruby context as it seems to complete processing all the braces
+          stream.next();
+          state.tokenize = tokenize;
+          return "closeAttributeTag";
+        } else {
+          return ruby(stream, state);
+        }
+      };
+    }
+    function startRubySplat(tokenize) {
+      var rubyState;
+      var runSplat = function(stream, state) {
+        if (state.rubyState.tokenize.length == 1 && !state.rubyState.context.prev) {
+          stream.backUp(1);
+          if (stream.eatSpace()) {
+            state.rubyState = rubyState;
+            state.tokenize = tokenize;
+            return tokenize(stream, state);
+          }
+          stream.next();
+        }
+        return ruby(stream, state);
+      };
+      return function(stream, state) {
+        rubyState = state.rubyState;
+        state.rubyState = CodeMirror.startState(rubyMode);
+        state.tokenize = runSplat;
+        return ruby(stream, state);
+      };
+    }
+
+    function ruby(stream, state) {
+      return rubyMode.token(stream, state.rubyState);
+    }
+
+    function htmlLine(stream, state) {
+      if (stream.match(/^\\$/)) {
+        return "lineContinuation";
+      }
+      return html(stream, state);
+    }
+    function html(stream, state) {
+      if (stream.match(/^#\{/)) {
+        state.tokenize = rubyInQuote("}", state.tokenize);
+        return null;
+      }
+      return maybeBackup(stream, state, /[^\\]#\{/, 1, htmlMode.token(stream, state.htmlState));
+    }
+
+    function startHtmlLine(lastTokenize) {
+      return function(stream, state) {
+        var style = htmlLine(stream, state);
+        if (stream.eol()) state.tokenize = lastTokenize;
+        return style;
+      };
+    }
+
+    function startHtmlMode(stream, state, offset) {
+      state.stack = {
+        parent: state.stack,
+        style: "html",
+        indented: stream.column() + offset, // pipe + space
+        tokenize: state.line
+      };
+      state.line = state.tokenize = html;
+      return null;
+    }
+
+    function comment(stream, state) {
+      stream.skipToEnd();
+      return state.stack.style;
+    }
+
+    function commentMode(stream, state) {
+      state.stack = {
+        parent: state.stack,
+        style: "comment",
+        indented: state.indented + 1,
+        tokenize: state.line
+      };
+      state.line = comment;
+      return comment(stream, state);
+    }
+
+    function attributeWrapper(stream, state) {
+      if (stream.eat(state.stack.endQuote)) {
+        state.line = state.stack.line;
+        state.tokenize = state.stack.tokenize;
+        state.stack = state.stack.parent;
+        return null;
+      }
+      if (stream.match(wrappedAttributeNameRegexp)) {
+        state.tokenize = attributeWrapperAssign;
+        return "slimAttribute";
+      }
+      stream.next();
+      return null;
+    }
+    function attributeWrapperAssign(stream, state) {
+      if (stream.match(/^==?/)) {
+        state.tokenize = attributeWrapperValue;
+        return null;
+      }
+      return attributeWrapper(stream, state);
+    }
+    function attributeWrapperValue(stream, state) {
+      var ch = stream.peek();
+      if (ch == '"' || ch == "\'") {
+        state.tokenize = readQuoted(ch, "string", true, false, attributeWrapper);
+        stream.next();
+        return state.tokenize(stream, state);
+      }
+      if (ch == '[') {
+        return startRubySplat(attributeWrapper)(stream, state);
+      }
+      if (stream.match(/^(true|false|nil)\b/)) {
+        state.tokenize = attributeWrapper;
+        return "keyword";
+      }
+      return startRubySplat(attributeWrapper)(stream, state);
+    }
+
+    function startAttributeWrapperMode(state, endQuote, tokenize) {
+      state.stack = {
+        parent: state.stack,
+        style: "wrapper",
+        indented: state.indented + 1,
+        tokenize: tokenize,
+        line: state.line,
+        endQuote: endQuote
+      };
+      state.line = state.tokenize = attributeWrapper;
+      return null;
+    }
+
+    function sub(stream, state) {
+      if (stream.match(/^#\{/)) {
+        state.tokenize = rubyInQuote("}", state.tokenize);
+        return null;
+      }
+      var subStream = new CodeMirror.StringStream(stream.string.slice(state.stack.indented), stream.tabSize);
+      subStream.pos = stream.pos - state.stack.indented;
+      subStream.start = stream.start - state.stack.indented;
+      subStream.lastColumnPos = stream.lastColumnPos - state.stack.indented;
+      subStream.lastColumnValue = stream.lastColumnValue - state.stack.indented;
+      var style = state.subMode.token(subStream, state.subState);
+      stream.pos = subStream.pos + state.stack.indented;
+      return style;
+    }
+    function firstSub(stream, state) {
+      state.stack.indented = stream.column();
+      state.line = state.tokenize = sub;
+      return state.tokenize(stream, state);
+    }
+
+    function createMode(mode) {
+      var query = embedded[mode];
+      var spec = CodeMirror.mimeModes[query];
+      if (spec) {
+        return CodeMirror.getMode(config, spec);
+      }
+      var factory = CodeMirror.modes[query];
+      if (factory) {
+        return factory(config, {name: query});
+      }
+      return CodeMirror.getMode(config, "null");
+    }
+
+    function getMode(mode) {
+      if (!modes.hasOwnProperty(mode)) {
+        return modes[mode] = createMode(mode);
+      }
+      return modes[mode];
+    }
+
+    function startSubMode(mode, state) {
+      var subMode = getMode(mode);
+      var subState = CodeMirror.startState(subMode);
+
+      state.subMode = subMode;
+      state.subState = subState;
+
+      state.stack = {
+        parent: state.stack,
+        style: "sub",
+        indented: state.indented + 1,
+        tokenize: state.line
+      };
+      state.line = state.tokenize = firstSub;
+      return "slimSubmode";
+    }
+
+    function doctypeLine(stream, _state) {
+      stream.skipToEnd();
+      return "slimDoctype";
+    }
+
+    function startLine(stream, state) {
+      var ch = stream.peek();
+      if (ch == '<') {
+        return (state.tokenize = startHtmlLine(state.tokenize))(stream, state);
+      }
+      if (stream.match(/^[|']/)) {
+        return startHtmlMode(stream, state, 1);
+      }
+      if (stream.match(/^\/(!|\[\w+])?/)) {
+        return commentMode(stream, state);
+      }
+      if (stream.match(/^(-|==?[<>]?)/)) {
+        state.tokenize = lineContinuable(stream.column(), commaContinuable(stream.column(), ruby));
+        return "slimSwitch";
+      }
+      if (stream.match(/^doctype\b/)) {
+        state.tokenize = doctypeLine;
+        return "keyword";
+      }
+
+      var m = stream.match(embeddedRegexp);
+      if (m) {
+        return startSubMode(m[1], state);
+      }
+
+      return slimTag(stream, state);
+    }
+
+    function slim(stream, state) {
+      if (state.startOfLine) {
+        return startLine(stream, state);
+      }
+      return slimTag(stream, state);
+    }
+
+    function slimTag(stream, state) {
+      if (stream.eat('*')) {
+        state.tokenize = startRubySplat(slimTagExtras);
+        return null;
+      }
+      if (stream.match(nameRegexp)) {
+        state.tokenize = slimTagExtras;
+        return "slimTag";
+      }
+      return slimClass(stream, state);
+    }
+    function slimTagExtras(stream, state) {
+      if (stream.match(/^(<>?|><?)/)) {
+        state.tokenize = slimClass;
+        return null;
+      }
+      return slimClass(stream, state);
+    }
+    function slimClass(stream, state) {
+      if (stream.match(classIdRegexp)) {
+        state.tokenize = slimClass;
+        return "slimId";
+      }
+      if (stream.match(classNameRegexp)) {
+        state.tokenize = slimClass;
+        return "slimClass";
+      }
+      return slimAttribute(stream, state);
+    }
+    function slimAttribute(stream, state) {
+      if (stream.match(/^([\[\{\(])/)) {
+        return startAttributeWrapperMode(state, closing[RegExp.$1], slimAttribute);
+      }
+      if (stream.match(attributeNameRegexp)) {
+        state.tokenize = slimAttributeAssign;
+        return "slimAttribute";
+      }
+      if (stream.peek() == '*') {
+        stream.next();
+        state.tokenize = startRubySplat(slimContent);
+        return null;
+      }
+      return slimContent(stream, state);
+    }
+    function slimAttributeAssign(stream, state) {
+      if (stream.match(/^==?/)) {
+        state.tokenize = slimAttributeValue;
+        return null;
+      }
+      // should never happen, because of forward lookup
+      return slimAttribute(stream, state);
+    }
+
+    function slimAttributeValue(stream, state) {
+      var ch = stream.peek();
+      if (ch == '"' || ch == "\'") {
+        state.tokenize = readQuoted(ch, "string", true, false, slimAttribute);
+        stream.next();
+        return state.tokenize(stream, state);
+      }
+      if (ch == '[') {
+        return startRubySplat(slimAttribute)(stream, state);
+      }
+      if (ch == ':') {
+        return startRubySplat(slimAttributeSymbols)(stream, state);
+      }
+      if (stream.match(/^(true|false|nil)\b/)) {
+        state.tokenize = slimAttribute;
+        return "keyword";
+      }
+      return startRubySplat(slimAttribute)(stream, state);
+    }
+    function slimAttributeSymbols(stream, state) {
+      stream.backUp(1);
+      if (stream.match(/^[^\s],(?=:)/)) {
+        state.tokenize = startRubySplat(slimAttributeSymbols);
+        return null;
+      }
+      stream.next();
+      return slimAttribute(stream, state);
+    }
+    function readQuoted(quote, style, embed, unescaped, nextTokenize) {
+      return function(stream, state) {
+        finishContinue(state);
+        var fresh = stream.current().length == 0;
+        if (stream.match(/^\\$/, fresh)) {
+          if (!fresh) return style;
+          continueLine(state, state.indented);
+          return "lineContinuation";
+        }
+        if (stream.match(/^#\{/, fresh)) {
+          if (!fresh) return style;
+          state.tokenize = rubyInQuote("}", state.tokenize);
+          return null;
+        }
+        var escaped = false, ch;
+        while ((ch = stream.next()) != null) {
+          if (ch == quote && (unescaped || !escaped)) {
+            state.tokenize = nextTokenize;
+            break;
+          }
+          if (embed && ch == "#" && !escaped) {
+            if (stream.eat("{")) {
+              stream.backUp(2);
+              break;
+            }
+          }
+          escaped = !escaped && ch == "\\";
+        }
+        if (stream.eol() && escaped) {
+          stream.backUp(1);
+        }
+        return style;
+      };
+    }
+    function slimContent(stream, state) {
+      if (stream.match(/^==?/)) {
+        state.tokenize = ruby;
+        return "slimSwitch";
+      }
+      if (stream.match(/^\/$/)) { // tag close hint
+        state.tokenize = slim;
+        return null;
+      }
+      if (stream.match(/^:/)) { // inline tag
+        state.tokenize = slimTag;
+        return "slimSwitch";
+      }
+      startHtmlMode(stream, state, 0);
+      return state.tokenize(stream, state);
+    }
+
+    var mode = {
+      // default to html mode
+      startState: function() {
+        var htmlState = CodeMirror.startState(htmlMode);
+        var rubyState = CodeMirror.startState(rubyMode);
+        return {
+          htmlState: htmlState,
+          rubyState: rubyState,
+          stack: null,
+          last: null,
+          tokenize: slim,
+          line: slim,
+          indented: 0
+        };
+      },
+
+      copyState: function(state) {
+        return {
+          htmlState : CodeMirror.copyState(htmlMode, state.htmlState),
+          rubyState: CodeMirror.copyState(rubyMode, state.rubyState),
+          subMode: state.subMode,
+          subState: state.subMode && CodeMirror.copyState(state.subMode, state.subState),
+          stack: state.stack,
+          last: state.last,
+          tokenize: state.tokenize,
+          line: state.line
+        };
+      },
+
+      token: function(stream, state) {
+        if (stream.sol()) {
+          state.indented = stream.indentation();
+          state.startOfLine = true;
+          state.tokenize = state.line;
+          while (state.stack && state.stack.indented > state.indented && state.last != "slimSubmode") {
+            state.line = state.tokenize = state.stack.tokenize;
+            state.stack = state.stack.parent;
+            state.subMode = null;
+            state.subState = null;
+          }
+        }
+        if (stream.eatSpace()) return null;
+        var style = state.tokenize(stream, state);
+        state.startOfLine = false;
+        if (style) state.last = style;
+        return styleMap.hasOwnProperty(style) ? styleMap[style] : style;
+      },
+
+      blankLine: function(state) {
+        if (state.subMode && state.subMode.blankLine) {
+          return state.subMode.blankLine(state.subState);
+        }
+      },
+
+      innerMode: function(state) {
+        if (state.subMode) return {state: state.subState, mode: state.subMode};
+        return {state: state, mode: mode};
+      }
+
+      //indent: function(state) {
+      //  return state.indented;
+      //}
+    };
+    return mode;
+  }, "htmlmixed", "ruby");
+
+  CodeMirror.defineMIME("text/x-slim", "slim");
+  CodeMirror.defineMIME("application/x-slim", "slim");
+});

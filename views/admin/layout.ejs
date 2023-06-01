@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AdminLTE Backend</title>
+    <link rel="stylesheet" href="/css/adminlte.css">
+  </head>
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      <!-- Navbar -->
+      <!-- Replace with your own navbar implementation -->
+      <% include partials/sidebar %>
+
+      <!-- Content Wrapper -->
+      <div class="content-wrapper">
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">
+            <!-- Your page content here -->
+            <%- body %>
+          </div>
+        </section>
+      </div>
+
+      <!-- Include AdminLTE JavaScript -->
+      <script src="/js/adminlte.js"></script>
+  </body>
+</html>
