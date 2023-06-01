@@ -51,6 +51,17 @@
 				$(".close").click(function(){
 					let url = "";
 				});			
+				$("#lottoSave").click(function(){
+					//alert($(".lottoId").val())
+					$.ajax({
+            type:"POST",
+            url:'http://localhost:3002/admin',
+            data:$("#editlottoForm").serialize(),//only input
+            success: function(response){
+                console.log(response);  
+            }
+        	});
+				})
 			});	
 		</script>
 	<style>	
