@@ -3,7 +3,7 @@ const path = require('path');
 const axios = require('axios');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-
+//const flash = require('connect-flash');
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -14,7 +14,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
-
+//app.use(flash());
 
 // app.use(express.static('public'));
 
@@ -44,14 +44,35 @@ app.get('/', (req, res) => {
 app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
+
+  const data = {
+              "username": username,
+              "password": password,
+        };
+        const conf = {
+             headers: {
+                 "Content-type": "application/json",
+             },
+        };    
+          axios.post('https://lottobets.co/watchAdminLogin', data).then(response => {
+            console.log("response==",response.data)
+          if(response.data.status=='success'){
+            req.session.loggedIn = true;
+            req.session.username = username;
+            return res.redirect('/admin');
+          }else{
+            //req.flash('error', response.data.message);
+            //req.flash('message', 'Welcome to Blog');
+            return res.redirect('/login');
+          }
+    });
   
-  if (username !='') {
-	req.session.loggedIn = true;
-	req.session.username = username;
+  /*if (username !='') {
+	
     res.redirect('/admin');
   } else {
     res.redirect('/login');
-  }
+  }*/
 });
 
 // app.use('/admin', express.static('./node_modules/admin-lte'));
