@@ -113,6 +113,21 @@ module.exports = function(model){
 	      next();
 	   	}
 	};
+	module.watchLottoUpdate = function(req, res, next){
+		
+		req.checkBody('lottoId', 'lottoId is required').notEmpty();
+		//req.checkBody('drawLink', 'password is required').notEmpty();
+		
+
+	   	var errors = req.validationErrors();
+	   	if(errors){
+	   		//req.flash('error',errors[0].msg);
+	      	//res.send(errors[0]);
+	      	return res.send({status : 'fail', status_code:404, message : errors[0].msg})
+	   	}else{
+	      next();
+	   	}
+	};
 	//End: Validation for login
 
 	

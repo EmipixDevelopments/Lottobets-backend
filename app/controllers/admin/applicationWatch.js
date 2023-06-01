@@ -149,6 +149,47 @@ module.exports = function(model,config){
             }
 
     };
+    module.watchLottoUpdate = async function(request, response){
+            
+            
+            let tra = await sequelize_luckynumberint.transaction();
+            let input = request.body;
+            try {
+                let sql = "SELECT ID FROM " + config.Table.LOTTOLIST + " WHERE ID="+sequelize_luckynumberint.escape(input.lottoId)+" limit 1";
+                //console.log(sql)
+                let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
+                
+                if (result.length) {
+                    let sql_update = "UPADTE " + config.Table.LOTTOLIST + " SET drawLink="+sequelize_luckynumberint.escape(input.drawLink)+",live_url="+sequelize_luckynumberint.escape(input.liveURL)+" WHERE ID="+sequelize_luckynumberint.escape(input.lottoId)+" limit 1";
+                    await sequelize_cngapi.query(sql_update, { transaction: tra ,type: sequelize_cngapi.QueryTypes.UPADTE})
+                    await tra.commit(); 
+                    return response.send({
+                        status: "success",
+                        result: result[0],
+                        message: "Lotto Updated Successfully",
+                        status_code: 200
+                    });
+                } else {
+                    await tra.commit();
+                    return response.send({
+                        status: "fail",
+                        result: '',
+                        message: "Lotto not found",
+                        status_code: 422
+                    });
+                }
+            } catch (error) {
+                console.log('error',error);
+                if(tra) {
+                   await t.rollback();
+                }
+                return response.send({
+                    status: 'fail',
+                    message: error,
+                    status_code: 422
+                });
+            }
 
+    };
     return module;
 }

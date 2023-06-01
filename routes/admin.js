@@ -25,6 +25,7 @@ module.exports = function (app, model, controller) {
     app.get('/nextDrawWatch',  controller.applicationWatch.watchNextDraw);
     app.get('/listAllLotteriesWatch',  controller.applicationWatch.watchListAllLotteries);
     app.post('/watchAdminLogin',  validation.admin.watchAdminLogin,controller.userWatch.watchAdminLogin);
+    app.post('/watchLottoUpdate',  validation.admin.watchLottoUpdate,controller.applicationWatch.watchLottoUpdate);
     
 
    } 
