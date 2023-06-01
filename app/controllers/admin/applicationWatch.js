@@ -160,7 +160,7 @@ module.exports = function(model,config){
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                 
                 if (result.length) {
-                    let sql_update = "UPADTE " + config.Table.LOTTOLIST + " SET drawLink="+sequelize_luckynumberint.escape(input.drawLink)+",live_url="+sequelize_luckynumberint.escape(input.liveURL)+" WHERE ID="+sequelize_luckynumberint.escape(input.lottoId)+" limit 1";
+                    let sql_update = "UPDATE " + config.Table.LOTTOLIST + " SET drawLink="+sequelize_luckynumberint.escape(input.drawLink)+",live_url="+sequelize_luckynumberint.escape(input.liveURL)+" WHERE ID="+sequelize_luckynumberint.escape(input.lottoId)+" limit 1";
                     await sequelize_cngapi.query(sql_update, { transaction: tra ,type: sequelize_cngapi.QueryTypes.UPADTE})
                     await tra.commit(); 
                     return response.send({
