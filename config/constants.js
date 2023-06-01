@@ -20,6 +20,7 @@ var config = {
 		"twilio_fromNumber" : "+27600703069",
 		"purchase_value": "10000",
 		"Table":{	USER:'mobile_user',
+					ADMIN:'admin',
 					QUESTIONLIST:'question_list',
 					COUNTRIES:'countries',
 					MOBILEUSERIAV:'mobile_user_iav_list',
