@@ -55,10 +55,16 @@
 					//alert($(".lottoId").val())
 					$.ajax({
             type:"POST",
-            url:'http://localhost:3002/admin',
+            url:'https://lottobets.co/watchLottoUpdate',
             data:$("#editlottoForm").serialize(),//only input
             success: function(response){
-                console.log(response);  
+                console.log(response); 
+                if(response.status=='success'){
+                	alert(response.message);
+                	window.location.reload();
+                }else{
+                	alert(response.message);
+                }
             }
         	});
 				})
