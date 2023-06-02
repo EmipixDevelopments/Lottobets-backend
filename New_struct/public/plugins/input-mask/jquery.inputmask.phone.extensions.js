@@ -1,1 +1,0 @@
-var a;(a=jQuery).extend(a.inputmask.defaults.aliases,{phone:{url:"phone-codes/phone-codes.json",mask:function(n){n.definitions={p:{validator:function(){return!1},cardinality:1},"#":{validator:"[0-9]",cardinality:1}};var p=[];return a.ajax({url:n.url,async:!1,dataType:"json",success:function(a){p=a}}),p.splice(0,0,"+p(ppp)ppp-pppp"),p}}});

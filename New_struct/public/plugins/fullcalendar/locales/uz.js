@@ -1,1 +1,0 @@
-FullCalendar.globalLocales.push({code:"uz",buttonText:{month:"Oy",week:"Xafta",day:"Kun",list:"Kun tartibi"},allDayText:"Kun bo'yi",moreLinkText:function(a){return"+ yana "+a},noEventsText:"Ko'rsatish uchun voqealar yo'q"});

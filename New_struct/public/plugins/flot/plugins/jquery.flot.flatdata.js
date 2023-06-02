@@ -1,1 +1,0 @@
-!function(t){function n(t,n,o,i){if(!0===n.flatdata){var s=n.start||0,p="number"==typeof n.step?n.step:1;i.pointsize=2;for(var a=0,e=0;a<o.length;a++,e+=2)i.points[e]=s+a*p,i.points[e+1]=o[a];void 0!==i.points?i.points.length=2*o.length:i.points=[]}}jQuery.plot.plugins.push({init:function(t){t.hooks.processRawData.push(n)},name:"flatdata",version:"0.0.2"})}();
