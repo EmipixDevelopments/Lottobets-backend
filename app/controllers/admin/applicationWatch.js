@@ -48,12 +48,12 @@ module.exports = function(model,config){
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         
                      if(lottoevent_result.length){
-                        let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
+                        /*let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
                         let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
                         let diffTime = Math.abs(date2 - date1);
                         let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                         console.log(diffTime + " milliseconds");
-                        console.log(diffDays + " days");
+                        console.log(diffDays + " days");*/
                         /*if(diffDays<=8){
                             
                         }else{
