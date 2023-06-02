@@ -70,6 +70,10 @@ module.exports = function(model,config){
                      }
                     
                 }
+                function custom_sort(a, b) {
+                    return new Date(b.lastDrawTime).getTime() - new Date(a.lastDrawTime).getTime();
+                }
+                dataArr.sort(custom_sort);
                 await tra.commit();
                 return response.send({
                     status: "success",
