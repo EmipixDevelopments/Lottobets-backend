@@ -5,8 +5,8 @@ var config = {
 		
 	},
 	production: {
-		"port": 3002,
-		"baseUrl": "http://3.120.224.214:3002",
+		"port": 3001,
+		"baseUrl": "http://3.120.224.214:3001",
 		"lotto_img_url": "https://img.luckynumbersinternet.net/Colour",
 		"rootpath": "/var/www/lucky",
 		"siteName": "lucky",
