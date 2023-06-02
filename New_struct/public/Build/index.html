@@ -1,0 +1,266 @@
+<html>
+	<head>
+		<title>Watch Live Lottos</title>
+		<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+		<script src="https://code.jquery.com/jquery-latest.min.js"
+        type="text/javascript"></script>
+		<style>
+			body {
+				background-image : url("images/BKG.png");
+				font-family:sans-serif;
+			}
+			header {
+				/*width:1024px;*/
+				width:51%;
+				/*height:111px;*/
+				height:70px;
+				top:24px !Important;
+				/*left:208px;*/
+				color:#21125A;
+				/*position: absolute;*/
+				background: #21125A;
+				border-radius: 20px;
+				margin:auto;
+				margin-top:24px;
+			}
+			.left {
+				display: inline-block;
+				width: 50%;
+				float: left;
+				padding: 10px;
+				
+			}
+			.left img {
+				width:15%;
+				float:left;
+			}
+			.left p {
+				color: #F95BBF;
+				font-family: sans-serif;
+				float: left;
+				margin-left: 10px;
+				margin-top:10px;
+			}
+			.right span {
+				position: absolute;
+				left: 26.79%;
+				right: 26.79%;
+				top: 64.29%;
+				bottom: 0%;
+
+				font-family: 'Inter';
+				font-style: normal;
+				font-weight: 400;
+				font-size: 10px;
+				line-height: 20px;
+				/* identical to box height, or 200% */
+
+				text-align: center;
+
+				color: #FFFFFF;
+			}
+			main {
+				width:50%;
+				margin:auto;
+				margin-top:24px;
+
+				background: #FFFFFF;
+				border-radius: 10px 10px 10px 10px;
+				padding:40px;
+			}
+			main h3 {
+				/*width: 68px;
+				height: 20px;*/
+				margin:0 !important;
+
+				/*font-family: 'Inter';*/
+				font-family:sans-serif;
+				font-style: normal;
+				font-weight: 700;
+				font-size: 14px;
+				line-height: 20px;
+				/* identical to box height, or 143% */
+
+				display: flex;
+				align-items: center;
+				text-align: center;
+
+				color: #21125A;
+
+
+				/* Inside auto layout */
+
+				flex: none;
+				order: 0;
+				flex-grow: 0;
+			}
+			
+			main table {
+				width:100%;
+			}
+			
+			main table tr td,main table tr th {
+				font-size:12px;
+				text-align:center;
+				border-bottom: 1px dotted;
+			}
+			main table tr td img{
+				max-width:50%;
+			}
+			
+			main table tr td button {
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				padding: 7px;
+				gap: 8px;
+
+				background: #F95BBF;
+				border: 1px solid #F95BBF;
+				box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+				border-radius: 8px;
+				color:#fff;
+				cursor:pointer;
+			}
+			main table tr td a, main table tr td a:hover, .right a {
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				padding: 8px;
+				gap: 8px;
+
+				background: #F95BBF;
+				border: 1px solid #F95BBF;
+				box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+				border-radius: 8px;
+				color:#fff;
+				text-decoration:none;
+			}
+			
+			/******* Bootstrap modal css*******/
+			.btn-group-sm>.btn, .btn-sm {
+				border-radius: 8px !Important;
+			}
+			.btn-group-sm>.btn, .btn-sm:hover {
+				color:#fff;
+				border:none;
+			}
+			.btn:focus {
+				color:#fff !Important;
+			}
+			
+			.modal-body {
+				padding:0px !important;
+			}
+			.right {
+				display: inline-block;
+				width: 50%;
+				float: right;
+				text-align: right;
+				padding:25px;
+			}
+		</style>
+		<script>
+		    $(document).ready(function() {
+				$(".watch").click(function(){
+					console.log('Hello Button clicked');
+					let url = $(this).attr("data-url");
+					console.log("url : ",url);
+					$(".modal-body").html("<iframe width='100%' height='450px' src='"+url+"' allow='autoplay; full screen'></iframe>");
+				});
+				$(".close").click(function(){
+					let url = "";
+					$(".modal-body").html("<iframe width='100%' height='450px' src='"+url+"' allow='autoplay; full screen'></iframe>");
+				});			
+			});	
+		</script>
+	</head>
+	<body>
+		<header>
+			<div class="left">
+				<img src="images/Logo.png" />
+				<p>Welcome to Online Fantasy Lotto</p>
+			</div>
+			<div class="right">
+				<a class="" target="_blank" href="http://3.120.231.131:3000/" type="button">Play Now</a>
+			</div>
+		</header>
+		<main>
+			<table>
+				<tr>
+					<th>Lotto</th>
+					<th>Country</th>
+					<th>&nbsp;</th>
+					<th>Starts In</th>
+					<th>&nbsp;</th>
+					<th>&nbsp;</th>
+				</tr>
+				<tr>
+					<td><img src="images/unitedstatestexasallornothingnight.png"/><br/>All or Nothing Night</td>
+					<td>USA Texas</td>
+					<td><img src="images/usa_flag.png" /></td>
+					<td>00:00:00 <br/> 03 May 2023</td>
+					<!-- <td><button>Watch</button></td> -->
+					<td><button type="button" class="btn btn-sm watch" data-toggle="modal" data-target="#myModal" data-url="https://www.youtube.com/embed/El5nwzOEpDQ?rel=0&amp;autoplay=1&origin=https://3.120.231.131:3000" frameborder="0" allowfullscreen>Watch</button></td>
+					<td><a type="button" href="http://3.120.231.131:3000/" target=”_blank”>Play</a></td>
+				</tr>
+				<tr>
+					<td><img src="images/unitedstatesfloridafantasy5.png"/><br/>Fantasy 5</td>
+					<td>USA Florida</td>
+					<td><img src="images/usa_flag.png" /></td>
+					<td>00:00:00 <br/ > 03 May 2023</td>
+					<td><button type="button" class="btn btn-sm watch" data-toggle="modal" data-target="#myModal" data-url="https://www.youtube.com/embed/WW_iECDeKvg?rel=0&amp;autoplay=1&origin=https://3.120.231.131:3000">Watch</button></td>
+					<td><a type="button" href="http://3.120.231.131:3000/" target=”_blank”>Play</a></td>
+				</tr>
+				<tr>
+					<td><img src="images/unitedstatesmegamillions.png"/><br/>Mega Millions</td>
+					<td>USA National</td>
+					<td><img src="images/usa_flag.png" /></td>
+					<td>00:00:00 <br/> 02 May 2023 </td>
+					<td><button type="button" class="btn btn-sm watch" data-toggle="modal" data-target="#myModal" data-url="https://www.youtube.com/embed/Kbqobx7B3fY?rel=0&amp;autoplay=1&origin=https://3.120.231.131:3000">Watch</button></td>
+					<td><a type="button" href="http://3.120.231.131:3000/"target=”_blank”>Play</a></td>
+				</tr>
+				<tr>
+					<td><img src="images/unitedstatescash4life.png"/><br/>Cash 4 Life</td>
+					<td>USA National</td>
+					<td><img src="images/usa_flag.png" /></td>
+					<td>00:00:00 <br/> 03 May 2023 </td>
+					<td><button type="button" class="btn btn-sm watch" data-toggle="modal" data-target="#myModal" data-url="https://www.youtube.com/embed/88DkqhHAki4?rel=0&amp;autoplay=1&origin=https://3.120.231.131:3000">Watch</button></td>
+					<td><a type="button" href="http://3.120.231.131:3000/" target=”_blank”>Play</a></td>
+				</tr>
+				<tr>
+					<td><img src="images/ukthunderball.png"/><br/>Thunderball</td>
+					<td>UK</td>
+					<td><img src="images/uk_flag.png" /></td>
+					<td>00:00:00 <br/> 02 May 2023 </td>
+					<td><button type="button" class="btn btn-sm watch" data-toggle="modal" data-target="#myModal" data-url="https://www.youtube.com/embed/6JJyls4vyq8?rel=0&amp;autoplay=1&origin=https://3.120.231.131:3000">Watch</button></td>
+					<td><a type="button" href="http://3.120.231.131:3000/" target=”_blank”>Play</a></td>
+				</tr>
+			</table>
+		</main>
+		<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <!-- <h4 class="modal-title">Modal Header</h4> -->
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+        </div>
+      </div>
+      
+    </div>
+  </div>
+	</body>
+</html>
