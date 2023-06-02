@@ -45,9 +45,20 @@ module.exports = function(model,config){
 
                      sql = "SELECT le.ProfileID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' ORDER BY le.DrawTime DESC limit 1";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
+                        
                      if(lottoevent_result.length){
-                       
-                        result[i]['lastDrawTime'] = lottoevent_result[0].DrawTime;
+                        let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
+                        let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
+                        let diffTime = Math.abs(date2 - date1);
+                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        console.log(diffTime + " milliseconds");
+                        console.log(diffDays + " days");
+                        if(diffDays<=8){
+                            result[i]['lastDrawTime'] = lottoevent_result[0].DrawTime;
+                        }else{
+                            result[i]['lastDrawTime'] = '';
+                        }
+                        
                         result[i]['lastResult'] = lottoevent_result[0].Result;
                      }else{
                         result[i]['lastDrawTime'] = '';
