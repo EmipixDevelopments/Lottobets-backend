@@ -31,6 +31,7 @@ module.exports = function(model,config){
                  
                 if (result.length) {
                 //var time = require('time');
+                let dataArr = [];
                 for(let i=0;i<result.length;i++){
                     let profileTimezone = result[i]['TimeZone'];
                     let timediff = (+2) - (profileTimezone);
@@ -43,7 +44,7 @@ module.exports = function(model,config){
                     result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
 
-                     sql = "SELECT le.ProfileID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' ORDER BY le.DrawTime DESC limit 1";
+                     sql = "SELECT le.ProfileID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         
                      if(lottoevent_result.length){
@@ -53,14 +54,17 @@ module.exports = function(model,config){
                         let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                         console.log(diffTime + " milliseconds");
                         console.log(diffDays + " days");
-                        if(diffDays<=8){
-                            result[i]['lastDrawTime'] = lottoevent_result[0].DrawTime;
+                        /*if(diffDays<=8){
+                            
                         }else{
                             result[i]['lastDrawTime'] = '';
-                        }
-                        
+                        }*/
+                        result[i]['lastDrawTime'] = lottoevent_result[0].DrawTime;
                         result[i]['lastResult'] = lottoevent_result[0].Result;
+                        dataArr.push(result[i]);
+
                      }else{
+                        continue;
                         result[i]['lastDrawTime'] = '';
                         result[i]['lastResult'] = '';
                      }
@@ -69,7 +73,7 @@ module.exports = function(model,config){
                 await tra.commit();
                 return response.send({
                     status: "success",
-                    result: result,
+                    result: dataArr,
                     message: "Lotto found successfully",
                     status_code: 200
                 });
