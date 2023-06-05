@@ -26,7 +26,7 @@ module.exports = function(model,config){
                 console.log("next===",next);
             let tra = await sequelize_cngapi.transaction();
             try {
-                let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR) ";
+                let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime,le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 AND (le.DrawTime <= now() - interval 8 day AND le.Result!='') GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),le.DrawTime DESC";
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                  
                 if (result.length) {
@@ -44,30 +44,12 @@ module.exports = function(model,config){
                     result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
 
-                     sql = "SELECT le.ProfileID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOEVENT + " le WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
+                     sql = "SELECT le.ProfileID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
-                        
-                     if(lottoevent_result.length){
-                        /*let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
-                        let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
-                        let diffTime = Math.abs(date2 - date1);
-                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                        console.log(diffTime + " milliseconds");
-                        console.log(diffDays + " days");*/
-                        /*if(diffDays<=8){
-                            
-                        }else{
-                            result[i]['lastDrawTime'] = '';
-                        }*/
-                        result[i]['lastDrawTime'] = lottoevent_result[0].DrawTime;
-                        result[i]['lastResult'] = lottoevent_result[0].Result;
-                        dataArr.push(result[i]);
-
-                     }else{
-                        continue;
-                        result[i]['lastDrawTime'] = '';
-                        result[i]['lastResult'] = '';
-                     }
+                        result[i]['lastDrawTime'] = result[i].DrawTime;
+                        result[i]['lastResult'] = lottoevent_result[i].Result;
+                        dataArr.push(result[i]);   
+                     
                     
                 }
                 function custom_sort(a, b) {
