@@ -20,16 +20,15 @@ module.exports = function(model,config){
                 var t = new Date();
                // t.setDate(t.getDate() + 2);
                 var next = new Date(dateFormat(new Date(t), "yyyy-mm-dd HH:MM:ss",true));
-                next.setHours(next.getMinutes() + 55);
+                next.setHours(next.getMinutes() + 5);
                 next = dateFormat(next, "yyyy-mm-dd HH:MM:ss");
                 console.log("current===",current);
                 console.log("next===",next);
             let tra = await sequelize_cngapi.transaction();
-            let tra_lucky = await sequelize_luckynumberint.transaction();
             try {
                 let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)";
                 console.log(sql)
-                let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
+                let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                  
                 if (result.length) {
                 //var time = require('time');
@@ -47,9 +46,7 @@ module.exports = function(model,config){
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
 
                      sql = "SELECT DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
-                     sql = "CALL GetIAVBalance(2348526318)";
-                     //let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
-                     let lottoevent_result = await sequelize_luckynumberint.query(sql, { transaction: tra_lucky ,type: sequelize_luckynumberint.QueryTypes.SELECT});
+                     let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         
                      if(lottoevent_result.length){
                         /*let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
@@ -63,8 +60,8 @@ module.exports = function(model,config){
                         }else{
                             result[i]['lastDrawTime'] = '';
                         }*/
-                        result[i]['lastDrawTime'] = '-';
-                        result[i]['lastResult'] = '-';
+                        result[i]['lastDrawTime'] = lottoevent_result[0].DrawTime;
+                        result[i]['lastResult'] = lottoevent_result[0].Result;
                         dataArr.push(result[i]);
 
                      }else{
@@ -79,7 +76,6 @@ module.exports = function(model,config){
                 }
                 dataArr.sort(custom_sort);
                 await tra.commit();
-                await tra_lucky.commit();
                 return response.send({
                     status: "success",
                     result: dataArr,
@@ -97,8 +93,7 @@ module.exports = function(model,config){
             } catch (error) {
                 console.log('error',error);
                 if(tra) {
-                   await tra.rollback();
-                   await tra_lucky.rollback();
+                   await t.rollback();
                 }
                 return response.send({
                     status: 'fail',
