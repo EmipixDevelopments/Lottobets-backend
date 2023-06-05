@@ -49,7 +49,7 @@ module.exports = function(model,config){
                      sql = "CALL ProfileLastResult(" + result[i].lottoId + ")";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         
-                     if(lottoevent_result.length){
+                     if(lottoevent_result[0]['0']){
                         /*let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
                         let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
                         let diffTime = Math.abs(date2 - date1);
@@ -61,7 +61,7 @@ module.exports = function(model,config){
                         }else{
                             result[i]['lastDrawTime'] = '';
                         }*/
-                        console.log(lottoevent_result[0]['0'])
+                        console.log(i,'=',lottoevent_result[0]['0'])
                         result[i]['lastDrawTime'] = lottoevent_result[0]['0'].DrawTime;
                         result[i]['lastResult'] = lottoevent_result[0]['0'].Result;
                         dataArr.push(result[i]);
