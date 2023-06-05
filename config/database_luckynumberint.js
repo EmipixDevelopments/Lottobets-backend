@@ -32,8 +32,8 @@ module.exports = function (dataBaseType) {
 		pool: {
 			max: 10000,
 			min: 0,
-			acquire: 30000,
-			idle: 10000
+			acquire: 1200000,
+      		idle: 1000000,
 		}
 	});
 
