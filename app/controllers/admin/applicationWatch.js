@@ -46,7 +46,7 @@ module.exports = function(model,config){
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
 
                      sql = "SELECT DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
-                     sql = "CALL(" + result[i].lottoId + ")";
+                     sql = "CALL ProfileLastResult2(" + result[i].lottoId + ")";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         console.log(lottoevent_result)
                      if(lottoevent_result.length){
