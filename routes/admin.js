@@ -22,7 +22,7 @@ module.exports = function (app, model, controller) {
     app.post('/forgot',  validation.admin.forgot,controller.user.forgot);
 
 
-    app.post('/nextDrawWatch',  controller.applicationWatch.watchNextDraw);
+    app.get('/nextDrawWatch',  controller.applicationWatch.watchNextDraw);
     app.get('/listAllLotteriesWatch',  controller.applicationWatch.watchListAllLotteries);
     app.post('/watchAdminLogin',  validation.admin.watchAdminLogin,controller.userWatch.watchAdminLogin);
     app.post('/watchLottoUpdate',  validation.admin.watchLottoUpdate,controller.applicationWatch.watchLottoUpdate);
