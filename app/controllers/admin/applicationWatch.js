@@ -20,7 +20,7 @@ module.exports = function(model,config){
                 var t = new Date();
                // t.setDate(t.getDate() + 2);
                 var next = new Date(dateFormat(new Date(t), "yyyy-mm-dd HH:MM:ss",true));
-                next.setHours(next.getMinutes() + 5);
+                next.setHours(next.getMinutes() + 55);
                 next = dateFormat(next, "yyyy-mm-dd HH:MM:ss");
                 console.log("current===",current);
                 console.log("next===",next);
