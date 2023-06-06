@@ -33,10 +33,10 @@ module.exports = function(model,config){
                 if (result.length) {
                 //var time = require('time');
                 let dataArr = [];
-                let profileID = [];
+                let profileIDArr = [];
                 for(let i=0;i<result.length;i++){
                     let profileTimezone = result[i]['TimeZone'];
-                    profileID.push(result[i][ProfileID]);
+                    profileIDArr.push(result[i].ProfileID);
                     let timediff = (+2) - (profileTimezone);
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
                     now  = new Date(now);
@@ -76,8 +76,8 @@ module.exports = function(model,config){
                     
                 }
                 if(profileID.length){
-                    console.log("profileID=",profileID)
-                    var ids = profileID,
+                    console.log("profileID=",profileIDArr)
+                    var ids = profileIDArr,
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
 
                 console.log("formatted",formatted)
