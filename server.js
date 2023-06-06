@@ -3,8 +3,6 @@ const path = require('path');
 const axios = require('axios');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const getVideoId = require('get-video-id');
-const url = require('url');
 //const flash = require('connect-flash');
 const app = express();
 
@@ -27,26 +25,13 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.get('/', (req, res) => {
   // Retrieve your data from a database or any other source
-
   // const data = [
     // { lottoImage: 'images/unitedstatestexasallornothingnight.png',lottoName : 'All or Nothing Night', country: 'USA Texas', countryFlag : 'images/usa_flag.png', startTime : '00:00:00', startDate : '03 May 2023', watchLink : 'https://www.youtube.com/embed/El5nwzOEpDQ', drawLink: '' },
   // ];
-  req.setTimeout(50000000);
 
 	axios.get('https://lottobets.co/nextdrawWatch')
 	  .then(response => {
 		const data = response.data.result;
-		data.forEach((element, index) => {
-			if(element.live_url !=''){
-				let videoID = getVideoId(element.live_url);
-				element.live_url = makeLinkEmbeded(element.live_url, videoID.id, "Live");
-			}
-			
-			if(element.drawLink !='' && element.drawLink !=undefined){
-				let videoID = getVideoId(element.drawLink);
-				element.drawLink = makeLinkEmbeded(element.drawLink, videoID.id, "Watch");
-			}	
-		});
 		res.render('index', { data });
 	  })
 	  .catch(error => {
@@ -69,15 +54,17 @@ app.post('/login', (req, res) => {
                  "Content-type": "application/json",
              },
         };    
-        axios.post('https://lottobets.co/watchAdminLogin', data).then(response => {
+          axios.post('https://lottobets.co/watchAdminLogin', data).then(response => {
             console.log("response==",response.data)
-			if(response.data.status=='success'){
-				req.session.loggedIn = true;
-				req.session.username = username;
-				return res.redirect('/admin');
-			}else{
-				return res.redirect('/login');
-			}
+          if(response.data.status=='success'){
+            req.session.loggedIn = true;
+            req.session.username = username;
+            return res.redirect('/admin');
+          }else{
+            //req.flash('error', response.data.message);
+            //req.flash('message', 'Welcome to Blog');
+            return res.redirect('/login');
+          }
     });
   
   /*if (username !='') {
@@ -129,71 +116,3 @@ function checkAuth(req, res, next) {
     res.redirect('/login');
   }
 }	
-
-function makeLinkEmbeded(link ,videoId, linkType){
-	//if(linkType == 'Live'){
-		// console.log("linkType : ",linkType," link : ",link);
-		//const videoId = getYouTubeVideoId(link);
-		// const { videoId } = getVideoId(link);
-	//} else { 
-		if(videoId)
-			return createEmbeddedYouTubeLink(videoId);
-		else	
-		  console.log("Invalid YouTube URL");
-	//}
-	
-}
-
-function getYouTubeVideoId(urlString) {
-
-	// var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;	
-    // var match = url.match(regExp);
-	// console.log('url : ',url);
-	// console.log('regExp : ',regExp);
-	// console.log('match : ',match);
-    // return (match&&match[7].length==11)? match[7] : false;	
-	/*
-  const regex = new RegExp('/(?:http?s?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/g');
-  const match = url.match(regex);
-  console.log("regex : ",regex);
-  console.log("match : ",match);
-  
-  
-  if(match && match[1].length === 11){
-	return match[1];
-  }	else {
-	const pattern = /^(?:https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]+)/;
-	const match = url.match(pattern);
-	return match[1];  
-  } 
-  */
-  
-  const parsedUrl = url.parse(urlString, true);
-
-  if (parsedUrl.hostname === 'www.youtube.com' || parsedUrl.hostname === 'youtube.com') {
-    if (parsedUrl.pathname === '/watch') {
-		console.log('parsedUrl.query.v : ',parsedUrl.query.v);
-      return parsedUrl.query.v;
-    } else if (parsedUrl.pathname.startsWith('/embed/')) {
-		console.log("parsedUrl.pathname.split('/')[2] : ",parsedUrl.pathname.split('/')[2]);
-      return parsedUrl.pathname.split('/')[2];
-    } else if (parsedUrl.pathname.startsWith('/v/')) {
-		console.log("parsedUrl.pathname.split('/')[2] : ",parsedUrl.pathname.split('/')[2]);
-      return parsedUrl.pathname.split('/')[2];
-    }
-  } else if (parsedUrl.hostname === 'youtu.be') {
-	  console.log('parsedUrl.pathname.substr(1) : ',parsedUrl.pathname.substr(1));
-    return parsedUrl.pathname.substr(1);
-  }
-
-  return null;
-  
-}
-
-function createEmbeddedYouTubeLink(videoId) {
-  const embedUrl = "https://www.youtube.com/embed/"+videoId;
-
- // const iframe = `<iframe width="560" height="315" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-
-  return embedUrl;
-}
