@@ -36,7 +36,7 @@ module.exports = function(model,config){
                 let profileIDArr = [];
                 for(let i=0;i<result.length;i++){
                     let profileTimezone = result[i]['TimeZone'];
-                    profileIDArr.push(parseInt(result[i].ProfileID));
+                    profileIDArr.push(result[i].lottoId);
                     let timediff = (+2) - (profileTimezone);
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
                     now  = new Date(now);
