@@ -26,7 +26,8 @@ module.exports = function(model,config){
                 console.log("next===",next);
             let tra = await sequelize_cngapi.transaction();
             try {
-                let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)";
+                //let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)";
+                let sql = "SELECT le.profileID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.IsClosed=1 AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC";
                 console.log(sql)
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                  
@@ -35,9 +36,9 @@ module.exports = function(model,config){
                 let dataArr = [];
                 let profileIDArr = [];
                 for(let i=0;i<result.length;i++){
-                    let profileTimezone = result[i]['TimeZone'];
-                    profileIDArr.push(result[i].lottoId);
-                    let timediff = (+2) - (profileTimezone);
+                    //let profileTimezone = result[i]['TimeZone'];
+                    profileIDArr.push(result[i].profileID);
+                    /*let timediff = (+2) - (profileTimezone);
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
                     now  = new Date(now);
                     
@@ -45,7 +46,7 @@ module.exports = function(model,config){
                     CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                     result['CutTime'] = CutTime;
                     result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
-                    result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
+                    result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;*/
 
                      //sql = "SELECT DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
                      /*sql = "CALL ProfileLastResult(" + result[i].lottoId + ")";
@@ -81,26 +82,28 @@ module.exports = function(model,config){
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
 
                 console.log("formatted",formatted)
-                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
+                    //let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
+                    let next_sql="SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' le.result='' AND ll.Enable=1  AND le.IsClosed!=1 le.ProfileID IN"+formatted+" GROUP BY le.ProfileID ORDER by le.DrawTime DESC ";
                     let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                     for(let i=0;i<result.length;i++){
                         for(j=0;j<filter_result.length;j++){
-                            if(result[i].lottoId==filter_result[j].ProfileID){
-                                var index = dataArr.findIndex(function(item, i){
-                                      return item.lottoId === filter_result[j].ProfileID
-                                    });
+                            if(result[i].profileID==filter_result[j].lottoId){
+                                var index = dataArr.findIndex(obj => obj.lottoId==filter_result[j].lottoId);
+                                
                                 if(index<=-1){
-                                    let date1 = new Date(dateFormat(filter_result[j].DrawTime, "yyyy-mm-dd"));
-                                    let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
-                                    let diffTime = Math.abs(date2 - date1);
-                                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                                    //console.log(diffTime + " milliseconds");
-                                    //console.log(diffDays + " days");
-                                    if(diffDays<=8){
-                                        result[i]['lastDrawTime'] = filter_result[j].DrawTime;
-                                        result[i]['lastResult'] = filter_result[j].Result;
-                                        dataArr.push(result[i]) 
-                                    }
+                                    let profileTimezone = filter_result[j]['TimeZone'];
+                                    let timediff = (+2) - (profileTimezone);
+                                    var now = dateFormat(new Date(filter_result[j]['CutTime']), "yyyy-mm-dd HH:MM:ss");
+                                    now  = new Date(now);
+                                    
+                                    var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
+                                    CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
+                                    filter_result[j]['CutTime'] = CutTime;
+                                    filter_result[j]['countryFlag'] = config.baseUrl+'/flags/'+filter_result[j].countryFlag+'.png';
+                                    filter_result[j]['colorimage'] = config.lotto_img_url+'/'+filter_result[j].colorimage;
+                                    filter_result[j]['lastDrawTime'] = filter_result[j].DrawTime;
+                                    filter_result[j]['lastResult'] = result[i].Result;
+                                    dataArr.push(filter_result[j])
                                     
                                 }
                                 
