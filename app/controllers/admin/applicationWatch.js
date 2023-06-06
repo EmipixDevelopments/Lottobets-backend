@@ -33,8 +33,10 @@ module.exports = function(model,config){
                 if (result.length) {
                 //var time = require('time');
                 let dataArr = [];
+                let profileID = [];
                 for(let i=0;i<result.length;i++){
                     let profileTimezone = result[i]['TimeZone'];
+                    profileID.push(result[i]['ProfileID']);
                     let timediff = (+2) - (profileTimezone);
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
                     now  = new Date(now);
@@ -72,6 +74,14 @@ module.exports = function(model,config){
                         result[i]['lastResult'] = '';
                      }
                     
+                }
+                if(profileID.length){
+                    var ids = [378, 464],
+                    formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
+
+                console.log(formatted)
+                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN("+formatted+") AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
+                    console.log(next_sql)
                 }
                 function custom_sort(a, b) {
                     return new Date(b.lastDrawTime).getTime() - new Date(a.lastDrawTime).getTime();
