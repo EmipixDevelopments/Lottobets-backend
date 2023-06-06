@@ -81,7 +81,7 @@ module.exports = function(model,config){
                 }
                 if(profileIDArr.length){
                     
-                result.sort(custom_sort);
+                /*result.sort(custom_sort);*/
                     console.log("profileID=",profileIDArr)
                     profileIDArr = profileIDArr.filter((value, index, array) => array.indexOf(value) === index);
                     var ids = profileIDArr,
