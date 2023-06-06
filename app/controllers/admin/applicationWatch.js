@@ -20,7 +20,7 @@ module.exports = function(model,config){
                 var t = new Date();
                // t.setDate(t.getDate() + 2);
                 var next = new Date(dateFormat(new Date(t), "yyyy-mm-dd HH:MM:ss",true));
-                next.setHours(next.getMinutes() + 5);
+                next.setHours(next.getDate() - 8);
                 next = dateFormat(next, "yyyy-mm-dd HH:MM:ss");
                 console.log("current===",current);
                 console.log("next===",next);
@@ -30,7 +30,7 @@ module.exports = function(model,config){
                     return new Date(a.DrawTime).getTime() - new Date(b.DrawTime).getTime();
                 }
                 //let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)";
-                let sql = "SELECT le.profileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE  le.IsClosed=1 AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC";
+                let sql = "SELECT le.profileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE  le.IsClosed=1 AND le.Result!='' AND le.DrawTime <= "+current+" AND le.DrawTime >= "+next+" ORDER BY le.DrawTime DESC";
                 console.log(sql)
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                  
