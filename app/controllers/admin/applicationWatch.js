@@ -10,7 +10,7 @@ module.exports = function(model,config){
     
 
     module.watchNextDraw = async function(request, response){
-            
+            request.setTimeout(1500000);
             var d = new Date();
             var dt = d.getDate()+2;
             var current = new Date(dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss",true));
