@@ -48,21 +48,21 @@ module.exports = function(model,config){
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
 
                      //sql = "SELECT DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
-                     sql = "CALL ProfileLastResult(" + result[i].lottoId + ")";
+                     /*sql = "CALL ProfileLastResult(" + result[i].lottoId + ")";
                      let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         
                      if(lottoevent_result[0]['0']){
-                        /*let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
+                        let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
                         let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
                         let diffTime = Math.abs(date2 - date1);
                         let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                         console.log(diffTime + " milliseconds");
-                        console.log(diffDays + " days");*/
-                        /*if(diffDays<=8){
+                        console.log(diffDays + " days");
+                        if(diffDays<=8){
                             
                         }else{
                             result[i]['lastDrawTime'] = '';
-                        }*/
+                        }
                         console.log(i,'=',lottoevent_result[0]['0'])
                         result[i]['lastDrawTime'] = lottoevent_result[0]['0'].DrawTime;
                         result[i]['lastResult'] = lottoevent_result[0]['0'].Result;
@@ -72,7 +72,7 @@ module.exports = function(model,config){
                         continue;
                         result[i]['lastDrawTime'] = '';
                         result[i]['lastResult'] = '';
-                     }
+                     }*/
                     
                 }
                 if(profileIDArr.length){
@@ -81,8 +81,25 @@ module.exports = function(model,config){
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
 
                 console.log("formatted",formatted)
-                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
-                    console.log(next_sql)
+                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1 AND le.DrawTime <= now() - interval 8 day  ORDER BY le.DrawTime DESC ";
+                    let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
+                    for(let i=0;i<result.length;i++){
+                        for(j=0;j<filter_result.length;j++){
+                            if(result[i].lottoId==filter_result[j].ProfileID){
+                                var index = dataArr.findIndex(function(item, i){
+                                      return item.lottoId === filter_result[j].ProfileID
+                                    });
+                                if(index<=-1){
+                                    result[i]['lastDrawTime'] = filter_result[j].DrawTime;
+                                    result[i]['lastResult'] = filter_result[j].Result;
+                                    dataArr.push(result[i])
+                                }
+                                
+                            }
+                        }
+                    }
+                    console.log(dataArr);
+
                 }
                 function custom_sort(a, b) {
                     return new Date(b.lastDrawTime).getTime() - new Date(a.lastDrawTime).getTime();
