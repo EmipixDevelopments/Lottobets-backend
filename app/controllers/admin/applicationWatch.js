@@ -81,7 +81,7 @@ module.exports = function(model,config){
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
 
                 console.log("formatted",formatted)
-                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1 AND le.DrawTime <= now() - interval 8 day  ORDER BY le.DrawTime DESC ";
+                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
                     let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                     for(let i=0;i<result.length;i++){
                         for(j=0;j<filter_result.length;j++){
@@ -90,9 +90,18 @@ module.exports = function(model,config){
                                       return item.lottoId === filter_result[j].ProfileID
                                     });
                                 if(index<=-1){
-                                    result[i]['lastDrawTime'] = filter_result[j].DrawTime;
-                                    result[i]['lastResult'] = filter_result[j].Result;
-                                    dataArr.push(result[i])
+                                    let date1 = new Date(dateFormat(filter_result[j].DrawTime, "yyyy-mm-dd"));
+                                    let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
+                                    let diffTime = Math.abs(date2 - date1);
+                                    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                                    console.log(diffTime + " milliseconds");
+                                    console.log(diffDays + " days");
+                                    if(diffDays<=8){
+                                        result[i]['lastDrawTime'] = filter_result[j].DrawTime;
+                                        result[i]['lastResult'] = filter_result[j].Result;
+                                        dataArr.push(result[i]) 
+                                    }
+                                    
                                 }
                                 
                             }
