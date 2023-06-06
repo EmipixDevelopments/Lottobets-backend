@@ -117,7 +117,7 @@ module.exports = function(model,config){
 
                 }
                 function custom_sort(a, b) {
-                    return new Date(b.lastDrawTime).getTime() - new Date(a.lastDrawTime).getTime();
+                    return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
                 }
                 dataArr.sort(custom_sort);
                 await tra.commit();
