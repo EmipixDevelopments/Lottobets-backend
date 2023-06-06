@@ -75,7 +75,7 @@ module.exports = function(model,config){
                      }
                     
                 }
-                if(profileID.length){
+                if(profileIDArr.length){
                     console.log("profileID=",profileIDArr)
                     var ids = profileIDArr,
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
