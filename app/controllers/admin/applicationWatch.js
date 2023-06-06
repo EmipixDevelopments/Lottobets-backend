@@ -80,7 +80,7 @@ module.exports = function(model,config){
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
 
                 console.log(formatted)
-                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN("+formatted+") AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
+                    let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
                     console.log(next_sql)
                 }
                 function custom_sort(a, b) {
