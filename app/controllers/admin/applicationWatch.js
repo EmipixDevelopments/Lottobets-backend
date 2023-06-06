@@ -94,8 +94,8 @@ module.exports = function(model,config){
                                     let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
                                     let diffTime = Math.abs(date2 - date1);
                                     let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                                    console.log(diffTime + " milliseconds");
-                                    console.log(diffDays + " days");
+                                    //console.log(diffTime + " milliseconds");
+                                    //console.log(diffDays + " days");
                                     if(diffDays<=8){
                                         result[i]['lastDrawTime'] = filter_result[j].DrawTime;
                                         result[i]['lastResult'] = filter_result[j].Result;
@@ -107,7 +107,7 @@ module.exports = function(model,config){
                             }
                         }
                     }
-                    console.log(dataArr);
+                    //console.log(dataArr);
 
                 }
                 function custom_sort(a, b) {
