@@ -204,7 +204,7 @@ module.exports = function(model,config){
                             for(j=0;j<filter_result.length;j++){
                                 if(result[i].lottoId==filter_result[j].ProfileID){
                                     var index = dataArr.findIndex(obj => obj.lottoId==filter_result[j].lottoId);
-                                    
+                                    console.log('index=',index)
                                     if(index<=-1){
                                         console.log('pre=',result[i]['DrawTime'],'==',filter_result[j].DrawTime);
                                         result[i]['DrawTime'] = filter_result[j].DrawTime;
