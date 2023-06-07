@@ -206,7 +206,7 @@ module.exports = function(model,config){
                                     var index = dataArr.findIndex(obj => obj.lottoId==filter_result[j].lottoId);
                                     
                                     if(index<=-1){
-                                        result[i]['DrawTime'] = filter_result[j]['DrawTime'];
+                                        result[i]['DrawTime'] = filter_result[j].DrawTime;
                                         dataArr.push(result[i])
                                         
                                     }
