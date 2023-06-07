@@ -5,20 +5,16 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const getVideoId = require('get-video-id');
 const url = require('url');
-//const flash = require('connect-flash');
 const app = express();
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
-  // secret: 'your-secret-key',
   secret: 'Emipix123!@#',
   resave: false,
   saveUninitialized: true
 }));
-//app.use(flash());
 
-// app.use(express.static('public'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -26,19 +22,14 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 app.get('/', (req, res) => {
-  // Retrieve your data from a database or any other source
-  // const data = [
-    // { lottoImage: 'images/unitedstatestexasallornothingnight.png',lottoName : 'All or Nothing Night', country: 'USA Texas', countryFlag : 'images/usa_flag.png', startTime : '00:00:00', startDate : '03 May 2023', watchLink : 'https://www.youtube.com/embed/El5nwzOEpDQ', drawLink: '' },
-  // ];
-
 	axios.get('https://lottobets.co/nextdrawWatch')
 	  .then(response => {
 		const data = response.data.result;
 		data.forEach((element, index) => {
-			if(element.live_url !='' && element.live_url !=undefined){
-				let videoID = getVideoId(element.live_url);
-				element.live_url = makeLinkEmbeded(element.live_url, videoID.id, "Live");
-			}
+			// if(element.live_url !='' && element.live_url !=undefined){
+				// let videoID = getVideoId(element.live_url);
+				// element.live_url = makeLinkEmbeded(element.live_url, videoID.id, "Live");
+			// }
 			
 			if(element.drawLink !='' && element.drawLink !=undefined){
 				let videoID = getVideoId(element.drawLink);
@@ -68,7 +59,6 @@ app.post('/login', (req, res) => {
              },
         };    
         axios.post('https://lottobets.co/watchAdminLogin', data).then(response => {
-            // console.log("response==",response.data)
 			if(response.data.status=='success'){
 				req.session.loggedIn = true;
 				req.session.username = username;
@@ -77,16 +67,8 @@ app.post('/login', (req, res) => {
 				return res.redirect('/login');
 			}
     });
-  
-  /*if (username !='') {
-	
-    res.redirect('/admin');
-  } else {
-    res.redirect('/login');
-  }*/
 });
 
-// app.use('/admin', express.static('./node_modules/admin-lte'));
 app.get('/admin', checkAuth, (req, res) => {
 	axios.get('https://lottobets.co/listAllLotteriesWatch')
 	  .then(response => {
@@ -143,44 +125,17 @@ function makeLinkEmbeded(link ,videoId, linkType){
 }
 
 function getYouTubeVideoId(urlString) {
-
-	// var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;	
-    // var match = url.match(regExp);
-	// console.log('url : ',url);
-	// console.log('regExp : ',regExp);
-	// console.log('match : ',match);
-    // return (match&&match[7].length==11)? match[7] : false;	
-	/*
-  const regex = new RegExp('/(?:http?s?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(.+)/g');
-  const match = url.match(regex);
-  console.log("regex : ",regex);
-  console.log("match : ",match);
-  
-  
-  if(match && match[1].length === 11){
-	return match[1];
-  }	else {
-	const pattern = /^(?:https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]+)/;
-	const match = url.match(pattern);
-	return match[1];  
-  } 
-  */
-  
   const parsedUrl = url.parse(urlString, true);
 
   if (parsedUrl.hostname === 'www.youtube.com' || parsedUrl.hostname === 'youtube.com') {
     if (parsedUrl.pathname === '/watch') {
-		console.log('parsedUrl.query.v : ',parsedUrl.query.v);
       return parsedUrl.query.v;
     } else if (parsedUrl.pathname.startsWith('/embed/')) {
-		console.log("parsedUrl.pathname.split('/')[2] : ",parsedUrl.pathname.split('/')[2]);
       return parsedUrl.pathname.split('/')[2];
     } else if (parsedUrl.pathname.startsWith('/v/')) {
-		console.log("parsedUrl.pathname.split('/')[2] : ",parsedUrl.pathname.split('/')[2]);
       return parsedUrl.pathname.split('/')[2];
     }
   } else if (parsedUrl.hostname === 'youtu.be') {
-	  console.log('parsedUrl.pathname.substr(1) : ',parsedUrl.pathname.substr(1));
     return parsedUrl.pathname.substr(1);
   }
 
@@ -189,9 +144,6 @@ function getYouTubeVideoId(urlString) {
 }
 
 function createEmbeddedYouTubeLink(videoId) {
-  const embedUrl = "https://www.youtube.com/embed/"+videoId;
-
- // const iframe = `<iframe width="560" height="315" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-
-  return embedUrl;
+	const embedUrl = "https://www.youtube.com/embed/"+videoId;
+	return embedUrl;
 }

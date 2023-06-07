@@ -235,7 +235,7 @@
 						<tr>
 						  <td><img src="<%= item.colorimage %>"/><br/><%= item.ProfileName %></td>
 						  <td><%= item.Country %><% if(item.State !="") { %>, <%=item.State %><% } %></td>
-						  <td><img class="countrFlag" src="<%= item.countryFlag %>" style="border:1px solid #ccc;" /></td>
+						  <td><img class="countrFlag" src="<%= item.countryFlag %>" style="border:1px solid #ccc; border-radius:50%;" /></td>
 						  <td><b>-</b></td>
 						  <td><%= item.lastDrawTime %></td>
 						  <td style="width:100px; max-width:100px;"><%= item.lastResult %></td>
@@ -253,7 +253,7 @@
 		</main>
 		<!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width:60%;">
     
       <!-- Modal content-->
       <div class="modal-content">
@@ -263,9 +263,9 @@
         </div>
         <div class="modal-body">
         </div>
-        <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-        </div>
+        <!--<div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> 
+        </div>-->
       </div>
       
     </div>
