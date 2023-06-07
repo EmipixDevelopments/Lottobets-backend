@@ -129,8 +129,8 @@ module.exports = function(model,config){
                 const now2 = new Date();
                 const threshold = new Date(now2.getTime() + 5 * 60000); // 5 minutes threshold
 
-                let sortedData = data.sort((a, b) => {
-                  if (a.updatedAt <= threshold && b.updatedAt <= threshold) {
+                let sortedData = dataArr.sort((a, b) => {
+                  if (a.DrawTime <= threshold && b.DrawTime <= threshold) {
                     return a.updatedAt - b.updatedAt;
                   } else if (a.updatedAt <= threshold) {
                     return -1;
