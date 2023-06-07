@@ -122,10 +122,10 @@ module.exports = function(model,config){
 
                 }
                 
-                //dataArr.sort(custom_sort);
-                dataArr = dataArr.sort(function(a, b) {
+                dataArr.sort(custom_sort);
+                /*dataArr = dataArr.sort(function(a, b) {
                     return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
-                });
+                });*/
                 await tra.commit();
                 return response.send({
                     status: "success",
