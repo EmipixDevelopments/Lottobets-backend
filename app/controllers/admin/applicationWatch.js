@@ -174,9 +174,12 @@ module.exports = function(model,config){
                 console.log(sql)
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                 await tra.commit(); 
+                let profileIDArr = [];
+                let dataArr = [];
                 if (result.length) {
                 //var time = require('time');
                 for(let i=0;i<result.length;i++){
+                    profileIDArr.push(result[i]['ProfileID'])
                     let profileTimezone = result[i]['TimeZone'];
                     let timediff = (+2) - (profileTimezone);
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
@@ -188,6 +191,27 @@ module.exports = function(model,config){
                     result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
                     result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;
                     
+                }
+                if(profileIDArr.length){
+                    profileIDArr = profileIDArr.filter((value, index, array) => array.indexOf(value) === index);
+                    var ids = profileIDArr,
+                    formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
+                    let next_sql="SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND le.Result='' AND ll.Enable=1  AND le.IsClosed!=1 AND le.ProfileID IN"+formatted+" GROUP BY le.ProfileID ORDER by le.DrawTime DESC ";
+                        let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
+                        for(let i=0;i<result.length;i++){
+                            for(j=0;j<filter_result.length;j++){
+                                if(result[i].profileID==filter_result[j].lottoId){
+                                    var index = dataArr.findIndex(obj => obj.lottoId==filter_result[j].lottoId);
+                                    
+                                    if(index<=-1){
+                                        result[i]['DrawTime'] = filter_result[j]['DrawTime'];
+                                        //dataArr.push(filter_result[j])
+                                        
+                                    }
+                                    
+                                }
+                            }
+                        }
                 }
                 
                 return response.send({
