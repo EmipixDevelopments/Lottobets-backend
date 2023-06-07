@@ -20,6 +20,7 @@ module.exports = function(model,config){
                 var t = new Date();
                // t.setDate(t.getDate() + 2);
                 var next = new Date(dateFormat(new Date(t), "yyyy-mm-dd HH:MM:ss",true));
+                next = next.setHours(next.getHours() + 2);
                 next.setDate(next.getDate() - 8);
                 next = dateFormat(next, "yyyy-mm-dd HH:MM:ss");
                 console.log("current===",current);
@@ -41,42 +42,7 @@ module.exports = function(model,config){
                 for(let i=0;i<result.length;i++){
                     //let profileTimezone = result[i]['TimeZone'];
                     profileIDArr.push(result[i].profileID);
-                    /*let timediff = (+2) - (profileTimezone);
-                    var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
-                    now  = new Date(now);
                     
-                    var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
-                    CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
-                    result['CutTime'] = CutTime;
-                    result[i]['countryFlag'] = config.baseUrl+'/flags/'+result[i].countryFlag+'.png';
-                    result[i]['colorimage'] = config.lotto_img_url+'/'+result[i].colorimage;*/
-
-                     //sql = "SELECT DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone, le.Result FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE le.ProfileID='" + result[i].lottoId + "' AND le.Result!='' AND le.DrawTime <= now() - interval 8 day ORDER BY le.DrawTime DESC limit 1";
-                     /*sql = "CALL ProfileLastResult(" + result[i].lottoId + ")";
-                     let lottoevent_result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
-                        
-                     if(lottoevent_result[0]['0']){
-                        let date1 = new Date(dateFormat(lottoevent_result[0].DrawTime, "yyyy-mm-dd"));
-                        let date2 = new Date(dateFormat(new Date(), "yyyy-mm-dd"));
-                        let diffTime = Math.abs(date2 - date1);
-                        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                        console.log(diffTime + " milliseconds");
-                        console.log(diffDays + " days");
-                        if(diffDays<=8){
-                            
-                        }else{
-                            result[i]['lastDrawTime'] = '';
-                        }
-                        console.log(i,'=',lottoevent_result[0]['0'])
-                        result[i]['lastDrawTime'] = lottoevent_result[0]['0'].DrawTime;
-                        result[i]['lastResult'] = lottoevent_result[0]['0'].Result;
-                        dataArr.push(result[i]);
-
-                     }else{
-                        continue;
-                        result[i]['lastDrawTime'] = '';
-                        result[i]['lastResult'] = '';
-                     }*/
                     
                 }
                 if(profileIDArr.length){
