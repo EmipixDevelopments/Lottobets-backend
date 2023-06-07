@@ -132,6 +132,7 @@ module.exports = function(model,config){
                 const sortedData = dataArr
                   .filter((item) => item.DrawTime <= threshold)
                   .sort((a, b) => a.DrawTime - b.DrawTime);
+                  console.log(sortedData)
                 //dataArr.sort(custom_sort);
                 /*dataArr = dataArr.sort(function(a, b) {
                     return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
