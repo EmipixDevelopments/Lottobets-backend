@@ -102,8 +102,10 @@ module.exports = function(model,config){
                                     let timediff = (+2) - (profileTimezone);
                                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
                                     now  = new Date(now);
+                                    console.log("now1",now);
                                     
                                     var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
+                                    console.log("now2",CutTime);
                                     CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['CutTime'] = CutTime;
                                     filter_result[j]['countryFlag'] = config.baseUrl+'/flags/'+filter_result[j].countryFlag+'.png';
