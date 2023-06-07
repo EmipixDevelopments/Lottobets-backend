@@ -202,6 +202,7 @@ module.exports = function(model,config){
                         let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         for(let i=0;i<result.length;i++){
                             for(j=0;j<filter_result.length;j++){
+                                console.log('pre=',result[i].lottoId,'==',filter_result[j].ProfileID);
                                 if(result[i].lottoId==filter_result[j].ProfileID){
                                     var index = dataArr.findIndex(obj => obj.lottoId==filter_result[j].lottoId);
                                     console.log('index=',index)
