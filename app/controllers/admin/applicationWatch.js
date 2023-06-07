@@ -126,8 +126,8 @@ module.exports = function(model,config){
                     //console.log(dataArr);
 
                 }
-                const now = new Date();
-                const threshold = new Date(now.getTime() + 5 * 60000); // 5 minutes threshold
+                const now2 = new Date();
+                const threshold = new Date(now2.getTime() + 5 * 60000); // 5 minutes threshold
 
                 const sortedData = dataArr
                   .filter((item) => item.DrawTime <= threshold)
