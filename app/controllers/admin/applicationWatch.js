@@ -126,15 +126,20 @@ module.exports = function(model,config){
                     //console.log(dataArr);
 
                 }
-                
-                dataArr.sort(custom_sort);
+                const now = new Date();
+                const threshold = new Date(now.getTime() + 5 * 60000); // 5 minutes threshold
+
+                const sortedData = dataArr
+                  .filter((item) => item.DrawTime <= threshold)
+                  .sort((a, b) => a.DrawTime - b.DrawTime);
+                //dataArr.sort(custom_sort);
                 /*dataArr = dataArr.sort(function(a, b) {
                     return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
                 });*/
                 await tra.commit();
                 return response.send({
                     status: "success",
-                    result: dataArr,
+                    result: sortedData,
                     message: "Lotto found successfully",
                     status_code: 200
                 });
