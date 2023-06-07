@@ -179,7 +179,7 @@ module.exports = function(model,config){
                 if (result.length) {
                 //var time = require('time');
                 for(let i=0;i<result.length;i++){
-                    profileIDArr.push(result[i].profileID)
+                    profileIDArr.push(result[i].lottoId)
                     let profileTimezone = result[i]['TimeZone'];
                     let timediff = (+2) - (profileTimezone);
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
