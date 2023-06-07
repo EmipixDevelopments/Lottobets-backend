@@ -201,12 +201,12 @@ module.exports = function(model,config){
                         let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         for(let i=0;i<result.length;i++){
                             for(j=0;j<filter_result.length;j++){
-                                if(result[i].profileID==filter_result[j].lottoId){
+                                if(result[i].lottoId==filter_result[j].ProfileID){
                                     var index = dataArr.findIndex(obj => obj.lottoId==filter_result[j].lottoId);
                                     
                                     if(index<=-1){
                                         result[i]['DrawTime'] = filter_result[j]['DrawTime'];
-                                        //dataArr.push(filter_result[j])
+                                        dataArr.push(result[i])
                                         
                                     }
                                     
