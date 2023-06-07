@@ -129,10 +129,21 @@ module.exports = function(model,config){
                 const now2 = new Date();
                 const threshold = new Date(now2.getTime() + 5 * 60000); // 5 minutes threshold
 
-                let sortedData = dataArr
-                  .filter((item) => item.DrawTime <= threshold)
-                  .sort((a, b) => a.DrawTime - b.DrawTime);
-                  console.log(sortedData)
+                const now = new Date();
+                const threshold = new Date(now.getTime() + 5 * 60000); // 5 minutes threshold
+
+                let sortedData = data.sort((a, b) => {
+                  if (a.updatedAt <= threshold && b.updatedAt <= threshold) {
+                    return a.updatedAt - b.updatedAt;
+                  } else if (a.updatedAt <= threshold) {
+                    return -1;
+                  } else if (b.updatedAt <= threshold) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
+                });
+
                 //dataArr.sort(custom_sort);
                 /*dataArr = dataArr.sort(function(a, b) {
                     return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
