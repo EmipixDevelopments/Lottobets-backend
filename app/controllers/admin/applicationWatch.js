@@ -109,7 +109,7 @@ module.exports = function(model,config){
                                     filter_result[j]['countryFlag'] = config.baseUrl+'/flags/'+filter_result[j].countryFlag+'.png';
                                     filter_result[j]['colorimage'] = config.lotto_img_url+'/'+filter_result[j].colorimage;
                                     filter_result[j]['lastDrawTime'] = result[i].DrawTime;
-                                    filter_result[j]['lastUpdateTime'] = result[i].UpdateTime;
+                                    filter_result[j]['lastUpdateTime'] = dateFormat(result[i].UpdateTime), "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['lastResult'] = result[i].Result;
                                     filter_result[j]['lastID'] = result[i].ID;
                                     dataArr.push(filter_result[j])
