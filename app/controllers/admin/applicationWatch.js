@@ -129,7 +129,7 @@ module.exports = function(model,config){
                 const now2 = new Date();
                 const threshold = new Date(now2.getTime() + 5 * 60000); // 5 minutes threshold
 
-                const sortedData = dataArr
+                let sortedData = dataArr
                   .filter((item) => item.DrawTime <= threshold)
                   .sort((a, b) => a.DrawTime - b.DrawTime);
                   console.log(sortedData)
@@ -137,6 +137,9 @@ module.exports = function(model,config){
                 /*dataArr = dataArr.sort(function(a, b) {
                     return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
                 });*/
+                for(let i=0;i<sortedData.length;i++){
+                    sortedData[i]['DrawTime']=dateFormat(sortedData[i].DrawTime, "yyyy-mm-dd HH:MM:ss")
+                }
                 await tra.commit();
                 return response.send({
                     status: "success",
