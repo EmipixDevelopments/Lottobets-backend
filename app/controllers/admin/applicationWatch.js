@@ -30,7 +30,7 @@ module.exports = function(model,config){
                     return new Date(a.DrawTime).getTime() - new Date(b.DrawTime).getTime();
                 }
                 //let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)";
-                let sql = "SELECT le.profileID,le.ID,le.DrawTime,ll.TimeZone, le.Result,le.UpdateTime,le.CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE  le.IsClosed=1 AND le.Result!='' AND  le.UpdateTime >= '"+next+"' AND le.UpdateTime <= '"+current+"' ORDER BY le.ID DESC";
+                let sql = "SELECT le.profileID,le.ID,le.DrawTime,ll.TimeZone, le.Result,le.UpdateTime,le.CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE  le.IsClosed=1 AND le.Result!='' AND  DATE_ADD(le.UpdateTime,INTERVAL (-1 *TimeZone)+2 HOUR) >= '"+next+"' AND DATE_ADD(le.UpdateTime,INTERVAL (-1 *TimeZone)+2 HOUR) <= '"+current+"' ORDER BY le.ID DESC";
                 console.log(sql)
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                  
@@ -90,7 +90,7 @@ module.exports = function(model,config){
                 console.log("formatted",formatted)
 
                     //let next_sql="SELECT le.ProfileID,le.ID,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,le.DrawTime as Draw,ll.TimeZone, le.Result FROM lottolist ll LEFT JOIN lottoevent le ON  ll.ID=le.ProfileID WHERE le.ProfileID IN"+formatted+" AND le.Result!='' AND le.IsClosed=1  ORDER BY le.DrawTime DESC ";
-                    let next_sql="SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,le. DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND le.Result='' AND ll.Enable=1  AND le.IsClosed!=1 AND le.ProfileID IN"+formatted+" GROUP BY le.ProfileID ORDER by le.DrawTime DESC ";
+                    let next_sql="SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND le.Result='' AND ll.Enable=1  AND le.IsClosed!=1 AND le.ProfileID IN"+formatted+" GROUP BY le.ProfileID ORDER by le.DrawTime DESC ";
                     let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                     for(let i=0;i<result.length;i++){
                         for(j=0;j<filter_result.length;j++){
@@ -114,7 +114,8 @@ module.exports = function(model,config){
                                     filter_result[j]['lastDrawTime'] = dateFormat(result[i].DrawTime, "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['lastUpdateTime'] = dateFormat(result[i].UpdateTime, "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['lastResult'] = result[i].Result;
-                                    filter_result[j]['DrawTime'] = new Date(dateFormat(filter_result[j].DrawTime, "yyyy-mm-dd HH:MM:ss"));
+                                    //filter_result[j]['DrawTime'] = new Date(dateFormat(filter_result[j].DrawTime, "yyyy-mm-dd HH:MM:ss"));
+                                    filter_result[j]['DrawTime'] = filter_result[j].DrawTime;
                                     filter_result[j]['lastID'] = result[i].ID;
                                     dataArr.push(filter_result[j])
                                     
@@ -141,17 +142,17 @@ module.exports = function(model,config){
                   }
                 });
 
-                //dataArr.sort(custom_sort);
+                dataArr.sort(custom_sort);
                 /*dataArr = dataArr.sort(function(a, b) {
                     return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
                 });*/
-                for(let i=0;i<sortedData.length;i++){
+                /*for(let i=0;i<sortedData.length;i++){
                     sortedData[i]['DrawTime']=dateFormat(sortedData[i].DrawTime, "yyyy-mm-dd HH:MM:ss")
-                }
+                }*/
                 await tra.commit();
                 return response.send({
                     status: "success",
-                    result: sortedData,
+                    result: dataArr,
                     message: "Lotto found successfully",
                     status_code: 200
                 });
