@@ -31,7 +31,7 @@ module.exports = function(model,config){
                     return new Date(a.UpdateTime).getTime() - new Date(b.UpdateTime).getTime();
                 }
                 //let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)";
-                let sql = "SELECT le.profileID,le.ID,le.DrawTime,ll.TimeZone, le.Result,le.UpdateTime,le.CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE  le.IsClosed=1 AND le.Result!='' AND  le.UpdateTime >= '"+next+"' AND le.UpdateTime <= '"+current+"' ORDER BY le.ID DESC";
+                let sql = "SELECT le.profileID,le.ID,le.DrawTime,ll.TimeZone, le.Result,le.UpdateTime,le.CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE  le.IsClosed=1 AND le.Result!='' AND  le.UpdateTime >= '"+next+"' AND le.UpdateTime <= '"+current+"' ORDER BY le.UpdateTime DESC";
                 console.log(sql)
                 let result = await sequelize_cngapi.query(sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT})
                  
@@ -93,28 +93,10 @@ module.exports = function(model,config){
                     //console.log(dataArr);
 
                 }
-                const now2 = new Date();
-                const threshold = new Date(now2.getTime() + 5 * 60000); // 5 minutes threshold
-
-                let sortedData = dataArr.sort((a, b) => {
-                  if (a.DrawTime <= threshold && b.DrawTime <= threshold) {
-                    return a.updatedAt - b.updatedAt;
-                  } else if (a.updatedAt <= threshold) {
-                    return -1;
-                  } else if (b.updatedAt <= threshold) {
-                    return 1;
-                  } else {
-                    return 0;
-                  }
-                });
+                
 
                 dataArr.sort(custom_sort);
-                /*dataArr = dataArr.sort(function(a, b) {
-                    return new Date(b.DrawTime).getTime() - new Date(a.DrawTime).getTime();
-                });*/
-                /*for(let i=0;i<sortedData.length;i++){
-                    sortedData[i]['DrawTime']=dateFormat(sortedData[i].DrawTime, "yyyy-mm-dd HH:MM:ss")
-                }*/
+                
                 await tra.commit();
                 return response.send({
                     status: "success",
