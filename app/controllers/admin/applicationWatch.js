@@ -114,6 +114,7 @@ module.exports = function(model,config){
                                     filter_result[j]['lastDrawTime'] = dateFormat(result[i].DrawTime, "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['lastUpdateTime'] = dateFormat(result[i].UpdateTime, "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['lastResult'] = result[i].Result;
+                                    filter_result[j]['DrawTime'] = dateFormat(filter_result[j].DrawTime, "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['lastID'] = result[i].ID;
                                     dataArr.push(filter_result[j])
                                     
