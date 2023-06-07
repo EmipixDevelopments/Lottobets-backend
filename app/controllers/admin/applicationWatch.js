@@ -179,7 +179,7 @@ module.exports = function(model,config){
                 if (result.length) {
                 //var time = require('time');
                 for(let i=0;i<result.length;i++){
-                    profileIDArr.push(result[i]['ProfileID'])
+                    profileIDArr.push(result[i].profileID)
                     let profileTimezone = result[i]['TimeZone'];
                     let timediff = (+2) - (profileTimezone);
                     var now = dateFormat(new Date(result[i]['CutTime']), "yyyy-mm-dd HH:MM:ss");
@@ -193,6 +193,7 @@ module.exports = function(model,config){
                     
                 }
                 if(profileIDArr.length){
+                    console.log(profileIDArr)
                     profileIDArr = profileIDArr.filter((value, index, array) => array.indexOf(value) === index);
                     var ids = profileIDArr,
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
