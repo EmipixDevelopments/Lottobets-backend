@@ -198,18 +198,23 @@ module.exports = function(model,config){
                     var ids = profileIDArr,
                     formatted = `(${ids.map(v => JSON.stringify(v.toString())).join(', ')})`;
                     let next_sql="SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND le.Result='' AND ll.Enable=1  AND le.IsClosed!=1 AND le.ProfileID IN"+formatted+" GROUP BY le.ProfileID ORDER by le.DrawTime DESC ";
-                    console.log(next_sql)
+                    
                         let filter_result = await sequelize_cngapi.query(next_sql, { transaction: tra ,type: sequelize_cngapi.QueryTypes.SELECT});
                         for(let i=0;i<result.length;i++){
                             for(j=0;j<filter_result.length;j++){
-                                console.log('pre=',result[i].lottoId,'==',filter_result[j].lottoId);
                                 if(result[i].lottoId==filter_result[j].lottoId){
                                     var index = dataArr.findIndex(obj => obj.lottoId==filter_result[j].lottoId);
-                                    console.log('index=',index)
+                                    
                                     if(index<=-1){
-                                        console.log('pre=',result[i]['DrawTime'],'==',filter_result[j].DrawTime);
+                                        let profileTimezone = filter_result[j]['TimeZone'];
+                                        let timediff = (+2) - (profileTimezone);
+                                        var now = dateFormat(new Date(filter_result[j]['CutTime']), "yyyy-mm-dd HH:MM:ss");
+                                        now  = new Date(now);
+                                        
+                                        var CutTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
+                                        CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                                         result[i]['DrawTime'] = filter_result[j].DrawTime;
-                                        console.log('next=',result[i]['DrawTime'])
+                                        result[i]['CutTime'] = CutTime;
                                         dataArr.push(result[i])
                                         
                                     }
