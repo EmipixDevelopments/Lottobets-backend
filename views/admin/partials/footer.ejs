@@ -73,6 +73,42 @@
       
     </div>
   </div>
+	<!-- Modal New -->
+  <div class="modal fade myModal3" id="myModal3" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+		  <h4 class="modal-title"></h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+			<form class="edit form-horizontal" id="lottoEditForm" name="lottoEditForm" action="/edit" method="post">
+				<input type="hidden" class="lottoId" name="lottoId" value="" />
+				
+				<div class="form-group results" style="display:none;">
+					<label for="result" class="col-sm-3 control-label">Result :</label><div class="col-sm-9"><input type="text" class="form-control result" id="result" name="result" /></div>
+				</div>
+				<br/>
+				<div class="form-group watchLink" style="display:none;">
+					<label for="drawLink" class="col-sm-3 control-label">Watch URL :</label><div class="col-sm-9"><input type="text" class="form-control drawLink" id="drawLink" name="drawLink" /></div>
+				</div>
+				<br/>
+				<div class="form-group liveLink" style="display:none;">
+					<label for="liveURL" class="col-sm-3 control-label">LIVE URL :</label><div class="col-sm-9"><input type="text" class="form-control liveURL" id="liveURL" name="liveURL" /></div>
+				</div>
+				
+				<button type="button" id="lottoUpdate" class="btn btn-default">Save</button>
+			  </form>
+        </div>
+        <div class="modal-footer">
+          <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+        </div>
+      </div>
+      
+    </div>
+  </div>  
 
 <!-- jQuery -->
 <script src="../../plugins/jquery/jquery.min.js"></script>

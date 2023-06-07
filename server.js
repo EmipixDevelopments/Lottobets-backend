@@ -41,9 +41,9 @@ app.get('/', (req, res) => {
 	  .catch(error => {
 		console.error('Error fetching data:', error);
 	});	
-
   
 });
+
 //backend Admin
 app.post('/login', (req, res) => {
   const username = req.body.username;

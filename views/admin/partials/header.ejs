@@ -49,25 +49,85 @@
 					
 					
 				});
+				
+				$(".updateVal").click(function(){
+					let type = $(this).attr("data-type");
+					let lottoid = $(this).attr("data-lottoid");
+					let lottoName = $(this).attr("data-lottoname");
+					let liveURL = $(this).attr("data-liveurl");
+					let drawLink = $(this).attr("data-drawlink");
+					let result = $(this).attr("data-result");
+					
+					$(".modal-title").html("<b>"+lottoName+"</b>");
+					$(".lottoId").val(lottoid);
+					if(type == 'Result'){
+						$(".result").val(result);
+						//show/hide
+						$(".results").css("display","block");
+						$(".watchLink").css("display","none");
+						$(".liveLink").css("display","none");
+					} else if(type == 'LiveURL'){
+						$(".liveURL").val(liveURL);
+						//show/hide
+						$(".liveLink").css("display","block");
+						$(".watchLink").css("display","none");
+						$(".results").css("display","none");
+					} else {
+						$(".drawLink").val(drawLink);
+						//show/hide
+						$(".watchLink").css("display","block");
+						$(".results").css("display","none");
+						$(".liveLink").css("display","none");
+					}
+					
+					
+					
+				});
+				
 				$(".close").click(function(){
 					let url = "";
 				});			
+				
+				$("#lottoUpdate").click(function(){
+					
+					console.log('lottoEditForm : ',$("#lottoEditForm").serialize());
+					
+					$.ajax({
+						type:"POST",
+						url:'https://lottobets.co/watchLottoUpdate',
+						data:$("#lottoEditForm").serialize(),//only input
+						success: function(response){
+							console.log(response); 
+							if(response.status=='success'){
+								alert(response.message);
+								window.location.reload();
+							}else{
+								alert(response.message);
+							}
+						}
+					});
+					
+					$("#lottoEditForm").trigger('reset');
+					//$('#myModal3').hide();
+					$(".close").trigger('click');
+				});
+				
 				$("#lottoSave").click(function(){
 					//alert($(".lottoId").val())
 					$.ajax({
-            type:"POST",
-            url:'https://lottobets.co/watchLottoUpdate',
-            data:$("#editlottoForm").serialize(),//only input
-            success: function(response){
-                console.log(response); 
-                if(response.status=='success'){
-                	alert(response.message);
-                	window.location.reload();
-                }else{
-                	alert(response.message);
-                }
-            }
-        	});
+						type:"POST",
+						url:'https://lottobets.co/watchLottoUpdate',
+						data:$("#editlottoForm").serialize(),//only input
+						success: function(response){
+							console.log(response); 
+							if(response.status=='success'){
+								alert(response.message);
+								window.location.reload();
+							}else{
+								alert(response.message);
+							}
+						}
+					});
 				})
 			});	
 		</script>
