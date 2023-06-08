@@ -95,12 +95,33 @@ module.exports = function(model,config){
                 }
                 
 
-                dataArr.sort(custom_sort);
+                //dataArr.sort(custom_sort);
+
+                var array1 = [];
+                var array2 = [];
+
+                for (const date in dataArr) {
+                  if (dataArr[date].lastUpdateTime) {
+                    array1.push(dataArr[date]);
+                  } else {
+                   array2.push(dataArr[date]);
+                  }
+                }
+
+                var sorted1 = array1.sort(function(a,b) {
+                      return (a.lastUpdateTime > b.lastUpdateTime) ? 1 : -1
+                   }); 
+                   
+                var sorted2 = array2.sort(function(a,b) {
+                      return (a.DrawTime > b.DrawTime) ? 1 : -1
+                   }); 
+                   
+                const sorted = sorted1.concat(sorted2);
                 
                 await tra.commit();
                 return response.send({
                     status: "success",
-                    result: dataArr,
+                    result: sorted,
                     message: "Lotto found successfully",
                     status_code: 200
                 });
