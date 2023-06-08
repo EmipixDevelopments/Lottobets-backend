@@ -28,8 +28,9 @@ module.exports = function(model,config){
             let tra = await sequelize_cngapi.transaction();
             try {
                 function custom_sort(a, b) {
-                    return new Date(a.UpdateTime).getTime() - new Date(b.UpdateTime).getTime();
-                }
+                    return new Date(a.d).getTime() - new Date(b.d).getTime();
+                                }
+                
                 //let sql = "SELECT le.ProfileID AS lottoId,le.ID AS lottoEventId,le.Description,ll.ProfileName,ll.State,ll.Country,ll.drawLink,ll.RegUsed,ll.StartNum,ll.live_url,cl.Id AS CountryId,cl.FlagAbv As countryFlag,ll.colorimage,ll.grayscaleimage,DATE_FORMAT(DATE_ADD(le.DrawTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as DrawTime,ll.TimeZone,cl.Continent, DATE_FORMAT(DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR),'%Y-%m-%d %H:%i:%s') as CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID LEFT JOIN " + config.Table.CUNTRYLIST + " cl ON ll.CountryId=cl.Id WHERE DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)>='" + current + "' AND DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)<='" + next + "' AND ll.Enable=1  AND le.IsClosed!=1 GROUP BY le.ProfileID ORDER by DATE_ADD(le.CutTime,INTERVAL (-1 *TimeZone)+2 HOUR)";
                 let sql = "SELECT le.profileID,le.ID,le.DrawTime,ll.TimeZone, le.Result,le.UpdateTime,le.CutTime FROM " + config.Table.LOTTOLIST + " ll LEFT JOIN " + config.Table.LOTTOEVENT + " le ON  ll.ID=le.ProfileID WHERE  le.IsClosed=1 AND le.Result!='' AND  le.UpdateTime >= '"+next+"' AND le.UpdateTime <= '"+current+"' ORDER BY le.UpdateTime DESC";
                 console.log(sql)
@@ -98,8 +99,9 @@ module.exports = function(model,config){
 
                 }
                 
-
+                dataArr.sort((date1, date2) => new Date(date1.DrawTime).setHours(0, 0, 0, 0) - new Date(date2.DrawTime).setHours(0, 0, 0, 0));
                 dataArr.sort(custom_sort);
+                //dataArr.sort(custom_sort);
                 
                 await tra.commit();
                 return response.send({
