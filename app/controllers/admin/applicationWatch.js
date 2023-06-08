@@ -188,6 +188,7 @@ module.exports = function(model,config){
                                     
                                     if(index<=-1){
                                         if(index2>=-1){
+                                            console.log(last_result[index2])
                                             result[i]['lastResult']=last_result[index2]['Result'];
                                         }
                                         let profileTimezone = filter_result[j]['TimeZone'];
