@@ -86,7 +86,12 @@ module.exports = function(model,config){
                                     filter_result[j]['lastUpdateTime'] = dateFormat(result[i].UpdateTime, "yyyy-mm-dd HH:MM:ss");
                                     filter_result[j]['lastResult'] = result[i].Result;
                                     //filter_result[j]['DrawTime'] = new Date(dateFormat(filter_result[j].DrawTime, "yyyy-mm-dd HH:MM:ss"));
-                                    filter_result[j]['DrawTime'] = filter_result[j].DrawTime;
+                                    var now = dateFormat(new Date(filter_result[j].DrawTime), "yyyy-mm-dd HH:MM:ss");
+                                    now  = new Date(now);
+                                    //console.log("now1",now);
+                                    
+                                    var DrawTime = new Date(now.getTime() + (timediff * 1000 * 60 * 60));
+                                    filter_result[j]['DrawTime'] = DrawTime;
                                     filter_result[j]['lastID'] = result[i].ID;
                                     dataArr.push(filter_result[j])
                                     
