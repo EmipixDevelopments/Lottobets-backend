@@ -128,8 +128,8 @@
 						  <td><%= item.State %></td>
 						  <td><%= item.DrawTime %></td>
 						  <td>
-							<% if(item.Result){ %>
-								<a href="#" class="updateVal" data-toggle="modal" data-target="#myModal3" data-type="Result" data-result="<%= item.result %>" data-lottoId="<%=item.lottoId %>" data-lottoName="<%=item.ProfileName %>"><%= item.Result %></a>
+							<% if(item.lastResult){ %>
+								<a href="#" class="updateVal" data-toggle="modal" data-target="#myModal3" data-type="Result" data-result="<%= item.lastResult %>" data-lottoId="<%=item.lottoId %>" data-lottoName="<%=item.ProfileName %>"><%= item.lastResult %></a>
 							<%} else {%>
 								<button class="btn btn-info updateVal" data-toggle="modal" data-target="#myModal3" data-type="Result" data-lottoId="<%=item.lottoId %>" data-lottoName="<%=item.ProfileName %>">Add Results</button>
 							<% } %>
