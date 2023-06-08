@@ -80,7 +80,7 @@ module.exports = function(model,config){
 
                                     CutTime = dateFormat(CutTime, "yyyy-mm-dd HH:MM:ss");
                                     //console.log("now2",CutTime);
-                                    filter_result[j]['CutTime'] = CutTime;
+                                    filter_result[j]['CutTime'] = filter_result[j]['CutTime'];
                                     filter_result[j]['countryFlag'] = config.baseUrl+'/flags/'+filter_result[j].countryFlag+'.png';
                                     filter_result[j]['colorimage'] = config.lotto_img_url+'/'+filter_result[j].colorimage;
                                     filter_result[j]['lastDrawTime'] = dateFormat(result[i].DrawTime, "yyyy-mm-dd HH:MM:ss");
