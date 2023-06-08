@@ -74,6 +74,8 @@ app.get('/admin', checkAuth, (req, res) => {
 	  .then(response => {
 		const data = response.data.result;
 		
+		// data.sort((a, b) => a.DrawTime - b.DrawTime);
+		
 		res.render('admin/dashboard', {user: req.session.username, data });
 	  })
 	  .catch(error => {

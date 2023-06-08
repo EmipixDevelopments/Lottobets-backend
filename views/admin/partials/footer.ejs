@@ -14,10 +14,9 @@
 </div>
 <!-- ./wrapper -->
 	<!-- Modal -->
-  <div class="modal fade myModal2" id="myModal2" role="dialog">
+  <!--<div class="modal fade myModal2" id="myModal2" role="dialog">
     <div class="modal-dialog">
     
-      <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
 		  <h4 class="modal-title"></h4>
@@ -68,11 +67,11 @@
         </div>
         <div class="modal-footer">
           <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
-        </div>
+       <!-- </div>
       </div>
       
     </div>
-  </div>
+  </div>-->
 	<!-- Modal New -->
   <div class="modal fade myModal3" id="myModal3" role="dialog">
     <div class="modal-dialog">
@@ -86,6 +85,7 @@
         <div class="modal-body">
 			<form class="edit form-horizontal" id="lottoEditForm" name="lottoEditForm" action="/edit" method="post">
 				<input type="hidden" class="lottoId" name="lottoId" value="" />
+				<input type="hidden" class="type" name="type" value="" />
 				
 				<div class="form-group results" style="display:none;">
 					<label for="result" class="col-sm-3 control-label">Result :</label><div class="col-sm-9"><input type="text" class="form-control result" id="result" name="result" /></div>
@@ -99,7 +99,8 @@
 					<label for="liveURL" class="col-sm-3 control-label">LIVE URL :</label><div class="col-sm-9"><input type="text" class="form-control liveURL" id="liveURL" name="liveURL" /></div>
 				</div>
 				
-				<button type="button" id="lottoUpdate" class="btn btn-default">Save</button>
+				<button type="button" id="lottoUpdate" class="btn btn-default"  data-dismiss="modal">Save</button>
+				<!-- <button type="button" class="btn btn-danger close"  data-dismiss="modal">Close</button> -->
 			  </form>
         </div>
         <div class="modal-footer">
@@ -139,7 +140,8 @@
             "bSmart": false, 
             "bRegex": true,
             "sSearch": ""                
-        }
+        },
+		//order: [[4, 'desc']],
       //"buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     
