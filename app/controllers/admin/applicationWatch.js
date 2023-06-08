@@ -99,7 +99,7 @@ module.exports = function(model,config){
                 }
                 
 
-                dataArr.sort(custom_sort);
+                //dataArr.sort(custom_sort);
                 
                 await tra.commit();
                 return response.send({
