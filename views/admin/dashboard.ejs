@@ -108,7 +108,7 @@
                     <th>State</th>
                     <th>Draw Days & Time</th>
                     <th>Result</th>
-                    <th>Live Url</th>
+                    <!-- <th>Live Url</th> -->
                     <th>Watch Url</th>
                     <!-- <th>&nbsp;</th> -->
                   </tr>
@@ -134,13 +134,13 @@
 								<button class="btn btn-info updateVal" data-toggle="modal" data-target="#myModal3" data-type="Result" data-lottoId="<%=item.lottoId %>" data-lottoName="<%=item.ProfileName %>">Add Results</button>
 							<% } %>
 						  </td>
-						  <td>
+						  <!--<td>
 							<% if(item.live_url) {%>
 								<a href="#" class="updateVal" data-toggle="modal" data-target="#myModal3" data-liveURL="<%= item.live_url %>" data-lottoId="<%=item.lottoId %>" data-type="LiveURL" data-lottoName="<%=item.ProfileName %>"><%= item.live_url %></a>
 							<%} else {%>
 								<button class="btn btn-info updateVal" data-toggle="modal" data-target="#myModal3" data-lottoId="<%=item.lottoId %>"  data-type="LiveURL" data-lottoName="<%=item.ProfileName %>">Add Live Link</button>
 							<% } %>
-						  </td>
+						  </td>-->
 						  <td>
 							<% if(item.drawLink){ %>
 								<a href="#" class="updateVal" data-toggle="modal"data-target="#myModal3" data-lottoId="<%=item.lottoId %>" data-drawLink="<%= item.drawLink %>"  data-type="DrawLink" data-lottoName="<%=item.ProfileName %>"><%= item.drawLink %></a>
