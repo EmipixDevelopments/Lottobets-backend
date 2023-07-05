@@ -988,7 +988,8 @@ module.exports = function(model,config){
                     siteTimeDate = dateFormat(siteTime, "yyyy-mm-dd HH:MM:ss");
 
                    
-
+                    let profileDetail = "SELECT jackpotValue,jackpotDate FROM " + config.Table.LOTTOLIST + " WHERE ID="+sequelize_cngapi.escape(inputs.profileId)+" LIMIT 1";
+                    let profileDetailResult = await sequelize_cngapi.query(profileDetail, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
                     let finalResponse = {
                         // "RegUsed":eventResult[0].RegUsed,
                         "minStake" : minStake,
@@ -997,8 +998,8 @@ module.exports = function(model,config){
                         "regBallImages" : regBallImages,
                         "bonusBallImages" : (priceData.BonusFromReg)?regBallImages:bonusBallImages,
                         "eventId": eventResult[0].ID,
-                        "jackpotValue": (eventResult[0].jackpotValue)?eventResult[0].jackpotValue:'',
-                        "jackpotDate": (eventResult[0].jackpotDate)?eventResult[0].jackpotDate:'',
+                        "jackpotValue": (profileDetailResult[0].jackpotValue)?profileDetailResult[0].jackpotValue:'',
+                        "jackpotDate": (profileDetailResult[0].jackpotDate)?profileDetailResult[0].jackpotDate:'',
                         "day": priceData.Description,
                         "country": lottoListData.Country,
                         "profileName": lottoListData.ProfileName,
