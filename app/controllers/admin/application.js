@@ -643,6 +643,7 @@ module.exports = function(model,config){
                         condition;
                         //condition + Limit;
                     eventSql = 'SELECT * FROM ('+eventSql+') as temp ORDER BY temp.DrawTime LIMIT 1';   
+                    console.log("eventSql=",eventSql)
                     eventResult = await sequelize_cngapi.query(eventSql, { transaction: tra_cngapi ,type: sequelize_cngapi.QueryTypes.SELECT});
                     
                    
