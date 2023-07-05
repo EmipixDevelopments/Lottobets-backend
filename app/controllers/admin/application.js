@@ -703,6 +703,7 @@ module.exports = function(model,config){
                     let bonsArr = [];
                     let bonsPickerArr = [];
                     console.log("prices=",prices)
+                    console.log("priceData=",priceData)
                     for (let index1 = 0; index1 < prices.length; ++index1) {
 
                         var pricevalue = (prices[index1]).split(":");
