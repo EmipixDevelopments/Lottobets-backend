@@ -712,6 +712,11 @@ module.exports = function(model,config){
                                 if (marketlist[index].MarketID == marketid) {
                                     var marketdesc = marketlist[index].MarketDescription;
                                     regulararr[marketdesc] = prices[index1];
+                                    console.log({
+                                        "market": marketdesc,
+                                        "marketId": marketid,
+                                        "price": marketprice,
+                                    })
                                     regArr.push({
                                         "market": marketdesc,
                                         "marketId": marketid,
