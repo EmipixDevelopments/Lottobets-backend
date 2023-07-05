@@ -705,6 +705,7 @@ module.exports = function(model,config){
                     for (let index1 = 0; index1 < prices.length; ++index1) {
 
                         var pricevalue = (prices[index1]).split(":");
+                        console.log("pricevalue=",pricevalue)
                         var marketid = pricevalue[0];
                         var marketprice = pricevalue[1];
                         if (marketid >= 1 && marketid <= 20) {
